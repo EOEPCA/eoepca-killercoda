@@ -1,0 +1,28 @@
+{
+  "title": "OGC API Process - OpenEO",
+  "description": "EOEPCA Data Processing Building Block - OpenEO interface - OpenEO processing engine",
+  "details": {
+    "intro": {
+      "title": "Intro",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh"
+    },
+		"prerequisites": {
+			"title": "Pre-requisites",
+			"text": "prerequisites.md"
+		},
+    "deploy": [
+      {
+        "title": "Step1",
+        "text": "tbc.md",
+      },
+      {
+        "title": "Step2",
+        "text": "tbc.md",
+      }
+    ]
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

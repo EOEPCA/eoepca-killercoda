@@ -1,0 +1,46 @@
+{
+  "title": "OGC API Process - Calrissian",
+  "description": "EOEPCA Data Processing Building Block - OGC API Process interface - Calrissian K8S processing engine",
+  "details": {
+    "intro": {
+      "title": "Intro",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh"
+    },
+		"prerequisites": {
+			"title": "Pre-requisites",
+			"text": "prerequisites.md"
+		},
+    "deployzoo": [
+			"configure":{
+				"title": "Configure Deployment",
+				"text": "configurezoo.md",
+			},
+			"deploy":{
+				"title": "Deploy Zoo",
+				"text": "deployzoo.md",
+			}
+		],
+		"validate": [{
+				"title": "Deploy an application",
+				"text": "deployapp.md"
+			},
+			{
+				"title": "Execute an application",
+				"text": "submitproc.md"
+			}
+		],
+		"finish": {
+			"title": "Finish",
+			"text": "finish.md"
+		}
+  },
+	"assets": {
+		"host01": [
+			{"file": "../../commons/commons_bin.7z", "target": "/tmp/commons_bin.7z"},
+		]
+	},
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
