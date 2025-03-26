@@ -1,7 +1,0 @@
-{
-  "title": "EOEPCA Processing Building Block",
-  "description": "Data processing with different engines",
-  "items": [
-    { "path": "calrissian" }
-  ]
-}

@@ -12,4 +12,4 @@ For more information about EOEPCA and the EOEPCA Processing Building Block, and 
  - [Zoo Project Documentation](https://zoo-project.org/resources/userguide/)
  - [Calrissian Documentation](https://duke-gcb.github.io/calrissian/)
 
-and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, contact us at [contact@eoepca.org](mailto:contact@eoepca.org)
+and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
