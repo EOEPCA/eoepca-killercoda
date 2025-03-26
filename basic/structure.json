@@ -4,9 +4,9 @@
   "items": [
     { "path": "pre-requisites" },
     { "path": "resource-discovery-registration" },
-		{ "path": "data-access" },
+    { "path": "data-access" },
     { "path": "processing" },
-		{ "path": "iam" },
-		{ "path": "mlops" },
+    { "path": "iam" },
+    { "path": "mlops" }
   ]
 }
