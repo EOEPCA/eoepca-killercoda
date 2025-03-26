@@ -38,7 +38,7 @@
   },
 	"assets": {
 		"host01": [
-			{"file": "../../commons/commons_bin.7z", "target": "/tmp/commons_bin.7z"}
+			{"file": "commons_bin.7z", "target": "/tmp/commons_bin.7z"}
 		]
 	},
   "backend": {
