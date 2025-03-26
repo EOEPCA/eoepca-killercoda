@@ -7,11 +7,11 @@
       "text": "intro.md",
       "foreground": "intro_foreground.sh"
     },
-		"prerequisites": {
-			"title": "Pre-requisites",
-			"text": "prerequisites.md"
-		},
-    "deployzoo": [
+		"steps": [
+      {
+        "title": "Pre-requisites",
+        "text": "prerequisites.md"
+      },
       {
 				"title": "Configure Deployment",
 				"text": "configurezoo.md"
@@ -19,9 +19,7 @@
 			{
 				"title": "Deploy Zoo",
 				"text": "deployzoo.md"
-			}
-		],
-		"validate": [
+			},
       {
 				"title": "Deploy an application",
 				"text": "deployapp.md"

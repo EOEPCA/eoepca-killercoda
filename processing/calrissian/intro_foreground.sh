@@ -1,3 +1,4 @@
+reset
 echo setting-up your environment...
 #DNS-es for dependencies
 echo "172.30.1.2 minio.eoepca.local zoo.eoepca.local" >> /etc/hosts
