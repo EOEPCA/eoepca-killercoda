@@ -1,12 +1,12 @@
 #!/bin/bash
-echo setting-up your environment... >> /tmp/killercoda_setup.log
+echo setting-up your environment... wait till it terminates before starting the tutorial >> /tmp/killercoda_setup.log
 #DNS-es for dependencies
 echo "172.30.1.2 minio.eoepca.local zoo.eoepca.local" >> /etc/hosts
 kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
 sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 minio.eoepca.local zoo.eoepca.local\n          fallthrough\n        }|" kc.yml
 kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
 #Common binaries (we have this locally installed for speed and to keep the versions)
-mkdir -p /usr/local/bin/ && 7z x /tmp/commons_bin.7z -o /usr/local/bin/ && chmod +x /usr/local/bin/gomplate /usr/local/bin/mc /usr/local/bin/minio
+mkdir -p /usr/local/bin/ && 7z x /tmp/commons_bin.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate /usr/local/bin/mc /usr/local/bin/minio
 #gotemplate scripts
 #curl -s -S -L -o /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/v4.3.0/gomplate_linux-amd64 && chmod +x /usr/local/bin/gomplate
 #Installing Ingress (basic)
@@ -79,4 +79,6 @@ spec:
         cpu: "0"
         memory: "0"
 EOF
-echo setup complete! you can start the tutorial...  >> /tmp/killercoda_setup.log
+#Stop the foreground script
+killall tail
+echo setup complete! terminating...  >> /tmp/killercoda_setup.log
