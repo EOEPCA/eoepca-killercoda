@@ -1,1 +1,0 @@
-some ssample text
