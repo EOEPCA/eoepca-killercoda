@@ -1,6 +1,6 @@
 {
   "title": "OGC API Process - Calrissian",
-  "description": "EOEPCA Data Processing Building Block - OGC API Process interface - Calrissian K8S processing engine",
+  "description": "EOEPCA Data Processing, OGC API Process, Calrissian K8S engine",
   "details": {
     "intro": {
       "title": "Intro",

@@ -2,6 +2,6 @@
   "title": "EOEPCA Deployment Basics",
   "description": "Deploy the fundamental EOEPCA Building Blocks, to form a basic data exploitation platform",
   "items": [
-    { "path": "../processing" }
+    { "path": "../processing/clarissian", "title": "Lesson 3: Deploy a data processing engine" }
   ]
 }

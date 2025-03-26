@@ -1,1 +1,1 @@
-reset; tail -f /tmp/killercoda_setup.log; echo "setup complete! you can start the tutorial now!"
+reset; tail -f /tmp/killercoda_setup.log; echo "setup completed! you can start the tutorial now!"
