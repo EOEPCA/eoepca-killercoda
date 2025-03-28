@@ -15,15 +15,15 @@
       },
       {
         "title": "Pre-requisites (2/4)",
-        "text": "prerequisites_k8s.md"
+        "text": "prerequisite_k8s.md"
       },
       {
         "title": "Pre-requisites (3/4)",
-        "text": "prerequisites_s3.md"
+        "text": "prerequisite_s3.md"
       },
       {
         "title": "Pre-requisites (4/4)",
-        "text": "prerequisites_rwm.md"
+        "text": "prerequisite_rwm.md"
       },
       {
 				"title": "Configure Deployment",
