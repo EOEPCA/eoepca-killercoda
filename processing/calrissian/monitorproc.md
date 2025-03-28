@@ -18,7 +18,7 @@ curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/${JOB_ID}" | jq
 
 at some point our job will be successful, and the status will show the "finished" state.
 
-Let's wait for our job to complete via
+Let's wait for our job to complete via the following. Note that the first time a job is run, it will take some time, as all the containers needs to be downloaded by kubernetes
 
 ```
 while [[ "$JOB_STATUS" != "finished" ]]; do
