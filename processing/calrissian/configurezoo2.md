@@ -1,5 +1,3 @@
-we are now asked to determine which nodes will run the processing jobs.
-
 This is an important field as it will allow to allocate different portions of the Kubernetes cluster to the data processing jobs executed via the OGC API Process interface.
 
 For this demo, we use a very basic requirement for the nodes running processing, which is the nodes with linux.

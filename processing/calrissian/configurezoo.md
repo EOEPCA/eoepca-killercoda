@@ -42,3 +42,5 @@ we now move to the Processing Building Block specific configuration. We use the 
 no
 no
 ```{{exec}}
+
+we will now be asked to determine which nodes will run the processing jobs.
