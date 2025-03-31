@@ -1,0 +1,70 @@
+{
+  "title": "OGC API Process - Calrissian",
+  "description": "EOEPCA Data Processing, OGC API Process, Calrissian K8S engine",
+  "details": {
+    "intro": {
+      "title": "Intro",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+		"steps": [
+      {
+        "title": "Pre-requisites (1/4)",
+        "text": "prerequisites.md"
+      },
+      {
+        "title": "Pre-requisites (2/4)",
+        "text": "prerequisite_k8s.md"
+      },
+      {
+        "title": "Pre-requisites (3/4)",
+        "text": "prerequisite_s3.md"
+      },
+      {
+        "title": "Pre-requisites (4/4)",
+        "text": "prerequisite_rwm.md"
+      },
+      {
+				"title": "Configure Deployment (1/2)",
+				"text": "configurezoo.md"
+			},
+      {
+        "title": "Configure Deployment (2/2)",
+        "text": "configurezoo2.md"
+      },
+			{
+				"title": "Deploy Zoo",
+				"text": "deployzoo.md"
+			},
+      {
+				"title": "Deploy an application (1/2)",
+				"text": "deployapp.md"
+			},
+      {
+        "title": "Deploy an application (2/2)",
+        "text": "deployapp2.md"
+      },
+			{
+				"title": "Execute an application",
+				"text": "submitproc.md"
+			},
+      {
+        "title": "Monitor a job",
+        "text": "monitorproc.md"
+      }
+		],
+		"finish": {
+			"title": "Finish",
+			"text": "finish.md"
+		},
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
