@@ -5,8 +5,8 @@ We cannot post this to the general Zoo endpoint, `http://zoo.eoepca.local/ogc-ap
 If we have a look at the `test`{{}} user namespace, as in the command below, we can see that only the general sample `echo`{{}} process is available
 
 ```
-curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/  | jq .processes[].id
-```
+curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/  | jq -r .processes[].id
+```{{exec}}
 
 To deploy the application, we can do a POST to the the processes endpoint, including the CWL representing the [OGC Application Pakcage](https://docs.ogc.org/bp/20-089r1.html):
 
@@ -17,7 +17,7 @@ curl -s -S -X POST -H "Content-Type: application/cwl+yaml" -H "Accept: applicati
 If all went well, the `convert-url`{{}} application is now deployed, and you can see it in the list of deployed applications:
 
 ```
-curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/ | jq .processes[].id
+curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/ | jq -r .processes[].id
 ```{{exec}}
 
 Nothing changed now in our Kubernetes cluster. The CWL is stored within the Zoo software and the actual application docker containers and pods will be deployed on-demand only after we submit a processing execution

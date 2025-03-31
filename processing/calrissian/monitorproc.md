@@ -13,7 +13,7 @@ kubectl get -n `kubectl get namespaces | grep ^convert-url | cut -d' ' -f 1` pod
 the status of the processing is can be monitored via the API, via
 
 ```
-curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/${JOB_ID}" | jq
+curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq
 ```{{exec}}
 
 at some point our job will be successful, and the status will show the "finished" state.
@@ -21,24 +21,31 @@ at some point our job will be successful, and the status will show the "finished
 Let's wait for our job to complete via the following. Note that the first time a job is run, it will take some time, as all the containers needs to be downloaded by kubernetes
 
 ```
-while [[ "$JOB_STATUS" != "finished" ]]; do
-  JOB_STATUS=`curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/${JOB_ID}" | jq .status`
+JOB_STATUS=`curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq -r .status`
+while [[ "$JOB_STATUS" == "accepted" || "$JOB_STATUS" == "running" ]]; do
+  JOB_STATUS=`curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq -r .status`
   echo status is $JOB_STATUS...
   echo pods are:
   kubectl get -n `kubectl get namespaces | grep ^convert-url | cut -d' ' -f 1` pods
-  sleep 1
+  sleep 5
 done
 ```{{exec}}
 
-A link to the result will be then accessible from the status page, and also available directly into the object storage.
-
-If the job completed successfully, the namespace will be also cleaned up, and you will not be able to find it anymore.
+We can now access the result page, which should be populated with the final processing status and the processing logs
 
 ```
-#Wait till the job completes
-while [ `curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/${JOB_ID}" | jq .status` != "finished" ]; do sleep 5; done
-#Check the namespace has been deleted (empty result)
-kubectl get namespaces | grep ^convert-url
-#Check the output is available in the object storage
+curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq
+```{{exec}}
+
+If the job completed with the `successful` state, a link to the result will be then accessible from the status page as a STAC Item
+
+```
+curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID/results" | jq
+```{{exec}}
+
+The result STAC Item asset, our resized image, is also available directly from the object storage
+
+```
 mc ls -r minio-local/eoepca
 ```{{exec}}
+
