@@ -26,9 +26,13 @@
         "text": "prerequisite_rwm.md"
       },
       {
-				"title": "Configure Deployment",
+				"title": "Configure Deployment (1/2)",
 				"text": "configurezoo.md"
 			},
+      {
+        "title": "Configure Deployment (2/2)",
+        "text": "configurezoo.md"
+      },
 			{
 				"title": "Deploy Zoo",
 				"text": "deployzoo.md"
