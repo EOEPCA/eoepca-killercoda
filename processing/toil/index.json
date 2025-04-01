@@ -1,6 +1,6 @@
 {
-  "title": "Calrissian - OGC Process",
-  "description": "Deploy the EOEPCA Processing Building Block, with an OGC Process API interface and Calrissian Kubernetes execution engine",
+  "title": "Toil - OGC Process",
+  "description": "Deploy the EOEPCA Processing Building Block, with an OGC Process API interface and Toil High Performance Computing (HPC) execution engine",
   "details": {
     "intro": {
       "title": "Intro",
@@ -10,20 +10,24 @@
     },
 		"steps": [
       {
-        "title": "Pre-requisites (1/4)",
+        "title": "Pre-requisites (1/5)",
         "text": "prerequisites.md"
       },
       {
-        "title": "Pre-requisites (2/4)",
+        "title": "Pre-requisites (2/5)",
         "text": "prerequisite_k8s.md"
       },
       {
-        "title": "Pre-requisites (3/4)",
+        "title": "Pre-requisites (3/5)",
         "text": "prerequisite_s3.md"
       },
       {
-        "title": "Pre-requisites (4/4)",
-        "text": "prerequisite_rwm.md"
+        "title": "Pre-requisites (4/5)",
+        "text": "prerequisite_condor.md"
+      },
+      {
+        "title": "Pre-requisites (5/5)",
+        "text": "prerequisite_toil.md"
       },
       {
 				"title": "Configure Deployment (1/2)",
@@ -65,6 +69,6 @@
     }
   },
   "backend": {
-    "imageid": "kubernetes-kubeadm-1node-4GB"
+    "imageid": "kubernetes-kubeadm-1node"
   }
 }
