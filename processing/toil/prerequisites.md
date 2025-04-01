@@ -14,7 +14,6 @@ git checkout killercoda-demo
 As specified in the deployment guide, the OGC API Process interface, Calrissian Kubernetes engine, requires the following pre-requisites:
  - a kubernetes cluster
  - an S3 object storage
- - an HPC cluster interface (Toil supports [several](https://toil.readthedocs.io/en/latest/running/hpcEnvironments.html))
- - a working Toil instance and [Toil WES service](https://toil.readthedocs.io/en/master/running/server/wes.html) installed on the HPC cluster
+ - an HPC cluster offering the [Toil WES service](https://toil.readthedocs.io/en/master/running/server/wes.html), or in alternative an HPC cluster with an interface [supported by Toil](https://toil.readthedocs.io/en/latest/running/hpcEnvironments.html)
 
 we will check in the next steps the avaliability of these pre-requisites

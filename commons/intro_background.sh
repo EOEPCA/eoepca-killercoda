@@ -97,9 +97,15 @@ spec:
         memory: "0"
 EOF
 fi
+if [[ -e /tmp/assets/pythonvenv ]]; then
+  echo enabling python virtual environments...
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  apt-get install -y python3.12-venv
+fi
 if [[ -e /tmp/assets/htcondor ]]; then
   echo installing HPC batch system for ubuntu user... >> /tmp/killercoda_setup.log
-  apt update -y && apt install -y minicondor </dev/null
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  apt-get install -y minicondor </dev/null
   usermod -a -G docker ubuntu
 fi
 #Stop the foreground script

@@ -10,24 +10,32 @@
     },
 		"steps": [
       {
-        "title": "Pre-requisites (1/5)",
+        "title": "Pre-requisites (1/4)",
         "text": "prerequisites.md"
       },
       {
-        "title": "Pre-requisites (2/5)",
+        "title": "Pre-requisites (2/4)",
         "text": "prerequisite_k8s.md"
       },
       {
-        "title": "Pre-requisites (3/5)",
+        "title": "Pre-requisites (3/4)",
         "text": "prerequisite_s3.md"
       },
       {
-        "title": "Pre-requisites (4/5)",
+        "title": "Pre-requisites (4/4)",
         "text": "prerequisite_condor.md"
       },
       {
-        "title": "Pre-requisites (5/5)",
-        "text": "prerequisite_toil.md"
+        "title": "Install Toil WES on HPC (1/2)",
+        "text": "install_toil.md"
+      },
+      {
+        "title": "Install Toil WES on HPC (2/3)",
+        "text": "install_toil2.md"
+      },
+      {
+        "title": "Install Toil WES on HPC (3/3)",
+        "text": "install_toil2.md"
       },
       {
 				"title": "Configure Deployment (1/2)",

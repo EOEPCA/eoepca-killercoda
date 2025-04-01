@@ -18,3 +18,5 @@ and test that our HTCondor is properly accessible via:
 ```
 condor_status
 ```{{exec}}
+
+we will then, in the next steps, procede to the installation of the Toil software and Toil WES interface on own HPC cluster
