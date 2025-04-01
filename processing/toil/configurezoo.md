@@ -24,10 +24,11 @@ as a domain, we use eoepca.local, which is mapped to the local machine in this d
 eoepca.local
 ```{{exec}}
 
-our storage class was already setup to 'standard' in the step before, so we do not need to update it
+
+we do not need a specific storage class for Zoo with the Toil execution engine, so the one provided by killercoda, `local-path` is going to be ok
 
 ```
-no
+local-path
 ```{{exec}}
 
 as we have http only services, we do not need certificate generation (which anyway would not work in this demo environment)

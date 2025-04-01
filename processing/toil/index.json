@@ -35,7 +35,7 @@
       },
       {
         "title": "Install Toil WES on HPC (3/3)",
-        "text": "install_toil2.md"
+        "text": "install_toil3.md"
       },
       {
 				"title": "Configure Deployment (1/2)",
@@ -77,6 +77,6 @@
     }
   },
   "backend": {
-    "imageid": "kubernetes-kubeadm-1node"
+    "imageid": "kubernetes-kubeadm-1node-4GB"
   }
 }

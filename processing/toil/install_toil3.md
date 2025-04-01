@@ -24,7 +24,7 @@ echo "$!" > $HOME/toil.pid
 If all went fine, we should have now our Toil WES interface available. We can check by running
 
 ```
-curl toil-wes.hpc.local:8080
+curl -s -S http://toil-wes.hpc.local:8080
 ```{{exec}}
 
 We can now go back to our `controlplane` tab, to install and configure the EOEPCA Processing Building Block
