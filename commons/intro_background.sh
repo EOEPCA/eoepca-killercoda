@@ -98,8 +98,9 @@ spec:
 EOF
 fi
 if [[ -e /tmp/assets/htcondor ]]; then
-  echo installing HPC batch system... >> /tmp/killercoda_setup.log
+  echo installing HPC batch system for ubuntu user... >> /tmp/killercoda_setup.log
   apt update -y && apt install -y minicondor </dev/null
+  usermod -a -G docker ubuntu
 fi
 #Stop the foreground script
 killall tail
