@@ -44,5 +44,5 @@ The available assets you can select are described in the following table. Please
 | `minio.7z` | minio s3 storage service installed locally |
 | `nginxingress` | nginx ingress installed in the K8S cluster |
 | `readwritemany` | local storage class supporting ReadWriteMany K8S persistent volumes provisioning |
-
+| `htcondor` | HPC batch system (HTCondor) |
 

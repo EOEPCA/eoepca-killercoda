@@ -4,9 +4,10 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  echo "172.30.1.2 minio.eoepca.local zoo.eoepca.local" >> /etc/hosts
+  WEBSITES="minio.eoepca.local zoo.eoepca.local toil-wes.hpc.local"
+  echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
-  sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 minio.eoepca.local zoo.eoepca.local\n          fallthrough\n        }|" kc.yml
+  sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
   kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
 fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
@@ -95,6 +96,10 @@ spec:
         cpu: "0"
         memory: "0"
 EOF
+fi
+if [[ -e /tmp/assets/htcondor ]]; then
+  echo installing HPC batch system... >> /tmp/killercoda_setup.log
+  apt update -y && apt install -y minicondor </dev/null
 fi
 #Stop the foreground script
 killall tail
