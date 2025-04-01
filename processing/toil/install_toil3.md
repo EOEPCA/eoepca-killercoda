@@ -7,13 +7,24 @@ docker run -d --restart=always --name toil-wes-rabbitmq -p 127.0.0.1:5672:5672 r
 then we need a celery broker to manage the queue, which we can start with
 
 ```
-celery --broker=amqp://guest:guest@127.0.0.1:5672// -A toil.server.celery_app worker \
-  --loglevel=INFO --pidfile="~/celery.pid" --logfile="~/celery.log"
+celery --broker=amqp://guest:guest@127.0.0.1:5672// -A toil.server.celery_app multi start w1 \
+   --loglevel=INFO --pidfile=$HOME/celery.pid --logfile=$HOME/celery.log
 ```{{exec}}
 
 at last we can start the Toil WES service via
 
 ```
-TOIL_WES_BROKER_URL=amqp://user:bitnami@127.0.0.1:5672//  toil server --opt=--batchSystem=htcondor
+TOIL_WES_BROKER_URL=amqp://guest:guest@127.0.0.1:5672// nohup toil server --host 0.0.0.0 \ 
+  --opt=--batchSystem=htcondor \
+  --logFile $HOME/toil.log --logLevel INFO -w 1 \
+  &>$HOME/toil_run.log </dev/null &
+echo "$!" > $HOME/toil.pid
 ```{{exec}}
 
+If all went fine, we should have now our Toil WES interface available. We can check by running
+
+```
+curl toil-wes.hpc.local:8080
+```{{exec}}
+
+We can now go back to our `controlplane` tab, to install and configure the EOEPCA Processing Building Block

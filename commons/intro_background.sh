@@ -27,7 +27,7 @@ if [[ -e /tmp/assets/nginxingress ]]; then
 fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
-  echo enabling object storage...  >> /tmp/killercoda_setup.log
+  echo installing object storage...  >> /tmp/killercoda_setup.log
   ### Prerequisite: minio
   #We have this locally installed for speed
   #wget -q https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio && chmod +x /usr/local/bin/minio
@@ -98,7 +98,7 @@ spec:
 EOF
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
-  echo enabling python virtual environments...
+  echo enabling python virtual environments... >> /tmp/killercoda_setup.log
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
   apt-get install -y python3.12-venv
 fi

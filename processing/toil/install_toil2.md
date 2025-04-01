@@ -6,24 +6,39 @@ Let's download the example application via
 
 ```
 wget https://github.com/EOEPCA/deployment-guide/raw/refs/heads/main/scripts/processing/oapip/examples/convert-url-app.cwl
-```
+```{{exec}}
 
-and execute a Toil job via
+now to execute a Toil job we ensure that we have the toil environment enabled
 
 ```
-#Ensure you have the toil environment enabled
 source ~/toil/venv/bin/activate
-#Create an ID for your job
+```{{exec}}
+
+create an ID for our job
+
+```
 jobid=$(uuidgen)
-#Create working directory and job storage directories for your job in the toil storage
+```{{exec}}
+
+create the working directory and job storage directories for your job in the toil storage folder
+
+```
 mkdir -p ~/toil/storage/example/{work_dir,job_store}
-#Write the parameters of your job execution
+```{{exec}}
+
+write the parameters for our job execution
+
+```
 cat <<EOF > ~/toil/storage/example/work_dir/$jobid.params.yaml
 fn: resize
 url: https://eoepca.org/media_portal/images/logo6_med.original.png
 size: 50%
 EOF
-#Execute the OGC Application Package via Toil
+```{{exec}}
+
+and then execute the application via Toil
+
+```
 toil-cwl-runner \
     --batchSystem htcondor \
     --workDir ~/toil/storage/example/work_dir \
@@ -32,4 +47,5 @@ toil-cwl-runner \
     ~/toil/storage/example/work_dir/$jobid.params.yaml
 ```{{exec}}
 
+If all works correctly, at the end of the processing we will see a JSON text which represents the processing output STAC Item. 
 Now that we know Toil works correctly, we will proceed to install and start the Toil WES service in the next step

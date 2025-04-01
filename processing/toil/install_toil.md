@@ -13,10 +13,10 @@ python3 -m venv --prompt toil ~/toil/venv
 
 we now can enter the virtual environment and install toil via pip
 
-``
+```
 source ~/toil/venv/bin/activate
 python3 -m pip install toil[all]
-``{{exec}}
+```{{exec}}
 
 for connecting toil with our HTCondor HPC cluster, we need also to install the python HTCondor library via
 
