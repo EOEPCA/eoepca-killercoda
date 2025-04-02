@@ -20,16 +20,11 @@ create an ID for our job
 jobid=$(uuidgen)
 ```{{exec}}
 
-create the working directory and job storage directories for your job in the toil storage folder
-
-```
-mkdir -p ~/toil/storage/example/{work_dir,job_store}
-```{{exec}}
-
 write the parameters for our job execution
 
 ```
-cat <<EOF > ~/toil/storage/example/work_dir/$jobid.params.yaml
+mkdir -p ~/toil/storage/test/work_dir
+cat <<EOF > ~/toil/storage/test/work_dir/$jobid.params.yaml
 fn: resize
 url: https://eoepca.org/media_portal/images/logo6_med.original.png
 size: 50%
@@ -41,11 +36,17 @@ and then execute the application via Toil
 ```
 toil-cwl-runner \
     --batchSystem htcondor \
-    --workDir ~/toil/storage/example/work_dir \
-    --jobStore ~/toil/storage/example/job_store/$jobid \
+    --workDir ~/toil/storage/test/work_dir \
+    --jobStore ~/toil/storage/test/job_store/$jobid \
     convert-url-app.cwl#convert-url \
-    ~/toil/storage/example/work_dir/$jobid.params.yaml
+    ~/toil/storage/test/work_dir/$jobid.params.yaml
 ```{{exec}}
 
 If all works correctly, at the end of the processing we will see a JSON text which represents the processing output STAC Item. 
+You can now delete the test folder
+
+```
+rm -rf ~/toil/storage/test
+```{{exec}}
+
 Now that we know Toil works correctly, we will proceed to install and start the Toil WES service in the next step

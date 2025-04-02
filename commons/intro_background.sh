@@ -106,7 +106,16 @@ if [[ -e /tmp/assets/htcondor ]]; then
   echo installing HPC batch system for ubuntu user... >> /tmp/killercoda_setup.log
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
   apt-get install -y minicondor </dev/null
+  #Allow ubuntu user to submit jobs
   usermod -a -G docker ubuntu
+  #Mount the local /etc/hosts in docker for the DNS resolution
+  echo '#!/usr/bin/python
+import sys, os
+n=sys.argv
+n[0]="/usr/bin/docker"
+if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
+os.execv(n[0],n)' > /usr/local/bin/docker
+  chmod +x /usr/local/bin/docker
 fi
-#Stop the foreground script
-killall tail
+#Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
+while ! killall tail; do sleep 1; done

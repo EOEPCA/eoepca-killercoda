@@ -11,17 +11,11 @@ mkdir -p ~/toil ~/toil/storage
 python3 -m venv --prompt toil ~/toil/venv
 ```{{exec}}
 
-we now can enter the virtual environment and install toil via pip
+we now can enter the virtual environment and install Toil with HTCondor support via pip
 
 ```
 source ~/toil/venv/bin/activate
-python3 -m pip install toil[all]
-```{{exec}}
-
-for connecting toil with our HTCondor HPC cluster, we need also to install the python HTCondor library via
-
-```
-python3 -m pip install htcondor
+python3 -m pip install toil[cwl,htcondor,server,aws] htcondor
 ```{{exec}}
 
 now all the computing nodes can access toil from the `ubuntu` user home
