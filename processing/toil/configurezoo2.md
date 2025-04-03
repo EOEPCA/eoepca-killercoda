@@ -1,35 +1,20 @@
-This is an important field as it will allow to allocate different portions of the Kubernetes cluster to the data processing jobs executed via the OGC API Process interface.
-
-For this demo, we use a very basic requirement for the nodes running processing, which is the nodes with linux.
+we are configuration the Toil WES processing engine, so we need to select it
 
 ```
-kubernetes.io/os
-linux
+toil
 ```{{exec}}
 
-the S3 endpoint that we will use for storing the output is the local S3 storage, which was already configured in the pre-requisites, so we do not need to update its configuration (endpoint, access key, secret key and region)
+the script is asking our Toil WES interface endpoint. From the previous Toil installation step, this is
 
 ```
-no
-no
-no
-no
+http://toil-wes.hpc.local:8080/ga4gh/wes/v1/
 ```{{exec}}
 
-we will also use the same S3 storage for stagein and stageout, so we reply again to no to the next question
+we did not implement any authentication in our Toil WES interface endopoint, as this is a test system, so we can provide standard credentials now (they will be ignore anyway)
 
 ```
-no
-```{{exec}}
-
-now, the script is asking if we want to enable authentication via Open ID connect.
-
-This is strongly recommended for the processing API, as otherwise every user will be able to deploy processing and run it.
-
-Anyway, for this basic demo, we will disable it by responding false to the question.
-
-```
-false
+test
+$2y$12$ci.4U63YX83CwkyUrjqxAucnmi2xXOIlEF6T/KdP9824f1Rf1iyNG
 ```{{exec}}
 
 we now have a set of configuration values for our building block deployment available, you can check them with

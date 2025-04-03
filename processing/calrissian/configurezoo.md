@@ -36,11 +36,38 @@ as we have http only services, we do not need certificate generation (which anyw
 no
 ```{{exec}}
 
-we now move to the Processing Building Block specific configuration. We use the general domain and storage class
+we now move to the Processing Building Block specific configuration, starting with the general Zoo configuration.
+
+We do not need to update domain and storage class, as we can use the standard ones
 
 ```
 no
 no
 ```{{exec}}
 
-we will now be asked to determine which nodes will run the processing jobs.
+the S3 endpoint that we will use for storing the output is the local S3 storage, which was already configured in the pre-requisites, so we do not need to update its configuration (endpoint, access key, secret key and region)
+
+```
+no
+no
+no
+no
+```{{exec}}
+
+we will also use the same S3 storage for stagein and stageout, so we reply again to no to the next question
+
+```
+no
+```{{exec}}
+
+now, the script is asking if we want to enable authentication via Open ID connect.
+
+This is strongly recommended for the processing API, as otherwise every user will be able to deploy processing and run it.
+
+Anyway, for this basic demo, we will disable it by responding false to the question.
+
+```
+false
+```{{exec}}
+
+we completed the Zoo general configuration and we will proceed in the next step with the processing engine specific configuration

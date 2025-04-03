@@ -7,7 +7,9 @@ This HPC cluster needs to provide the following:
 
 In this tutorial we assume, as this is the most common, that a [Toil WES interace](https://toil.readthedocs.io/en/master/running/server/wes.html) is not available, but we have an HPC Cluster that provides the [HTCondor](https://research.cs.wisc.edu/htcondor/) environment with [Docker](https://www.docker.com/) support and free internet access.
 
-This HPC environment is accessible by the `ubuntu` user installed on this machine. We recommend you now to open a new tab, login as `ubuntu` user via
+This HPC environment is accessible by the `ubuntu` user installed on this machine.
+
+To check it, you can login as `ubuntu`{{}} user:
 
 ```
 su - ubuntu

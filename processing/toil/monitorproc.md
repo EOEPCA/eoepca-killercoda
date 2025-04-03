@@ -1,16 +1,16 @@
-Now the application is running. We can see, after few seconds, that a new namespace starting with `convert-url`{{}} is created,
+Now the application is running. We can see, after few seconds, that a new Toil WES request has been performed and is in processing:
 
 ```
-kubectl get namespaces
-```{{exec}}
+tail -n 10 ~ubuntu/celery.log
+```
 
-and, after another few seconds, it will be populated with the pods of our kubernetes job
+and after another few seconds, Toil will start jobs in our HPC system (as ubuntu user)
 
 ```
-kubectl get -n `kubectl get namespaces | grep ^convert-url | cut -d' ' -f 1` pods
-```{{exec}}
+condor_q -all
+```
 
-the status of the processing is can be monitored via the API, via
+the status of the processing is can be monitored by the users via the API, via
 
 ```
 curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq
@@ -25,8 +25,10 @@ JOB_STATUS=`curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq 
 while [[ "$JOB_STATUS" == "accepted" || "$JOB_STATUS" == "running" ]]; do
   JOB_STATUS=`curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq -r .status`
   echo status is $JOB_STATUS...
-  echo pods are:
-  kubectl get -n `kubectl get namespaces | grep ^convert-url | cut -d' ' -f 1` pods
+  echo toil WES status is:
+  tail -n 10 ~ubuntu/celery.log
+  echo HTCondor queue status is:
+  condor_q -all
   sleep 5
 done
 ```{{exec}}
