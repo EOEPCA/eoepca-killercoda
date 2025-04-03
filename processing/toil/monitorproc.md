@@ -2,13 +2,13 @@ Now the application is running. We can see, after few seconds, that a new Toil W
 
 ```
 tail -n 10 ~ubuntu/celery.log
-```
+```{{exec}}
 
 and after another few seconds, Toil will start jobs in our HPC system (as ubuntu user)
 
 ```
 condor_q -all
-```
+```{{exec}}
 
 the status of the processing is can be monitored by the users via the API, via
 

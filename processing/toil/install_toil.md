@@ -7,7 +7,7 @@ Toil will also require for coordinating the jobs execution a running folder acce
 In our tutorial HPC environment, the home of the `ubuntu` user is shared across the HPC computing nodes, thus we create in it the Toil virtual environment and jobs storage directories
 
 ```
-[[ "`id -nu`" != "ubuntu" ]] && su - ubuntu
+[[ "$(id -nu)" != "ubuntu" ]] && su - ubuntu
 mkdir -p ~/toil ~/toil/storage
 python3 -m venv --prompt toil ~/toil/venv
 ```{{exec}}
