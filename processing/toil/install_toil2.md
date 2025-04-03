@@ -23,7 +23,7 @@ jobid=$(uuidgen)
 write the parameters for our job execution
 
 ```
-mkdir -p ~/toil/storage/test/work_dir
+mkdir -p ~/toil/storage/test/{work_dir,job_store}
 cat <<EOF > ~/toil/storage/test/work_dir/$jobid.params.yaml
 fn: resize
 url: https://eoepca.org/media_portal/images/logo6_med.original.png
