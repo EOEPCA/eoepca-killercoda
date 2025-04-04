@@ -10,19 +10,23 @@
     },
 		"steps": [
       {
-        "title": "Pre-requisites (1/4)",
+        "title": "Pre-requisites (1/5)",
         "text": "prerequisites.md"
       },
       {
-        "title": "Pre-requisites (2/4)",
+        "title": "Pre-requisites (2/5)",
         "text": "prerequisite_k8s.md"
       },
       {
-        "title": "Pre-requisites (3/4)",
+        "title": "Pre-requisites (3/5)",
+        "text": "prerequisite_rwm.md"
+      },
+      {
+        "title": "Pre-requisites (4/5)",
         "text": "prerequisite_s3.md"
       },
       {
-        "title": "Pre-requisites (4/4)",
+        "title": "Pre-requisites (5/5)",
         "text": "prerequisite_condor.md"
       },
       {

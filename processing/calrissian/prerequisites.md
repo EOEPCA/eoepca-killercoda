@@ -13,7 +13,7 @@ git checkout killercoda-demo
 
 As specified in the deployment guide, the OGC API Process interface, Calrissian Kubernetes engine, requires the following pre-requisites:
  - a kubernetes cluster
+ - a Read-Write-Many Storage Class (a pre-requisite for both Zoo and Calrissian)
  - an S3 object storage
- - a Read-Write-Many Storage Class
 
 we will check in the next steps the avaliability of these pre-requisites

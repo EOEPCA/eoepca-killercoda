@@ -13,6 +13,7 @@ git checkout killercoda-demo
 
 As specified in the deployment guide, the OGC API Process interface, Calrissian Kubernetes engine, requires the following pre-requisites:
  - a kubernetes cluster
+ - a Read-Write-Many Storage Class (a pre-requisite for Zoo) 
  - an S3 object storage
  - an HPC cluster offering the [Toil WES service](https://toil.readthedocs.io/en/master/running/server/wes.html), or in alternative an HPC cluster with an interface [supported by Toil](https://toil.readthedocs.io/en/latest/running/hpcEnvironments.html)
 

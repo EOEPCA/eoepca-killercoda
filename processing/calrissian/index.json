@@ -19,11 +19,11 @@
       },
       {
         "title": "Pre-requisites (3/4)",
-        "text": "prerequisite_s3.md"
+        "text": "prerequisite_rwm.md"
       },
       {
         "title": "Pre-requisites (4/4)",
-        "text": "prerequisite_rwm.md"
+        "text": "prerequisite_s3.md"
       },
       {
 				"title": "Configure Deployment (1/2)",
