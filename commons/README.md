@@ -45,4 +45,3 @@ The available assets you can select are described in the following table. Please
 | `nginxingress` | nginx ingress installed in the K8S cluster |
 | `readwritemany` | local storage class supporting ReadWriteMany K8S persistent volumes provisioning |
 | `htcondor` | HPC batch system (HTCondor) |
-
