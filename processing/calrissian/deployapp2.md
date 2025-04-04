@@ -11,7 +11,7 @@ curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/  | jq -r .processes[]
 To deploy the application, we can do a POST to the the processes endpoint, including the CWL representing the [OGC Application Pakcage](https://docs.ogc.org/bp/20-089r1.html):
 
 ```
-curl -s -S -X POST -H "Content-Type: application/cwl+yaml" -H "Accept: application/json" -d "$(cat examples/convert-url-app.cwl)" http://zoo.eoepca.local/test/ogc-api/processes/  | jq
+curl -s -S -X POST -H "Content-Type: application/cwl+yaml" -H "Accept: application/json" -d "$(cat ~/deployment-guide/scripts/processing/oapip/examples/convert-url-app.cwl)" http://zoo.eoepca.local/test/ogc-api/processes/  | jq
 ```{{exec}}
 
 If all went well, the `convert-url`{{}} application is now deployed, and you can see it in the list of deployed applications:

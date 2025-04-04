@@ -4,9 +4,10 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  echo "172.30.1.2 minio.eoepca.local zoo.eoepca.local" >> /etc/hosts
+  WEBSITES="minio.eoepca.local zoo.eoepca.local toil-wes.hpc.local"
+  echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
-  sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 minio.eoepca.local zoo.eoepca.local\n          fallthrough\n        }|" kc.yml
+  sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
   kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
 fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
@@ -26,7 +27,7 @@ if [[ -e /tmp/assets/nginxingress ]]; then
 fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
-  echo enabling object storage...  >> /tmp/killercoda_setup.log
+  echo installing object storage...  >> /tmp/killercoda_setup.log
   ### Prerequisite: minio
   #We have this locally installed for speed
   #wget -q https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio && chmod +x /usr/local/bin/minio
@@ -96,5 +97,25 @@ spec:
         memory: "0"
 EOF
 fi
-#Stop the foreground script
-killall tail
+if [[ -e /tmp/assets/pythonvenv ]]; then
+  echo enabling python virtual environments... >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  apt-get install -y python3.12-venv
+fi
+if [[ -e /tmp/assets/htcondor ]]; then
+  echo installing HPC batch system for ubuntu user... >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  apt-get install -y minicondor </dev/null
+  #Allow ubuntu user to submit jobs
+  usermod -a -G docker ubuntu
+  #Mount the local /etc/hosts in docker for the DNS resolution
+  echo '#!/usr/bin/python
+import sys, os
+n=sys.argv
+n[0]="/usr/bin/docker"
+if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
+os.execv(n[0],n)' > /usr/local/bin/docker
+  chmod +x /usr/local/bin/docker
+fi
+#Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
+while ! killall tail; do sleep 1; done
