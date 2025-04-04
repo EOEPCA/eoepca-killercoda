@@ -1,4 +1,4 @@
-a Read-Write-Many Storage Class is a pre-requisite for Calrissian.
+a Read-Write-Many Storage Class is a pre-requisite.
 
 This is not normally provided by all the Kubernetes CSI storage drivers, nor by most Kubernetes cloud services. It can be anyway installed as per the [EOEPCA pre-requisites tutorial](../pre-requisites).
 
