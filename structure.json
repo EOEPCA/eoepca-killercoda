@@ -1,6 +1,7 @@
 {
   "items": [
     { "path": "processing" },
+    { "path": "iam" },
     { "path": "basic" }
   ]
 }
