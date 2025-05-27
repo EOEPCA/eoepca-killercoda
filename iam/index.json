@@ -1,0 +1,59 @@
+{
+  "title": "IAM Building Block Deployment",
+  "description": "Deploy EOEPCA IAM Building Block with Keycloak, OPA and APISIX",
+  "details": {
+    "intro": {
+      "title": "Intro to IAM",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      [
+        {
+          "title": "Introduction to EOEPCA IAM",
+          "text": "1-introduction.md"
+        },
+        {
+          "title": "Prerequisite Checks",
+          "text": "2-prerequisites.md"
+        },
+        {
+          "title": "Environment Configuration",
+          "text": "3-environment.md"
+        },
+        {
+          "title": "Applying Secrets",
+          "text": "4-secrets.md"
+        },
+        {
+          "title": "Deploying IAM Components",
+          "text": "5-deployment.md"
+        },
+        {
+          "title": "Client and User Setup",
+          "text": "6-client-user.md"
+        },
+        {
+          "title": "Validation of Deployment",
+          "text": "7-validation.md"
+        }
+      ]
+    ],
+    "finish": {
+      "title": "IAM Setup Complete",
+      "text": "8-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
