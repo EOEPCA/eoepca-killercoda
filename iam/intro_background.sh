@@ -1,6 +1,6 @@
 #!/bin/bash
 #Script to set pre-requisites for EOEPCA components
-echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
+echo setting-up your IAM environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
@@ -19,6 +19,7 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
 fi
 
 # install apisix
+echo "installing apisix..." >> /tmp/killercoda_setup.log
 helm repo add apisix https://charts.apiseven.com
 helm repo update apisix
 
@@ -36,6 +37,8 @@ helm upgrade -i apisix apisix/apisix \
 
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
 
+echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
+
 kubectl -n cert-manager rollout status deployment cert-manager-webhook --timeout=120s
 
 kubectl apply -f - <<EOF
@@ -51,30 +54,6 @@ EOF
 if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
   echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
   kubectl apply -f /tmp/assets/apisix-tls.yaml
-fi
-
-if [[ -e /tmp/assets/minio.7z ]]; then
-  #Installing Minio (basic)
-  echo installing object storage...  >> /tmp/killercoda_setup.log
-  ### Prerequisite: minio
-  #We have this locally installed for speed
-  #wget -q https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio && chmod +x /usr/local/bin/minio
-  #wget -q https://dl.min.io/client/mc/release/linux-amd64/mc -O  /usr/local/bin/mc && chmod +x /usr/local/bin/mc
-  mkdir -p /usr/local/bin/ && 7z x /tmp/assets/minio.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/mc /usr/local/bin/minio
-  mkdir -p ~/minio && MINIO_ROOT_USER=eoepca MINIO_ROOT_PASSWORD=eoepcatest nohup minio server --quiet ~/minio &>/dev/null &
-  sleep 1
-  while ! mc config host add minio-local http://minio.eoepca.local:9000/ eoepca eoepcatest; do sleep 1; done
-  mc mb minio-local/eoepca
-  mkdir -p ~/.eoepca && echo 'export S3_ENDPOINT="http://minio.eoepca.local:9000/"
-export S3_ACCESS_KEY="eoepca"
-export S3_SECRET_KEY="eoepcatest"
-export S3_REGION="us-east-1"' >> ~/.eoepca/state
-fi
-if [[ -e /tmp/assets/readwritemany ]]; then
-  ### Prerequisites: readwritemany StorageClass
-  echo enabling ReadWriteMany StorageClass..  >> /tmp/killercoda_setup.log
-  kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/docs/prerequisites/hostpath-provisioner.yaml
-  echo 'export STORAGE_CLASS="standard"'>>~/.eoepca/state
 fi
 
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
