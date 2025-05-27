@@ -12,7 +12,6 @@ spec:
     kind: ClusterIssuer
     name: selfsigned-issuer
 ---
-
 apiVersion: apisix.apache.org/v2
 kind: ApisixTls
 metadata:

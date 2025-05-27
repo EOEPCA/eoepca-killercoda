@@ -20,8 +20,8 @@ fi
 
 # install apisix
 echo "installing apisix..." >> /tmp/killercoda_setup.log
-helm repo add apisix https://charts.apiseven.com
-helm repo update apisix
+helm repo add apisix https://charts.apiseven.com >> /tmp/killercoda_setup.log 2>&1
+helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
 
 helm upgrade -i apisix apisix/apisix \
   --version 2.9.0 \
@@ -33,15 +33,20 @@ helm upgrade -i apisix apisix/apisix \
   --set apisix.enableServerTokens=false \
   --set apisix.ssl.enabled=true \
   --set apisix.pluginAttrs.redirect.https_port=443 \
-  --set ingress-controller.enabled=true
+  --set ingress-controller.enabled=true >> /tmp/killercoda_setup.log 2>&1
 
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
 
 echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
 
-kubectl -n cert-manager rollout status deployment cert-manager-webhook --timeout=120s
+echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
+kubectl rollout status deployment -n cert-manager cert-manager --timeout=180s
+kubectl rollout status deployment -n cert-manager cert-manager-webhook --timeout=180s
+kubectl rollout status deployment -n cert-manager cert-manager-cainjector --timeout=180s
 
-kubectl apply -f - <<EOF
+echo "creating self-signed issuer..." >> /tmp/killercoda_setup.log
+
+kubectl apply -f - <<EOF >> /tmp/killercoda_setup.log 2>&1
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
