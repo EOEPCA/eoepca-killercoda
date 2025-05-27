@@ -4,7 +4,7 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  WEBSITES="minio.eoepca.local zoo.eoepca.local toil-wes.hpc.local"
+  WEBSITES="auth.eoepca.local opa.eoepca.local"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
@@ -17,14 +17,42 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
   #curl -s -S -L -o /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/v4.3.0/gomplate_linux-amd64 && chmod +x /usr/local/bin/gomplate
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/gomplate.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate
 fi
-if [[ -e /tmp/assets/nginxingress ]]; then
-  #Installing Ingress (basic)
-  echo installing nginx ingress... >> /tmp/killercoda_setup.log
-  helm upgrade --install ingress-nginx ingress-nginx \
-    --repo https://kubernetes.github.io/ingress-nginx \
-    --namespace ingress-nginx --create-namespace \
-    --set controller.hostNetwork=true
+
+# install apisix
+helm repo add apisix https://charts.apiseven.com
+helm repo update apisix
+
+helm upgrade -i apisix apisix/apisix \
+  --version 2.9.0 \
+  --namespace ingress-apisix --create-namespace \
+  --set service.type=NodePort \
+  --set service.http.nodePort=31080 \
+  --set service.tls.nodePort=31443 \
+  --set apisix.enableIPv6=false \
+  --set apisix.enableServerTokens=false \
+  --set apisix.ssl.enabled=true \
+  --set apisix.pluginAttrs.redirect.https_port=443 \
+  --set ingress-controller.enabled=true
+
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
+
+kubectl -n cert-manager rollout status deployment cert-manager-webhook --timeout=120s
+
+kubectl apply -f - <<EOF
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+EOF
+
+# apply the file in assets/apisix-tls.yaml
+if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
+  echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
+  kubectl apply -f /tmp/assets/apisix-tls.yaml
 fi
+
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
   echo installing object storage...  >> /tmp/killercoda_setup.log
@@ -97,25 +125,7 @@ spec:
         memory: "0"
 EOF
 fi
-if [[ -e /tmp/assets/pythonvenv ]]; then
-  echo enabling python virtual environments... >> /tmp/killercoda_setup.log
-  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
-  apt-get install -y python3.12-venv
-fi
-if [[ -e /tmp/assets/htcondor ]]; then
-  echo installing HPC batch system for ubuntu user... >> /tmp/killercoda_setup.log
-  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
-  apt-get install -y minicondor </dev/null
-  #Allow ubuntu user to submit jobs
-  usermod -a -G docker ubuntu
-  #Mount the local /etc/hosts in docker for the DNS resolution
-  echo '#!/usr/bin/python
-import sys, os
-n=sys.argv
-n[0]="/usr/bin/docker"
-if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
-os.execv(n[0],n)' > /usr/local/bin/docker
-  chmod +x /usr/local/bin/docker
-fi
+
+
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
