@@ -18,3 +18,6 @@ Then also apply the APISIX TLS configuration:
 ```bash
 kubectl apply -f apisix-tls.yaml
 ```
+
+You should now be able to run this command:
+curl -k https://auth.eoepca.local:31443

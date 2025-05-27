@@ -58,7 +58,7 @@ EOF
 # apply the file in assets/apisix-tls.yaml
 if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
   echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
-  kubectl apply -f /tmp/assets/apisix-tls.yaml
+  kubectl apply -f /tmp/assets/apisix-tls.yaml >> /tmp/killercoda_setup.log 2>&1
 fi
 
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
