@@ -4,15 +4,11 @@
   "details": {
     "intro": {
       "title": "Intro to IAM",
-      "text": "intro.md",
+      "text": "1-introduction.md",
       "foreground": "intro_foreground.sh",
       "background": "intro_background.sh"
     },
     "steps": [
-      {
-        "title": "Introduction to EOEPCA IAM",
-        "text": "1-introduction.md"
-      },
       {
         "title": "Prerequisite Checks",
         "text": "2-prerequisites.md"
