@@ -16,4 +16,17 @@ The script will ask for:
 - **OPA Client ID**: `opa`
 - **Identity API Client ID**: `identity-api`
 
+Alternatively run this which will set the same values without prompts:
+
+```bash
+bash configure-iam.sh <<EOF
+eoepca.local
+local-path
+eoepca
+selfsigned-issuer
+opa
+identity-api
+EOF
+```
+
 The script will securely store all generated passwords (Keycloak admin, Keycloak DB, OPA client secret) in the `~/.eoepca/state` file for use in later steps.

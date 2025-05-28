@@ -15,8 +15,7 @@
       },
       {
         "title": "Environment Configuration",
-        "text": "3-environment.md",
-        "foreground": "populate_environment.sh"
+        "text": "3-environment.md"
       },
       {
         "title": "Applying Secrets",

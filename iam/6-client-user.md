@@ -17,6 +17,18 @@ The script will ask for (hit enter to take the proposed value):
 - **New User Username:** `eoepcauser` (or any username you prefer).
 - **New User Password:** `eoepcapassword` (or any password you prefer).
 
+```
+bash ../utils/create-user.sh <<EOF
+
+
+y
+auth.eoepca.local:31443
+
+eoepcauser
+eoepcapassword
+EOF
+```
+
 ### 2. Create the OPA Client in Keycloak
 
 Next, we need to create an OIDC client in Keycloak for OPA.
@@ -38,6 +50,25 @@ bash ../utils/create-client.sh
 - **Subdomain:** `opa` (this sets the redirect URI/host as `opa.${INGRESS_HOST}`).
 - **Additional Hosts:** Leave blank.
 
+```bash
+source ~/.eoepca/state
+bash ../utils/create-client.sh <<EOF
+n
+n
+n
+n
+n
+true
+opa
+OPA Client
+Open Policy Agent client
+${OPA_CLIENT_SECRET}
+opa
+
+
+EOF
+```
+
 ### 3. Register the Identity API Client in Keycloak
 
 Next, we need to create an OIDC client in Keycloak for the Identity API.
@@ -58,3 +89,22 @@ bash ../utils/create-client.sh
 - **Client Secret:** The Identity API client secret from `~/.eoepca/state` under `IDENTITY_API_CLIENT_SECRET`. Copy and paste it when asked.
 - **Subdomain:** `identity-api` (this sets the redirect URI/host as `identity-api.${INGRESS_HOST}`).
 - **Additional Hosts:** Leave blank.
+
+```bash
+source ~/.eoepca/state
+bash ../utils/create-client.sh <<EOF
+n
+n
+n
+n
+n
+true
+identity-api
+Identity API Client
+Identity API client
+${IDENTITY_API_CLIENT_SECRET}
+identity-api
+
+
+EOF
+```

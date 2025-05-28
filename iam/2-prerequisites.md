@@ -23,3 +23,15 @@ As this will be the first time we are running any EOEPCA script, there will be i
 3. **Ingress host**: `eoepca.local`
 4. **Storage class**: `local-path`
 5. **Cert-manager enabled**: `no`
+
+Alternatively, run this:
+
+```bash
+bash check-prerequisites.sh <<EOF
+apisix
+http
+eoepca.local
+local-path
+no
+EOF
+```
