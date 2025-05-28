@@ -33,10 +33,11 @@ source ~/.eoepca/state
 
 # Get a token from Keycloak
 TOKEN=$(curl -k -X POST \
-    -d "client_id=admin-cli" -d "grant_type=password" \
-    -d "username=${KEYCLOAK_TEST_USER}" -d "password=${KEYCLOAK_TEST_PASSWORD}" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "client_id=opa" -d "client_secret=${OPA_CLIENT_SECRET}" \
+    -d "grant_type=client_credentials" \
     "https://${KEYCLOAK_HOST}/realms/eoepca/protocol/openid-connect/token" | jq -r .access_token)
 
 # Use the token to query OPA
-curl -k -H "Authorization: Bearer $TOKEN" "https://opa.${INGRESS_HOST}/v1/data/"
+curl -k -H "Authorization: Bearer $TOKEN" "https://opa.${INGRESS_HOST}:6443/v1/data/test"
 ```

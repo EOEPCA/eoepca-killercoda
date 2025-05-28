@@ -28,6 +28,7 @@ kubectl get pods -n iam
 ```
 
 Once all pods are running and ready, you can check the Keycloak and OPA services:
+Don't move on until the below command returns a successful response:
 
 ```bash
 curl -k https://auth.eoepca.local:31443/realms/eoepca/.well-known/openid-configuration
