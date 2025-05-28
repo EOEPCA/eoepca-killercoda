@@ -39,5 +39,5 @@ TOKEN=$(curl -k -X POST \
     "https://${KEYCLOAK_HOST}/realms/eoepca/protocol/openid-connect/token" | jq -r .access_token)
 
 # Use the token to query OPA
-curl -k -H "Authorization: Bearer $TOKEN" "https://opa.${INGRESS_HOST}:6443/v1/data/test"
+curl -k -H "Authorization: Bearer $TOKEN" "https://opa.${INGRESS_HOST}:6443/v1/data"
 ```
