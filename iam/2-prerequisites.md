@@ -1,7 +1,7 @@
 ## Prerequisite and Initial Configuration
 
 
-Before deploying the IAM components, let's verify that our environment meets all prerequisites. This scenario provides a Kubernetes cluster (v1.28+) with **kubectl** access and **Helm 3** pre-installed. We also need an ingress controller (APISIX) and cert-manager for TLS, which we will set up.
+Before deploying the IAM components, ensure your environment is ready. This scenario provides a Kubernetes cluster (v1.28+) with **kubectl** access, **Helm 3**, an **APISIX** ingress controller and **cert-manager**: already set up.
 
 **Clone Deployment Scripts:** First, clone the EOEPCA Deployment Guide repository to get the helper scripts and navigate to the IAM scripts directory:
 
