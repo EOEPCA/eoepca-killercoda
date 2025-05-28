@@ -19,5 +19,16 @@ Then also apply the APISIX TLS configuration:
 kubectl apply -f apisix-tls.yaml
 ```
 
-You should now be able to run this command:
-curl -k https://auth.eoepca.local:31443
+### Verifying the Deployment
+
+Check the status of the IAM deployment, this may take ~5 minutes to complete
+
+```bash
+kubectl get pods -n iam
+```
+
+Once all pods are running and ready, you can check the Keycloak and OPA services:
+
+```bash
+curl -k https://auth.eoepca.local:31443/realms/eoepca/.well-known/openid-configuration
+```
