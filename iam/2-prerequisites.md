@@ -18,10 +18,8 @@ bash check-prerequisites.sh
 ```
 
 As this will be the first time we are running any EOEPCA script, there will be initial setup steps.
-
-1. **Ingress Class**: `apisix`
-2. **HTTP Scheme**:  `http`
-1. **INGRESS_HOST**: `eoepca.local`
-2. **STORAGE_CLASS**: `local-path`
-Cert-manager : `no`
-3. **Keycloak Realm Name**: `eoepca`
+1. **Ingress class**: `apisix`
+2. **HTTP scheme**: `http`
+3. **Ingress host**: `eoepca.local`
+4. **Storage class**: `local-path`
+5. **Cert-manager enabled**: `no`

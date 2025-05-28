@@ -9,10 +9,10 @@ bash configure-iam.sh
 
 The script will ask for:
 
-- **INGRESS_HOST**: `eoepca.local`
-- **STORAGE_CLASS**: `local-path` (already set up for this environment)
+- **Ingress Host**: `eoepca.local`
+- **Storage Class**: `local-path` (already set up for this environment)
 - **Keycloak Realm Name**: `eoepca`
-- **CLUSTER_ISSUER**: `selfsigned-issuer` (already set up for this environment).
+- **Cluster Issuer**: `selfsigned-issuer` (already set up for this environment).
 - **OPA Client ID**: `opa`
 - **Identity API Client ID**: `identity-api`
 
