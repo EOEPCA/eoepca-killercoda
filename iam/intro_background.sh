@@ -4,7 +4,7 @@ echo setting-up your IAM environment... wait till this setup terminates before s
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  WEBSITES="auth.eoepca.local iam-opa.eoepca.local"
+  WEBSITES="auth.eoepca.local iam-opa.eoepca.local nginx.eoepca.local"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
