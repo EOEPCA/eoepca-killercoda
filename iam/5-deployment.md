@@ -11,7 +11,7 @@ helm upgrade -i iam eoepca-dev/iam-bb \
   --namespace iam \
   --values generated-values.yaml \
   --create-namespace
-```
+```{{exec}}
 
 Then also apply the APISIX TLS configuration:
 

@@ -7,7 +7,7 @@ To apply the secrets, run:
 
 ```bash
 bash apply-secrets.sh
-```
+```{{exec}}
 
 This script will create Kubernetes Secret objects in the `iam` namespace. These include things like the Keycloak admin password, the Keycloak PostgreSQL database password, and the OPA client secret. The Helm charts for Keycloak and OPA will use these secrets during deployment.
 

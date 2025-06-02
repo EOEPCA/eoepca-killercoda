@@ -7,7 +7,7 @@ With Keycloak and OPA running, we need to do some one-off setup in Keycloak: cre
 
 ```bash
 bash ../utils/create-user.sh
-```
+```{{exec}}
 
 The script will ask for (hit enter to take the proposed value):
 
