@@ -23,29 +23,18 @@ echo "installing apisix..." >> /tmp/killercoda_setup.log
 helm repo add apisix https://charts.apiseven.com >> /tmp/killercoda_setup.log 2>&1
 helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
 
-# helm upgrade -i apisix apisix/apisix \
-#   --version 2.9.0 \
-#   --namespace ingress-apisix --create-namespace \
-#   --set service.type=NodePort \
-#   --set service.http.nodePort=31080 \
-#   --set service.tls.nodePort=31443 \
-#   --set apisix.enableIPv6=false \
-#   --set apisix.enableServerTokens=false \
-#   --set apisix.ssl.enabled=true \
-#   --set apisix.pluginAttrs.redirect.https_port=443 \
-#   --set ingress-controller.enabled=true >> /tmp/killercoda_setup.log 2>&1
-
 helm upgrade -i apisix apisix/apisix \
   --version 2.9.0 \
   --namespace ingress-apisix --create-namespace \
-  --set service.type=LoadBalancer \
-  --set service.http.port=80 \
-  --set service.tls.port=443 \
+  --set service.type=NodePort \
+  --set service.http.nodePort=31080 \
+  --set service.tls.nodePort=31443 \
   --set apisix.enableIPv6=false \
   --set apisix.enableServerTokens=false \
   --set apisix.ssl.enabled=true \
   --set apisix.pluginAttrs.redirect.https_port=443 \
   --set ingress-controller.enabled=true >> /tmp/killercoda_setup.log 2>&1
+
 
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
 
