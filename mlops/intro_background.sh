@@ -40,12 +40,6 @@ export S3_SECRET_KEY="eoepcatest"
 export S3_REGION="us-east-1"' >> ~/.eoepca/state
 fi
 
-echo "setting up Helm repos..." >> /tmp/killercoda_setup.log
-helm repo add gitlab https://charts.gitlab.io/ >> /tmp/killercoda_setup.log 2>&1
-helm repo add sharinghub "git+https://github.com/csgroup-oss/sharinghub@deploy/helm?ref=0.4.0" >> /tmp/killercoda_setup.log 2>&1
-helm repo add mlflow-sharinghub "git+https://github.com/csgroup-oss/mlflow-sharinghub@deploy/helm?ref=0.2.0" >> /tmp/killercoda_setup.log 2>&1
-helm repo update >> /tmp/killercoda_setup.log 2>&1
-
 helm plugin install https://github.com/aslafy-z/helm-git --version 1.3.0
 
 while ! killall tail; do sleep 1; done
