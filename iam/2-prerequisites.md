@@ -9,7 +9,7 @@ Before deploying the IAM components, ensure your environment is ready. This scen
 git clone https://github.com/EOEPCA/deployment-guide.git -b killercoda-jh-changes
 
 cd deployment-guide/scripts/iam
-``` 
+```{{exec}}
 
 Run Prerequisites Check:
 

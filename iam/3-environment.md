@@ -29,9 +29,4 @@ identity-api
 EOF
 ```{{exec}}
 
-# ```bash
-# source ../common/utils.sh
-# add_to_state_file "KEYCLOAK_HOST" auth.eoepca.local:31443
-# ```{{exec}}
-
 The script will securely store all generated passwords (Keycloak admin, Keycloak DB, OPA client secret) in the `~/.eoepca/state` file for use in later steps.
