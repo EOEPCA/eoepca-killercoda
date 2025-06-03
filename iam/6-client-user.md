@@ -17,7 +17,7 @@ The script will ask for (hit enter to take the proposed value):
 - **New User Username:** `eoepcauser` (or any username you prefer).
 - **New User Password:** `eoepcapassword` (or any password you prefer).
 
-```
+```bash
 bash ../utils/create-user.sh <<EOF
 
 
@@ -27,7 +27,7 @@ auth.eoepca.local:31443
 eoepcauser
 eoepcapassword
 EOF
-```
+```{{exec}}
 
 ### 2. Create the OPA Client in Keycloak
 
@@ -67,7 +67,7 @@ opa
 
 
 EOF
-```
+```{{exec}}
 
 ### 3. Register the Identity API Client in Keycloak
 
@@ -107,4 +107,4 @@ identity-api
 
 
 EOF
-```
+```{{exec}}

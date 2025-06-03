@@ -9,7 +9,7 @@ Run the script to carry out some basic tests:
 
 ```bash
 bash validation.sh
-```
+```{{exec}}
 
 ### 2. Check Pods and Services
 
@@ -18,13 +18,13 @@ To double-check everything, list the pods and services:
 ```bash
 kubectl get pods -n iam
 kubectl get svc -n iam
-```
+```{{exec}}
 
 All pods (Keycloak, Postgres, OPAL) should show as Running. Keycloak and OPA services should be `ClusterIP` type, as ingress handles external access. Also, check the APISIX services:
 
 ```bash
 kubectl -n ingress-apisix get svc
-```
+```{{exec}}
 
 If everything looks good, you can try a manual test: get an access token for the test user and call OPA.
 
@@ -40,4 +40,4 @@ TOKEN=$(curl -k -X POST \
 
 # Use the token to query OPA
 curl -k -H "Authorization: Bearer $TOKEN" "https://opa.${INGRESS_HOST}:6443/v1/data"
-```
+```{{exec}}
