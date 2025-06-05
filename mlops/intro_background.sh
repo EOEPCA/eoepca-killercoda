@@ -45,4 +45,27 @@ helm plugin install https://github.com/aslafy-z/helm-git --version 1.3.0
 echo -e "\n# Custom Kubernetes Aliases\nalias k=kubectl\nalias o=xdg-open\nalias ns=~/set-namespace.sh\nalias vcc=\"vcluster connect vcluster-deployment-test --namespace vcluster-deployment-test\"\nalias p=\"kubectl get pods\"\nalias lo=\"kubectl logs\"\nalias i=\"kubectl get ingress\"\nalias svc=\"kubectl get svc\"\nalias pvc=\"kubectl get pvc\"\nalias d=\"kubectl describe pod\"" >> ~/.bashrc
 source ~/.bashrc
 
+cat <<'EOF' > ~/set-namespace.sh
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <namespace>"
+    exit 1
+fi
+
+NAMESPACE="$1"
+
+echo "Setting the default namespace to: $NAMESPACE"
+
+kubectl config set-context --current --namespace="$NAMESPACE"
+
+if [ $? -eq 0 ]; then
+    echo "Namespace successfully set."
+else
+    echo "Failed to set namespace."
+fi
+EOF
+
+chmod +x ~/set-namespace.sh
+
 while ! killall tail; do sleep 1; done
