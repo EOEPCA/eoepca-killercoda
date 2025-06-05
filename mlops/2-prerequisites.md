@@ -17,13 +17,25 @@ git clone https://github.com/EOEPCA/deployment-guide.git -b killercoda-jh-change
 cd deployment-guide/scripts/mlops
 ```{{exec}}
 
+Get your Killercoda temporary URL from the top corner -> Traffic / Ports -> Custom Ports -> 30080 -> Access.
+
+You should get something like
+XXXXXXXXXXX-XX-XXX-X-XXX-30080.spca.r.killercoda.com
+
+Now run
+
+```bash
+export INGRESS_HOST=<YOUR UNIQUE KILLERCODA URL>
+export PATH_BASED_ROUTING=true
+```
+
 Run the prerequisites check:
 
 ```bash
 bash check-prerequisites.sh <<EOF
 http
 nginx
-eoepca.local
+no
 local-path
 no
 EOF
