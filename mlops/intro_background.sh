@@ -20,7 +20,9 @@ if [[ -e /tmp/assets/nginxingress ]]; then
   helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace \
-    --set controller.hostNetwork=true
+    --set controller.service.type=NodePort \
+    --set controller.service.nodePorts.http=30080 \
+    --set controller.service.nodePorts.https=30443
 fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
