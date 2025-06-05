@@ -22,3 +22,7 @@ helm upgrade -i mlflow-sharinghub mlflow-sharinghub/mlflow-sharinghub \
   --create-namespace \
   --values mlflow/generated-values.yaml
 ```
+
+```bash
+kubectl apply -f mlflow/generated-ingress.yaml
+```
