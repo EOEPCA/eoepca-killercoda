@@ -22,7 +22,7 @@ Run the prerequisites check:
 ```bash
 bash check-prerequisites.sh <<EOF
 http
-apisix
+nginx
 eoepca.local
 local-path
 no
