@@ -29,6 +29,17 @@ export INGRESS_HOST=<YOUR UNIQUE KILLERCODA URL>
 export PATH_BASED_ROUTING=true
 ```
 
+We will also supply you with the Gitlab and secret for this demonstration.
+
+```bash
+export GITLAB_URL="https://gitlab.test.eoepca.org"
+export GITLAB_APP_ID="281ed7984b08581e2adec68db96fb207a715c3216ba1f4ca6b0706c483d52269"
+```{{exec}}
+
+```bash
+export GITLAB_APP_SECRET=""
+```
+
 Run the prerequisites check:
 
 ```bash

@@ -19,7 +19,7 @@ Alternatively, pre-configure using the following without prompts:
 
 ```bash
 bash configure-mlops.sh <<EOF
-eoepca.local
+n
 local-path
 https://minio.eoepca.local
 us-east-1
