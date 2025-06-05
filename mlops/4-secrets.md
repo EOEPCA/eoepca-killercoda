@@ -7,8 +7,8 @@ bash apply-secrets.sh
 
 Verify secrets were created:
 
-kubectl -n gitlab get secrets
-
+```bash
 kubectl -n sharinghub get secrets
+```{{exec}}
 
-You’ll see secrets for GitLab OAuth, S3 credentials, and MLflow databases.
+You’ll see secrets for S3 credentials and MLflow databases.

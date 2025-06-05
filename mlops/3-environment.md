@@ -27,9 +27,6 @@ us-east-1
 {{S3_SECRET_KEY}}
 mlops-sharinghub
 mlops-mlflow
-true
-https://auth.eoepca.local:31443/realms/eoepca
-gitlab
 EOF
 ```{{exec}}
 

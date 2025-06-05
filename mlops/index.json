@@ -22,14 +22,6 @@
         "text": "4-secrets.md"
       },
       {
-        "title": "Deploying GitLab",
-        "text": "5-deploy-gitlab.md"
-      },
-      {
-        "title": "Configuring OAuth for SharingHub",
-        "text": "6-oauth-setup.md"
-      },
-      {
         "title": "Deploying SharingHub & MLflow",
         "text": "7-deploy-sharinghub-mlflow.md"
       },
