@@ -21,8 +21,8 @@ Run the prerequisites check:
 
 ```bash
 bash check-prerequisites.sh <<EOF
-apisix
 http
+apisix
 eoepca.local
 local-path
 no

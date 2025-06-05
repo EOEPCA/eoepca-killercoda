@@ -11,4 +11,4 @@ Verify secrets were created:
 kubectl -n sharinghub get secrets
 ```{{exec}}
 
-You’ll see secrets for S3 credentials and MLflow databases.
+You should see secrets for the mlflow and sharinghub.
