@@ -22,7 +22,9 @@ if [[ -e /tmp/assets/nginxingress ]]; then
     --namespace ingress-nginx --create-namespace \
     --set controller.service.type=NodePort \
     --set controller.service.nodePorts.http=30080 \
-    --set controller.service.nodePorts.https=30443
+    --set controller.service.nodePorts.https=30443 \
+    --set controller.allowSnippetAnnotations=true \
+    --set controller.config.annotations-risk-level=Critical
 fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
