@@ -48,6 +48,9 @@ export MLFLOW_TRACKING_TOKEN="<YOUR-TOKEN>"
 
 ```bash
 apt install python3.12-venv --yes
+```{{exec}}
+
+```bash
 python -m venv venv
 source venv/bin/activate
 pip install mlflow scikit-learn
@@ -60,7 +63,7 @@ cd data/
 python example-script.py
 ```{{exec}}
 
-- The script will:
+The script will:
 - Load a dataset
 - Train a simple model
 - Log parameters, metrics, and the model to MLflow
