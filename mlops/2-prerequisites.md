@@ -43,7 +43,7 @@ Run the prerequisites check:
 
 ```bash
 bash check-prerequisites.sh <<EOF
-https
+http
 nginx
 no
 local-path

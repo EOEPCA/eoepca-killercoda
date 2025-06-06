@@ -8,7 +8,10 @@ bash apply-secrets.sh
 Then run this to apply application credentials to the state:
 
 ```bash
-bash utils/save-application-credentials-to-state.sh
+bash utils/save-application-credentials-to-state.sh <<EOF
+n
+n
+EOF
 ```{{exec}}
 
 Verify secrets were created:
