@@ -10,7 +10,7 @@ helm upgrade -i sharinghub sharinghub/sharinghub \
   --namespace sharinghub \
   --create-namespace \
   --values sharinghub/generated-values.yaml
-```
+```{{exec}}
 
 Deploy MLflow:
 
@@ -21,8 +21,8 @@ helm upgrade -i mlflow-sharinghub mlflow-sharinghub/mlflow-sharinghub \
   --namespace sharinghub \
   --create-namespace \
   --values mlflow/generated-values.yaml
-```
+```{{exec}}
 
 ```bash
 kubectl apply -f mlflow/generated-ingress.yaml
-```
+```{{exec}}

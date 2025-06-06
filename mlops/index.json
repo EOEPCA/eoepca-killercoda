@@ -26,6 +26,10 @@
         "text": "7-deploy-sharinghub-mlflow.md"
       },
       {
+        "title": "Login",
+        "text": "8-login.md"
+      },
+      {
         "title": "Validation of Deployment",
         "text": "8-validation.md"
       }
