@@ -1,14 +1,6 @@
 
 ## Prerequisites and Initial Configuration
 
-Ensure the following are available (already provided in this environment):
-
-- Kubernetes cluster (v1.28+)
-- Helm 3
-- APISIX ingress controller
-- cert-manager
-- MinIO S3-compatible storage
-  
 Clone deployment scripts:
 
 ```bash
