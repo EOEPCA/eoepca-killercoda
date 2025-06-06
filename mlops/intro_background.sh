@@ -42,6 +42,10 @@ if [[ -e /tmp/assets/minio.7z ]]; then
 export S3_ACCESS_KEY="eoepca"
 export S3_SECRET_KEY="eoepcatest"
 export S3_REGION="us-east-1"' >> ~/.eoepca/state
+
+  mc mb minio-local/mlopbb-sharinghub
+  mc mb minio-local/mlopbb-mlflow-sharinghub
+  echo "MinIO is set up with buckets 'mlopbb-sharinghub' and 'mlopbb-mlflow-sharinghub'."
 fi
 
 helm plugin install https://github.com/aslafy-z/helm-git --version 1.3.0

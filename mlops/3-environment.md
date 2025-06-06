@@ -25,8 +25,8 @@ https://minio.eoepca.local
 us-east-1
 {{S3_ACCESS_KEY}}
 {{S3_SECRET_KEY}}
-mlops-sharinghub
-mlops-mlflow
+mlopbb-sharinghub
+mlopbb-mlflow-sharinghub
 EOF
 ```{{exec}}
 
