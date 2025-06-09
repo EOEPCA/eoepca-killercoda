@@ -76,4 +76,57 @@ EOF
 
 chmod +x ~/set-namespace.sh
 
+sudo fallocate -l 1G /swapfile && chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
+sudo sysctl -w vm.swappiness=10
+
+helm repo add kyverno https://kyverno.github.io/kyverno/
+helm repo update kyverno
+helm upgrade -i kyverno kyverno/kyverno \
+  --version 3.4.1 \
+  --namespace kyverno \
+  --create-namespace
+
+
+cat - <<'EOF' | kubectl apply -f -
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remove-resource-requests
+spec:
+  rules:
+    - name: remove-resource-requests
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        foreach:
+          - list: "request.object.spec.containers"
+            patchStrategicMerge:
+              spec:
+                containers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "0"
+                        memory: "0"
+          - list: "request.object.spec.initContainers || []"
+            preconditions:
+              all:
+                - key: "{{ length(request.object.spec.initContainers) }}"
+                  operator: GreaterThan
+                  value: 0
+            patchStrategicMerge:
+              spec:
+                initContainers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "0"
+                        memory: "0"
+EOF
+
 while ! killall tail; do sleep 1; done
