@@ -54,6 +54,12 @@ no
 no
 ```{{exec}}
 
+For this test, we will not use the EOEPCA Workspace, but store results into a generic object storage. Thus we reply false to the next question
+
+```
+false
+```{exec}
+
 we will also use the same S3 storage for stagein and stageout, so we reply again to no to the next question
 
 ```
