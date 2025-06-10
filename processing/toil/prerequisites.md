@@ -8,7 +8,12 @@ the OGC API Process interface deployment scripts are available in the `processin
 
 ```
 cd ~/deployment-guide/scripts/processing/oapip
-git checkout killercoda-demo
+```{{exec}}
+
+and checkout the current release
+
+```
+git checkout eoepca-2.0-rc1
 ```{{exec}}
 
 As specified in the deployment guide, the OGC API Process interface, Calrissian Kubernetes engine, requires the following pre-requisites:
