@@ -1,6 +1,7 @@
 {
   "items": [
     { "path": "processing" },
-    { "path": "basic" }
+    { "path": "basic" },
+    { "path": "mlops" }
   ]
 }

@@ -40,8 +40,9 @@ The available assets you can select are described in the following table. Please
 | --- | --- |
 | `gomplate.7z` | gomplate software. Required by most EOEPCA deployment-guide script |
 | `ignoreresrequests` | install gatekeeper with mutation hook to override all resource requests, setting them to 0 (disabled). This allows to avoid honoring resource requests which may not be available in the killercoda environment |
-| `localdns` | /etc/hosts configuration with eoepca.local dns entries pointing to the local ingress |
-| `minio.7z` | minio s3 storage service installed locally |
+| `localdns` | /etc/hosts configuration with eoepca.local dns entries pointing to the local ingress. Fill the localdns file in the asset folder with a space-separated list of hosts to be mapped |
+| `minio.7z` | minio s3 storage service installed locally (NOTE: no buckets are created. To create a bucket use `miniobuckets` below) |
+| `miniobuckets` | minio buckets. Requires minio.7z to be enabled. Contains a space-separated list of buckets to be created |
 | `nginxingress` | nginx ingress installed in the K8S cluster |
 | `readwritemany` | local storage class supporting ReadWriteMany K8S persistent volumes provisioning |
 | `htcondor` | HPC batch system (HTCondor) |

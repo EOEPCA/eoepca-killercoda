@@ -4,7 +4,7 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  WEBSITES="minio.eoepca.local zoo.eoepca.local toil-wes.hpc.local"
+  WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
@@ -36,11 +36,17 @@ if [[ -e /tmp/assets/minio.7z ]]; then
   mkdir -p ~/minio && MINIO_ROOT_USER=eoepca MINIO_ROOT_PASSWORD=eoepcatest nohup minio server --quiet ~/minio &>/dev/null &
   sleep 1
   while ! mc config host add minio-local http://minio.eoepca.local:9000/ eoepca eoepcatest; do sleep 1; done
-  mc mb minio-local/eoepca
   mkdir -p ~/.eoepca && echo 'export S3_ENDPOINT="http://minio.eoepca.local:9000/"
 export S3_ACCESS_KEY="eoepca"
 export S3_SECRET_KEY="eoepcatest"
 export S3_REGION="us-east-1"' >> ~/.eoepca/state
+fi
+if [[ -e /tmp/assets/miniobuckets ]]; then
+  BUCKETS="`tr -d '\n' < /tmp/assets/miniobuckets`"
+  echo "creating object storage buckets: $BUCKETS..."  >> /tmp/killercoda_setup.log
+  for bkt in $BUCKETS; do
+    mc mb minio-local/$bkt
+  done
 fi
 if [[ -e /tmp/assets/readwritemany ]]; then
   ### Prerequisites: readwritemany StorageClass
