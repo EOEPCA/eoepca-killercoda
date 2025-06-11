@@ -22,7 +22,7 @@ helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
 Now we wait for the Resource Discovery pods to start. This may take some time, expecially in this demo environment. To automatically wait for all service to be ready you can run:
 
 ```
-kubectl --namespace resource-discovery wait pod --all --timeout=10m --for=condition=Ready
+kubectl --namespace resource-discovery wait pod --all --timeout=10m --for=condition=Ready; sleep 10
 ```{{exec}}
 
 Finally, we must create ingress for our newly created Resource Discovery service to make it available. We use the configuration file generated automatically in the previous step.
@@ -44,3 +44,5 @@ We can also check manually the provided STAC API via:
 ```
 curl -s "http://resource-catalogue.eoepca.local/stac" | jq
 ```{{exec}}
+
+Or have a look at the catalogue web interface from [this link]({{TRAFFIC_HOST1_81}}) (come back here after, the tutorial is not over).

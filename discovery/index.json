@@ -22,12 +22,8 @@
         "text": "03-deploy.md"
       },
       { 
-        "title": "Add STAC Metadata", 
+        "title": "Add STAC Collections and Items", 
         "text": "04-add-stac.md" 
-      },
-      { 
-        "title": "Query the Catalogue", 
-        "text": "05-query.md" 
       }
     ],
     "finish": {
