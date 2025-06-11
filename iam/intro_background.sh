@@ -79,38 +79,39 @@ helm upgrade -i apisix apisix/apisix \
   --set service.type=NodePort \
   --set service.http.nodePort=31080 \
   --set service.tls.nodePort=31443 \
+  --set gateway.http.containerPort=31080 \
+  --set gateway.https.containerPort=31443 \
   --set apisix.enableIPv6=false \
   --set apisix.enableServerTokens=false \
-  --set apisix.ssl.enabled=true \
-  --set apisix.pluginAttrs.redirect.https_port=443 \
   --set ingress-controller.enabled=true >> /tmp/killercoda_setup.log 2>&1
 
 
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
+# REMOVE_ME
+# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
 
-echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
+# echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
 
-echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
-kubectl rollout status deployment -n cert-manager cert-manager --timeout=180s
-kubectl rollout status deployment -n cert-manager cert-manager-webhook --timeout=180s
-kubectl rollout status deployment -n cert-manager cert-manager-cainjector --timeout=180s
+# echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
+# kubectl rollout status deployment -n cert-manager cert-manager --timeout=180s
+# kubectl rollout status deployment -n cert-manager cert-manager-webhook --timeout=180s
+# kubectl rollout status deployment -n cert-manager cert-manager-cainjector --timeout=180s
 
-echo "creating self-signed issuer..." >> /tmp/killercoda_setup.log
+# echo "creating self-signed issuer..." >> /tmp/killercoda_setup.log
 
-kubectl apply -f - <<EOF >> /tmp/killercoda_setup.log 2>&1
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
-EOF
+# kubectl apply -f - <<EOF >> /tmp/killercoda_setup.log 2>&1
+# apiVersion: cert-manager.io/v1
+# kind: ClusterIssuer
+# metadata:
+#   name: selfsigned-issuer
+# spec:
+#   selfSigned: {}
+# EOF
 
 # apply the file in assets/apisix-tls.yaml
-if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
-  echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
-  kubectl apply -f /tmp/assets/apisix-tls.yaml >> /tmp/killercoda_setup.log 2>&1
-fi
+# if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
+#   echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
+#   kubectl apply -f /tmp/assets/apisix-tls.yaml >> /tmp/killercoda_setup.log 2>&1
+# fi
 
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
