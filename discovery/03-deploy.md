@@ -22,7 +22,7 @@ helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
 Now we wait for the Resource Discovery pods to start. This may take some time, expecially in this demo environment. To automatically wait for all service to be ready you can run:
 
 ```
-kubectl --namespace resource-discovery wait pod --all --timeout=10m --for=condition=Ready; sleep 10
+kubectl --namespace resource-discovery wait pod -l io.kompose.service=pycsw --timeout=10m --for=condition=Ready; sleep 2
 ```{{exec}}
 
 Finally, we must create ingress for our newly created Resource Discovery service to make it available. We use the configuration file generated automatically in the previous step.
