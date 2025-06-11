@@ -6,7 +6,7 @@ Before deploying the IAM components, ensure your environment is ready. This scen
 **Clone Deployment Scripts:** First, clone the EOEPCA Deployment Guide repository to get the helper scripts and navigate to the IAM scripts directory:
 
 ```bash
-git clone https://github.com/EOEPCA/deployment-guide.git -b killercoda-jh-changes
+git clone https://github.com/EOEPCA/deployment-guide.git -b feature/rconway-updates
 
 cd deployment-guide/scripts/iam
 ```{{exec}}
