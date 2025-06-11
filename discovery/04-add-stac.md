@@ -29,9 +29,13 @@ curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/metadata:m
   -d @CAT_DEMO.json | jq
 ```{{exec}}
 
-You should be now able to see the collection via [the GUI]({{TRAFFIC_HOST1_81}}/collections/metadata:main/items).
+You should be now able to see the CAT_DEMO collection via the STAC API
 
-You will anyway not be able to see it via the STAC API, as the catalogue will show only collections containing at least one product.
+```
+curl http://resource-catalogue.eoepca.local/stac/collections | jq .collections[].id
+```{{exec}}
+
+or via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/)
 
 ### Add an Item
 
@@ -71,18 +75,11 @@ curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/i
   -d @example-item.json | jq
 ```{{exec}}
 
-We can now see the product in the CAT_DEMO collection via the STAC API
+we can now see the sample product we have ingested via the STAC API
 
 ```
-curl http://resource-catalogue.eoepca.local/stac/collections | jq .collections[].id
+curl http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/items | jq .features[].id
 ```{{exec}}
 
-and the sample product we have ingested
-
-```
-curl http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/items | jq .collections[].id
-```{{exec}}
-
-Last, we can browse the collection via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/CAT_DEMO/items)
-
+And in the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/CAT_DEMO/items)
 
