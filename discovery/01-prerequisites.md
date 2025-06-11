@@ -40,7 +40,7 @@ We enter the top-level domain for our EOEPCA services:
 eoepca.local
 ```{{exec}}
 
-We do not need a specific Storage Class for this component, so for this example we will use the basic storage class provided by Killercoda:
+We do not need a specific Storage Class for this component, so for this example we will use the basic storage class provided by Killercoda. Note that, in an operational environment, you should use a reliable (and possibly redundant and backed up) storage class, as this storage class will be used to store all the metadata of your data
 
 ```
 local-path

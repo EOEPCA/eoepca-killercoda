@@ -14,7 +14,8 @@ helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
   --values generated-values.yaml \
   --version 2.0.0-rc1 \
   --namespace resource-discovery \
-  --create-namespace
+  --create-namespace \
+  --set db.volume_access_modes=ReadWriteOnce
 ```{{exec}} 
 
 

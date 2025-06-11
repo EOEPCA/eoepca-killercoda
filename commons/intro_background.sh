@@ -25,6 +25,51 @@ if [[ -e /tmp/assets/nginxingress ]]; then
     --namespace ingress-nginx --create-namespace \
     --set controller.hostNetwork=true
 fi
+if [[ -e /tmp/assets/killercodaproxy ]]; then
+  #Use an NGinx proxy to force the Host and replace the links to allow most applciations
+  #to work with killercoda proxy
+  echo configuring proxy for killercoda external access... >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  #Install nginx with substitution mode
+  apt-get install -y nginx libnginx-mod-http-subs-filter
+  #write nginx configuration
+  cat <<EOF >/etc/nginx/nginx.conf
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+  worker_connections 768;
+  # multi_accept on;
+}
+
+http {
+  access_log /dev/null;
+  gzip on;
+EOF
+  while read port dest types; do
+cat <<EOF>>/etc/nginx/nginx.conf
+    server {
+
+        listen       $port;
+
+        location / {
+         proxy_pass  http://$dest;
+         proxy_set_header   Host             $dest:80;
+         proxy_set_header Accept-Encoding "";
+         subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
+         subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
+         subs_filter_types $types;
+        }
+    }
+EOF
+  done < /tmp/assets/killercodaproxy
+echo "}" >> /etc/nginx/nginx.conf
+  #restart nginx
+  service nginx restart
+fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
   echo installing object storage...  >> /tmp/killercoda_setup.log
