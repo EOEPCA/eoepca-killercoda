@@ -35,7 +35,7 @@ You should be now able to see the CAT_DEMO collection via the STAC API
 curl http://resource-catalogue.eoepca.local/stac/collections | jq .collections[].id
 ```{{exec}}
 
-or via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/)
+or via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/metadata:main/items)
 
 ### Add an Item
 
