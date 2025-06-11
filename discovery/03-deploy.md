@@ -18,17 +18,16 @@ helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
   --set db.volume_access_modes=ReadWriteOnce
 ```{{exec}} 
 
-
-Now we wait for the Resource Discovery pods to start. This may take some time, expecially in this demo environment. To automatically wait for all service to be ready you can run:
-
-```
-kubectl --namespace resource-discovery wait pod -l io.kompose.service=pycsw --timeout=10m --for=condition=Ready
-```{{exec}}
-
-Finally, we must create ingress for our newly created Resource Discovery service to make it available. We use the configuration file generated automatically in the previous step.
+And we create the ingress for our newly created Resource Discovery service to make it available, using the configuration file generated automatically in the previous step.
 
 ```
 kubectl apply -f generated-ingress.yaml
+```{{exec}}
+
+Now we wait for the Resource Discovery pods to start. This may take some time, expecially in this demo environment. To automatically wait till all service to are ready you and the catalogue responds correctly you can run:
+
+```
+while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
 ```{{exec}}
 
 Once deployed, the Resouce Discovery STAC API should be accessible at `http://resouce-catalogue.eoepca.local`
