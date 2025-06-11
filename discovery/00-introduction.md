@@ -23,6 +23,7 @@ Once published, other users can query it by:
 - Region of interest (bounding box)
 - Date range
 - Data collection or mission
+
 and see all the data information, download the data or process it using the [EOEPCA Processing Building Block](https://eoepca.readthedocs.io/projects/processing/en/latest/)
 
 This tutorial simulates the deployment of the data catalogue, the registration of some sample data and the discovery of such data.

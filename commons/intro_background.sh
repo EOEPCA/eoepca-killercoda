@@ -61,7 +61,7 @@ cat <<EOF>>/etc/nginx/nginx.conf
          proxy_set_header Accept-Encoding "";
          subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
          subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
-         subs_filter_types $types;
+         subs_filter_types ${types//\'/};
         }
     }
 EOF

@@ -1,4 +1,4 @@
-As ususal in this tutorial, we will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us configuring and deploying our application. 
+As ususal for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us configuring and deploying our application. 
 
 First, we clone it in our environment:
 ```
@@ -12,12 +12,14 @@ cd deployment-guide
 git checkout eoepca-2.0-rc1
 ```{{exec}}
 
-The Rescource Catalogue deployment scripts are available in the `resource-discovery` directory:
+The Rescource Discovery deployment scripts are available in the `resource-discovery` directory:
 ```
 cd scripts/resource-discovery
 ```{{exec}}
 
-Next we'll check whether the prerequisites for installing the Resource Discovery building block are met. The Deployment Guide scripts provide a dedicated script for this task:
+Now we need to understand our pre-requisites. In general EOEPCA Building Blocks will require as minimal pre-requisite a kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. In this tutorial, for simplicity, nginx is already installed and the `*.eoepca.local` domain is mapped to the nginx address.
+
+Next we need to check the specific Resource Discovery BB prerequisites for installing the Resource Discovery building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
 ```{{exec}}
