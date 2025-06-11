@@ -35,9 +35,6 @@ Once deployed, the Resouce Discovery STAC API should be accessible at `http://re
 We can validate it with the provided script `validation.sh`
 
 ```
-#Wait some seconds for the ingress to start
-sleep 2
-#Perform validation
 bash validation.sh
 ```{{exec}}
 
