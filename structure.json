@@ -1,5 +1,6 @@
 {
   "items": [
+    { "path": "resource",
     { "path": "processing" },
     { "path": "basic" },
     { "path": "mlops" }

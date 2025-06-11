@@ -1,0 +1,9 @@
+{
+  "title": "EOEPCA Resource Discovery and Data Access Building Blocks",
+  "description": "",
+  "items": [
+    { "path": "discovery" },
+    { "path": "registration" },
+    { "path": "data-access" }
+  ]
+}

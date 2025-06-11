@@ -1,0 +1,46 @@
+{
+  "title": "EOEPCA Resource Discovery",
+  "description": "Discover EO data using the EOEPCA Resource Discovery and the STAC API.",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Check Prerequisites",
+        "text": "01-prerequisites.md"
+      },
+      {
+        "title": "Configure Resource Discovery",
+        "text": "02-configure.md"
+      },
+      {
+        "title": "Deploy Resource Catalogue", 
+        "text": "03-deploy.md"
+      },
+      { 
+        "title": "Add STAC Metadata", 
+        "text": "04-add-stac.md" 
+      },
+      { 
+        "title": "Query the Catalogue", 
+        "text": "05-query.md" 
+      },
+    ],
+		"finish": {
+			"title": "Finish",
+			"text": "99-finish.md"
+		},
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
