@@ -1,6 +1,6 @@
 {
-  "title": "EOEPCA Resource Discovery",
-  "description": "Discover EO data using the EOEPCA Resource Discovery and the STAC API.",
+  "title": "EOEPCA Resource Discovery BB",
+  "description": "Catalogue, search and discover EO data using STAC API.",
   "details": {
     "intro": {
       "text": "00-introduction.md",
@@ -28,12 +28,12 @@
       { 
         "title": "Query the Catalogue", 
         "text": "05-query.md" 
-      },
+      }
     ],
-		"finish": {
-			"title": "Finish",
-			"text": "99-finish.md"
-		},
+    "finish": {
+     "title": "Finish",
+     "text": "99-finish.md"
+    },
     "assets": {
       "host01": [
         {"file": "*", "target": "/tmp/assets"}

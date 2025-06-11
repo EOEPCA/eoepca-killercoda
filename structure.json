@@ -1,6 +1,6 @@
 {
   "items": [
-    { "path": "resource" },
+    { "path": "discovery" },
     { "path": "processing" },
     { "path": "basic" },
     { "path": "mlops" }

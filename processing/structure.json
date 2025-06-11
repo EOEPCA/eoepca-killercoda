@@ -1,5 +1,5 @@
 {
-  "title": "EOEPCA Processing Building Block",
+  "title": "EOEPCA Processing BB",
   "description": "Data processing with different engines",
   "items": [
     { "path": "calrissian" },
