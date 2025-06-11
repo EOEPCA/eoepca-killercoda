@@ -17,14 +17,17 @@ In this scenario, you will learn how to deploy and interact with the EOEPCA Reso
 
 ### Use Case
 
-Imagine you've just ingested a new Sentinel-2 satellite scene into your system. To make it discoverable by other users or services, you publish the metadata into the Resource Catalogue using the STAC format.
+Imagine you've just several EO Satellite images or value added products or just any other products and you want to make them discoverable by your users or services, you publish the metadata into the Resource Catalogue using the STAC format.
 
 Once published, other users can query it by:
 - Region of interest (bounding box)
 - Date range
 - Data collection or mission
+and see all the data information, download the data or process it using the [EOEPCA Processing Building Block](https://eoepca.readthedocs.io/projects/processing/en/latest/)
 
-This tutorial simulates that workflow end-to-end.
+This tutorial simulates the deployment of the data catalogue, the registration of some sample data and the discovery of such data.
+
+Note that the registration shown here is a very simple single product registration. For automatic registration of common EO datasets and to perform all data management operations (e.g. keep the datasets in sync), the [EOEPCA Resource Registration Building Block](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/) is provided.
 
 ---
 
