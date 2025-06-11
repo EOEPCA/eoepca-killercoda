@@ -32,4 +32,3 @@ Note that the registration shown here is a very simple single product registrati
 
 ---
 
-Let’s begin by making sure all required tools are installed.
