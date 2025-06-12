@@ -14,6 +14,58 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
   echo "installing gomplate..." >> /tmp/killercoda_setup.log
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/gomplate.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate
 fi
+
+
+if [[ -e /tmp/assets/ignoreresrequests ]]; then
+  ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
+  ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
+  echo setting resource limits...  >> /tmp/killercoda_setup.log
+  kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+  cat <<EOF | kubectl apply -f -
+apiVersion: mutations.gatekeeper.sh/v1
+kind: Assign
+metadata:
+  name: relieve-resource-pods
+spec:
+  applyTo:
+  - groups: [""]
+    kinds: ["Pod"]
+    versions: ["v1"]
+  match:
+    scope: Namespaced
+    kinds:
+      - apiGroups: [ "*" ]
+        kinds: [ "Pod" ]
+  location: "spec.containers[name:*].resources.requests"
+  parameters:
+    assign:
+      value:
+        cpu: "0"
+        memory: "0"
+---
+apiVersion: mutations.gatekeeper.sh/v1
+kind: Assign
+metadata:
+  name: relieve-resource-inits
+spec:
+  applyTo:
+  - groups: [""]
+    kinds: ["Pod"]
+    versions: ["v1"]
+  match:
+    scope: Namespaced
+    kinds:
+      - apiGroups: [ "*" ]
+        kinds: [ "Pod" ]
+  location: "spec.initContainers[name:*].resources.requests"
+  parameters:
+    assign:
+      value:
+        cpu: "0"
+        memory: "0"
+EOF
+fi
+
 if [[ -e /tmp/assets/nginxingress ]]; then
   #Installing Ingress (basic)
   echo installing nginx ingress... >> /tmp/killercoda_setup.log
@@ -68,46 +120,6 @@ helm upgrade -i kyverno kyverno/kyverno \
   --namespace kyverno \
   --create-namespace
 
-
-cat - <<'EOF' | kubectl apply -f -
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: remove-resource-requests
-spec:
-  rules:
-    - name: remove-resource-requests
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      mutate:
-        foreach:
-          - list: "request.object.spec.containers"
-            patchStrategicMerge:
-              spec:
-                containers:
-                  - name: "{{ element.name }}"
-                    resources:
-                      requests:
-                        cpu: "0"
-                        memory: "0"
-          - list: "request.object.spec.initContainers || []"
-            preconditions:
-              all:
-                - key: "{{ length(request.object.spec.initContainers) }}"
-                  operator: GreaterThan
-                  value: 0
-            patchStrategicMerge:
-              spec:
-                initContainers:
-                  - name: "{{ element.name }}"
-                    resources:
-                      requests:
-                        cpu: "0"
-                        memory: "0"
-EOF
 
 # Clean up unused container images to free up disk space
 echo "cleaning up unused container images..." >> /tmp/killercoda_setup.log
