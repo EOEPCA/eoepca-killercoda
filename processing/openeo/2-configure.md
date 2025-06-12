@@ -10,7 +10,8 @@ This will configure the OpenEO building block with the following:
 ```bash
 bash configure-openeo.sh <<EOF
 eoepca.local
-standard
+local-path
+no
 EOF
 ```{{exec}}
 
