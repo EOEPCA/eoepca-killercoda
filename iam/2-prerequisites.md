@@ -25,15 +25,15 @@ EOF
 
 **What these values mean:**
 
-1. **HTTP scheme**: `http`  
+1. **HTTP scheme**: `http`{{}}
    The protocol to use for ingress traffic.
-2. **Ingress class**: `apisix`  
+2. **Ingress class**: `apisix`{{}}
    Specifies the ingress controller (here, APISIX) that will manage external access.
-3. **Ingress host**: `eoepca.local`  
+3. **Ingress host**: `eoepca.local`{{}}
    The hostname through which the services will be accessed.
-4. **Storage class**: `local-path`  
+4. **Storage class**: `local-path`{{}}
    The Kubernetes storage class to use for persistent data.
-5. **Cert-manager enabled**: `no`  
+5. **Cert-manager enabled**: `no`{{}}
    Indicates whether certificate management is enabled (set to `no` for this tutorial).
 
 You can set them to different values following the configuration prompts as they appear.
