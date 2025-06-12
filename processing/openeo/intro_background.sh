@@ -129,4 +129,8 @@ spec:
                         memory: "0"
 EOF
 
+# Clean up unused container images to free up disk space
+echo "cleaning up unused container images..." >> /tmp/killercoda_setup.log
+crictl rmi --prune >> /tmp/killercoda_setup.log 2>&1
+
 while ! killall tail; do sleep 1; done

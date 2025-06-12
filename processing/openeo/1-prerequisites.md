@@ -14,7 +14,7 @@ bash check-prerequisites.sh <<EOF
 http
 nginx
 eoepca.local
-standard
+local-path
 no
 EOF
 ```{{exec}}
