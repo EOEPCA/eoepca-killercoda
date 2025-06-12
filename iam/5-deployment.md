@@ -13,14 +13,15 @@ helm upgrade -i iam eoepca-dev/iam-bb \
   --create-namespace
 ```{{exec}}
 
-<!---
+<!--
 # REMOVE_ME
-Then also apply the APISIX TLS configuration:
+# Then also apply the APISIX TLS configuration:
 
-```bash
-kubectl apply -f apisix-tls.yaml
-```{{exec}}
---->
+# ```bash
+# kubectl apply -f apisix-tls.yaml
+# ```{{exec}}
+# REMOVE_ME (end)
+-->
 
 ### Verifying the Deployment
 

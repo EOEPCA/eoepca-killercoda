@@ -93,34 +93,33 @@ helm upgrade -i apisix apisix/apisix \
   >> /tmp/killercoda_setup.log 2>&1
 
 
-<!---
 # REMOVE_ME
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
+# kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
 
-echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
+# echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
 
-echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
-kubectl rollout status deployment -n cert-manager cert-manager --timeout=180s
-kubectl rollout status deployment -n cert-manager cert-manager-webhook --timeout=180s
-kubectl rollout status deployment -n cert-manager cert-manager-cainjector --timeout=180s
+# echo "waiting for cert-manager to be ready..." >> /tmp/killercoda_setup.log
+# kubectl rollout status deployment -n cert-manager cert-manager --timeout=180s
+# kubectl rollout status deployment -n cert-manager cert-manager-webhook --timeout=180s
+# kubectl rollout status deployment -n cert-manager cert-manager-cainjector --timeout=180s
 
-echo "creating self-signed issuer..." >> /tmp/killercoda_setup.log
+# echo "creating self-signed issuer..." >> /tmp/killercoda_setup.log
 
-kubectl apply -f - <<EOF >> /tmp/killercoda_setup.log 2>&1
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
-EOF
+# kubectl apply -f - <<EOF >> /tmp/killercoda_setup.log 2>&1
+# apiVersion: cert-manager.io/v1
+# kind: ClusterIssuer
+# metadata:
+#   name: selfsigned-issuer
+# spec:
+#   selfSigned: {}
+# EOF
 
-apply the file in assets/apisix-tls.yaml
-if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
-  echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
-  kubectl apply -f /tmp/assets/apisix-tls.yaml >> /tmp/killercoda_setup.log 2>&1
-fi
---->
+# apply the file in assets/apisix-tls.yaml
+# if [[ -e /tmp/assets/apisix-tls.yaml ]]; then
+#   echo "applying apisix-tls.yaml..." >> /tmp/killercoda_setup.log
+#   kubectl apply -f /tmp/assets/apisix-tls.yaml >> /tmp/killercoda_setup.log 2>&1
+# fi
+# REMOVE_ME (end)
 
 echo -n "installing k9s......" >> /tmp/killercoda_setup.log
 curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
