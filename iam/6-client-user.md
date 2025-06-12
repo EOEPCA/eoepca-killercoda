@@ -1,18 +1,20 @@
 
 ## Setting Up the Client and User
 
-With Keycloak and OPA running, we need to do some one-off setup in Keycloak: create a realm for EOEPCA, add a test user, and set up a client for OPA and Identity API. There are utility scripts to help with this.
+With Keycloak and OPA running, we need to do some one-off setup in Keycloak:
+* create a realm for EOEPCA
+* add a test user
+* set up an OIDC client for OPA and Identity API
+
+There are utility scripts to help with this.
 
 ### 1. Create an EOEPCA User
 
-```bash
-bash ../utils/create-user.sh
-```{{exec}}
-
+The helper script `create-user.sh` uses the Keycloak API to create a new user.<br>
 The script will ask for (hit enter to take the proposed value):
 
 - **Keycloak Admin Username/Password:** Hit enter
-- **Keycloak Base URL:** `y` to update the value to: `auth.eoepca.local:31443` # we need to set the NodePort in this scenario.
+- **Keycloak Base URL:** `y` to update the value to: `auth.eoepca.local:31080` # we need to set the NodePort in this scenario.
 - **Realm:** Use `eoepca` (as set up earlier).
 - **New User Username:** `eoepcauser` (or any username you prefer).
 - **New User Password:** `eoepcapassword` (or any password you prefer).
@@ -22,7 +24,7 @@ bash ../utils/create-user.sh <<EOF
 
 
 y
-auth.eoepca.local:31443
+auth.eoepca.local:31080
 
 eoepcauser
 eoepcapassword
@@ -41,7 +43,7 @@ bash ../utils/create-client.sh
 
 - **Keycloak Admin login:** Hit enter
 - **Ingress Host:** Hit enter
-- **Keycloak Base Domain:** This should be set to `auth.eoepca.local:31443` (the NodePort for Keycloak).
+- **Keycloak Base Domain:** This should be set to `auth.eoepca.local:31080` (the NodePort for Keycloak).
 - **Realm:** `eoepca`.
 - **Confidential Client?:** `true` (this will be a confidential client with a secret).
 - **Client ID:** `opa` (use "opa" as the client ID).
@@ -81,7 +83,7 @@ bash ../utils/create-client.sh
 
 - **Keycloak Admin login:** Hit enter (it will use the value from the state file).
 - **Ingress Host:** Hit enter (it will use the value from the state file).
-- **Keycloak Base Domain:** This should be set to `auth.eoepca.local:31443`
+- **Keycloak Base Domain:** This should be set to `auth.eoepca.local:31080`
 - **Realm:** `eoepca`.
 - **Confidential Client?:** `true` 
 - **Client ID:** `identity-api` (use "identity-api" as the client ID).

@@ -25,15 +25,27 @@ helm upgrade -i iam eoepca-dev/iam-bb \
 
 ### Verifying the Deployment
 
-Check the status of the IAM deployment, this may take ~5 minutes to complete
+Check the status of the IAM deployment:
 
 ```bash
 kubectl get pods -n iam
 ```{{exec}}
 
-Once all pods are running and ready, you can check the Keycloak and OPA services:
+Wait for all IAM pods to be `Running`, which may take ~5 minutes to complete:
+
+```bash
+kubectl -n iam rollout status \
+  deployment.apps/iam-opal-client \
+  deployment.apps/iam-opal-pgsql \
+  deployment.apps/iam-opal-server \
+  deployment.apps/identity-api \
+  statefulset.apps/iam-keycloak \
+  statefulset.apps/iam-postgresql
+```{{exec}}
+
+Once all pods are running and ready, you can check the Keycloak and OPA services.<br>
 Don't move on until the below command returns a successful response:
 
 ```bash
-curl -k https://auth.eoepca.local:31443/realms/eoepca/.well-known/openid-configuration
+curl -k http://auth.eoepca.local:31080/realms/eoepca/.well-known/openid-configuration | jq
 ```{{exec}}

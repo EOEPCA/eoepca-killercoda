@@ -128,4 +128,4 @@ rm -f ./k9s_linux_amd64.deb
 echo "-> DONE" >> /tmp/killercoda_setup.log
 
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
-while ! killall tail >/dev/null 2&1; do sleep 1; done
+while ! killall tail; do sleep 1; done >/dev/null 2>&1
