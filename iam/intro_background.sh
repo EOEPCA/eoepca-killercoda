@@ -23,6 +23,8 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
   echo setting resource limits...  >> /tmp/killercoda_setup.log
   kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+  echo ...waiting for gatekeeper readiness...  >> /tmp/killercoda_setup.log
+  kubectl rollout status gatekeeper-controller-manager -n gatekeeper-system
   cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
 kind: Assign
