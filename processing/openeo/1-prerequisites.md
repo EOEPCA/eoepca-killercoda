@@ -3,7 +3,7 @@
 First, let's clone the `deployment-guide` repository which contains the necessary scripts.
 
 ```bash
-git clone https://github.com/EOEPCA/deployment-guide
+git clone https://github.com/EOEPCA/deployment-guide -b killercoda-jh-changes
 cd deployment-guide/scripts/processing/openeo
 ```{{exec}}
 
