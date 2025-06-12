@@ -47,5 +47,5 @@ Once all pods are running and ready, you can check the Keycloak and OPA services
 Don't move on until the below command returns a successful response:
 
 ```bash
-curl -k http://auth.eoepca.local:31080/realms/eoepca/.well-known/openid-configuration | jq
+curl -k http://auth.eoepca.local/realms/eoepca/.well-known/openid-configuration | jq
 ```{{exec}}

@@ -14,18 +14,17 @@ The helper script `create-user.sh` uses the Keycloak API to create a new user.<b
 The script will ask for (hit enter to take the proposed value):
 
 - **Keycloak Admin Username/Password:** Hit enter
-- **Keycloak Base URL:** `y` to update the value to: `auth.eoepca.local:31080` # we need to set the NodePort in this scenario.
+- **Keycloak Base URL:** Hit enter
 - **Realm:** Use `eoepca` (as set up earlier).
 - **New User Username:** `eoepcauser` (or any username you prefer).
 - **New User Password:** `eoepcapassword` (or any password you prefer).
 
 ```bash
 bash ../utils/create-user.sh <<EOF
-
-
-y
-auth.eoepca.local:31080
-
+n
+n
+n
+n
 eoepcauser
 eoepcapassword
 EOF
@@ -43,7 +42,7 @@ bash ../utils/create-client.sh
 
 - **Keycloak Admin login:** Hit enter
 - **Ingress Host:** Hit enter
-- **Keycloak Base Domain:** This should be set to `auth.eoepca.local:31080` (the NodePort for Keycloak).
+- **Keycloak Base Domain:** Hit enter
 - **Realm:** `eoepca`.
 - **Confidential Client?:** `true` (this will be a confidential client with a secret).
 - **Client ID:** `opa` (use "opa" as the client ID).
@@ -83,7 +82,7 @@ bash ../utils/create-client.sh
 
 - **Keycloak Admin login:** Hit enter (it will use the value from the state file).
 - **Ingress Host:** Hit enter (it will use the value from the state file).
-- **Keycloak Base Domain:** This should be set to `auth.eoepca.local:31080`
+- **Keycloak Base Domain:** Hit enter (it will use the value from the state file).
 - **Realm:** `eoepca`.
 - **Confidential Client?:** `true` 
 - **Client ID:** `identity-api` (use "identity-api" as the client ID).

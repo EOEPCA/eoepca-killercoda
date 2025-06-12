@@ -17,7 +17,7 @@ Before deploying the IAM components, you need to ensure your environment is prop
 bash check-prerequisites.sh <<EOF
 http
 apisix
-eoepca.local:31080
+eoepca.local
 local-path
 no
 EOF
@@ -29,7 +29,7 @@ EOF
    The protocol to use for ingress traffic.
 2. **Ingress class**: `apisix`{{}}
    Specifies the ingress controller (here, APISIX) that will manage external access.
-3. **Ingress host**: `eoepca.local:31080`{{}}
+3. **Ingress host**: `eoepca.local`{{}}
    The hostname through which the services will be accessed.
 4. **Storage class**: `local-path`{{}}
    The Kubernetes storage class to use for persistent data.

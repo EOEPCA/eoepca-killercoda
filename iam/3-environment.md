@@ -19,8 +19,8 @@ The following runs the script and set the values without prompts:
 
 ```bash
 bash configure-iam.sh <<EOF
-eoepca.local
-local-path
+n
+n
 eoepca
 opa
 identity-api

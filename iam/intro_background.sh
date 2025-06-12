@@ -81,15 +81,14 @@ helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
 helm upgrade -i apisix apisix/apisix \
   --version 2.9.0 \
   --namespace ingress-apisix --create-namespace \
-  --set service.type=NodePort \
-  --set service.http.nodePort=31080 \
-  --set service.tls.nodePort=31443 \
-  --set gateway.http.containerPort=31080 \
-  --set gateway.https.containerPort=31443 \
+  --set securityContext.runAsUser=0 \
+  --set hostNetwork=true \
+  --set service.http.containerPort=80 \
+  --set apisix.ssl.containerPort=443 \
+  --set etcd.replicaCount=1 \
   --set apisix.enableIPv6=false \
   --set apisix.enableServerTokens=false \
   --set ingress-controller.enabled=true \
-  --set etcd.replicaCount=1 \
   >> /tmp/killercoda_setup.log 2>&1
 
 
@@ -128,4 +127,4 @@ rm -f ./k9s_linux_amd64.deb
 echo "-> DONE" >> /tmp/killercoda_setup.log
 
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
-while ! killall tail; do sleep 1; done >/dev/null 2>&1
+while ! killall tail; do sleep 1; done
