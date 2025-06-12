@@ -16,12 +16,11 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
 fi
 
 
-if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo setting resource limits...  >> /tmp/killercoda_setup.log
-  kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
-  cat <<EOF | kubectl apply -f -
+echo setting resource limits...  >> /tmp/killercoda_setup.log
+kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
 kind: Assign
 metadata:
@@ -64,7 +63,6 @@ spec:
         cpu: "0"
         memory: "0"
 EOF
-fi
 
 if [[ -e /tmp/assets/nginxingress ]]; then
   #Installing Ingress (basic)
