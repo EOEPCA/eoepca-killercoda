@@ -119,4 +119,4 @@ helm upgrade -i apisix apisix/apisix \
 # fi
 
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
-while ! killall tail; do sleep 1; done
+while ! killall tail >/dev/null 2&1; do sleep 1; done
