@@ -11,6 +11,10 @@ helm upgrade -i openeo-geotrellis-openeo sparkapplication \
     --values openeo-geotrellis/generated-values.yaml
 ```{{exec}}
 
+```bash
+crictl rmi --prune
+```{{exec}}
+
 Next, deploy the ingress to expose the OpenEO service:
 
 ```bash

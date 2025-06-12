@@ -12,4 +12,8 @@ helm upgrade -i openeo-geotrellis-zookeeper \
     --values zookeeper/generated-values.yaml
 ```{{exec}}
 
+```bash
+crictl rmi --prune
+```{{exec}}
+
 You must wait for the ZooKeeper deployment to be fully running before proceeding. You can check the status of the pods with `kubectl get pods -n openeo-geotrellis`.

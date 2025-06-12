@@ -111,6 +111,36 @@ EOF
 
 # Clean up unused container images to free up disk space
 echo "cleaning up unused container images..." >> /tmp/killercoda_setup.log
+# Remove unused container images
 crictl rmi --prune >> /tmp/killercoda_setup.log 2>&1
+
+if command -v docker &> /dev/null; then
+  docker image prune -af >> /tmp/killercoda_setup.log 2>&1
+  docker container prune -f >> /tmp/killercoda_setup.log 2>&1
+  docker volume prune -f >> /tmp/killercoda_setup.log 2>&1
+fi
+
+if command -v journalctl &> /dev/null; then
+  journalctl --vacuum-time=2d >> /tmp/killercoda_setup.log 2>&1
+fi
+
+if command -v apt-get &> /dev/null; then
+  apt-get autoremove -y >> /tmp/killercoda_setup.log 2>&1
+  apt-get clean >> /tmp/killercoda_setup.log 2>&1
+fi
+
+if command -v dnf &> /dev/null; then
+  dnf autoremove -y >> /tmp/killercoda_setup.log 2>&1
+  dnf clean all >> /tmp/killercoda_setup.log 2>&1
+elif command -v yum &> /dev/null; then
+  yum autoremove -y >> /tmp/killercoda_setup.log 2>&1
+  yum clean all >> /tmp/killercoda_setup.log 2>&1
+fi
+
+find /tmp -type f -atime +2 -delete
+find /var/tmp -type f -atime +2 -delete
+
+find /var/log -type f -name "*.log.*" -delete
+find /var/log -type f -name "*.gz" -delete
 
 while ! killall tail; do sleep 1; done

@@ -13,4 +13,8 @@ helm upgrade -i openeo-geotrellis-sparkoperator spark-operator \
     --values sparkoperator/generated-values.yaml
 ```{{exec}}
 
+```bash
+crictl rmi --prune
+```{{exec}}
+
 This command will install the Spark Operator into the `openeo-geotrellis` namespace.
