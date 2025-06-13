@@ -1,6 +1,7 @@
 {
   "items": [
     { "path": "discovery" },
+    { "path": "access" },
     { "path": "processing" },
     { "path": "basic" },
     { "path": "mlops" }
