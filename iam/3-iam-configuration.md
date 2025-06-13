@@ -30,3 +30,7 @@ cat ~/.eoepca/state
 ```{{exec}}
 
 These variables are used to configure the IAM helm chart for deployment. The values file `generated-values.yaml`{{}} has been created to support the deployment of the helm chart.
+
+```
+ls -l generated-values.yaml
+```{{exec}}

@@ -13,7 +13,7 @@ helm upgrade -i iam eoepca-dev/iam-bb \
   --create-namespace
 ```{{exec}}
 
-### Verifying the Deployment
+### Wait for deployment completion
 
 Check the status of the IAM deployment:
 
@@ -33,8 +33,11 @@ kubectl -n iam rollout status \
   statefulset.apps/iam-postgresql
 ```{{exec}}
 
-Once all pods are running and ready, you can check the Keycloak and OPA services.<br>
-Don't move on until the below command returns a successful response:
+> DO NOT proceed until the above command completes, indicating that the IAM services are deployed.
+
+### Check services
+
+Once all pods are running and ready, you can check the Keycloak service discovery endpoint...
 
 ```bash
 curl -k http://auth.eoepca.local/realms/eoepca/.well-known/openid-configuration | jq

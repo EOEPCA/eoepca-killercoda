@@ -1,8 +1,7 @@
 
 ## Setting Up the Client and User
 
-With Keycloak and OPA running, we need to do some one-off setup in Keycloak:
-* create a realm for EOEPCA
+We can use the Keycloak API to perform some post-deploy steps:
 * add a test user
 * set up an OIDC client for OPA and Identity API
 
@@ -10,102 +9,73 @@ There are utility scripts to help with this.
 
 ### 1. Create an EOEPCA User
 
-The helper script `create-user.sh` uses the Keycloak API to create a new user.<br>
-The script will ask for (hit enter to take the proposed value):
+The helper script `create-user.sh`{{}} uses the Keycloak API to create a new user.
 
-- **Keycloak Admin Username/Password:** Hit enter
-- **Keycloak Base URL:** Hit enter
-- **Realm:** Use `eoepca` (as set up earlier).
-- **New User Username:** `eoepcauser` (or any username you prefer).
-- **New User Password:** `eoepcapassword` (or any password you prefer).
+We will create the `eoepcauser`{{}} test user.
 
 ```bash
-bash ../utils/create-user.sh <<EOF
-n
-n
-n
-n
-eoepcauser
-eoepcapassword
-EOF
+bash ../utils/create-user.sh
 ```{{exec}}
+
+Use the following provided values:<br>
+_Select the provided values to inject them into the terminal prompts_
+
+> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
+
+* `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
+* `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}
+* `KEYCLOAK_HOST`{{}} already set: `n`{{exec}}
+* `REALM`{{}} already set: `n`{{exec}}
+* Username: `eoepcauser`{{exec}}<br>
+  Name of the new user to create
+* Password: `eoepcapassword`{{exec}}<br>
+  Password for the newly created user
 
 ### 2. Create the OPA Client in Keycloak
 
 Next, we need to create an OIDC client in Keycloak for OPA.
 
+Before running the script we will need the client secret that was previously generated:
+
+```bash
+cat ~/.eoepca/state | grep OPA_CLIENT_SECRET
+```{{exec}}
+
+The vakue of this secret will be used below.
+
 Run the script:
 
 ```bash
 bash ../utils/create-client.sh
 ```
 
-- **Keycloak Admin login:** Hit enter
-- **Ingress Host:** Hit enter
-- **Keycloak Base Domain:** Hit enter
-- **Realm:** `eoepca`.
-- **Confidential Client?:** `true` (this will be a confidential client with a secret).
-- **Client ID:** `opa` (use "opa" as the client ID).
-- **Client Name/Description:** For example, `OPA Client` or "Open Policy Agent client".
-- **Client Secret:** The OPA client secret from `~/.eoepca/state` under `OPA_CLIENT_SECRET`. Copy and paste it when asked.
-- **Subdomain:** `opa` (this sets the redirect URI/host as `opa.${INGRESS_HOST}`).
-- **Additional Hosts:** Leave blank.
+Use the following provided values:<br>
+_Select the provided values to inject them into the terminal prompts_
 
-```bash
-source ~/.eoepca/state
-bash ../utils/create-client.sh <<EOF
-n
-n
-n
-n
-n
-true
-opa
-OPA Client
-Open Policy Agent client
-${OPA_CLIENT_SECRET}
-opa
+> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
 
-
-EOF
-```{{exec}}
+* `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
+* `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}
+* `INGRESS_HOST`{{}} already set: `n`{{exec}}
+* `KEYCLOAK_HOST`{{}} already set: `n`{{exec}}
+* `REALM`{{}} already set: `n`{{exec}}
+* Confidential client?: `true`{{exec}}<br>
+  A confidential client is able to maintain its client secret securely (e.g. a backend service)
+* Client ID: `opa`{{exec}}<br>
+  The ID of the OIDC client to be used by the OPA service
+* Client Name: `OPA Client`{{exec}}<br>
+  Display name for the client
+* Client Description: `Open Policy Agent`{{exec}}<br>
+  Description for the client
+* Client Secret: <Paste value from above><br>
+  The secret that, together with the Client ID, provides the client credentials
+* Subdomain: `opa`{{exec}}<br>
+  The main redirect URL for OIDC flows - within the `INGRESS_HOST`{{}} domain
+* Additional Subdomains: <Leave blank><br>
+  Additional redirect URLs for OIDC flows - within the `INGRESS_HOST`{{}} domain
+* Additional Hosts: <Leave blank><br>
+  Additional redirect URLs for OIDC flows - external (outside the `INGRESS_HOST`{{}} domain)
 
 ### 3. Register the Identity API Client in Keycloak
 
-Next, we need to create an OIDC client in Keycloak for the Identity API.
-
-Run the script:
-
-```bash
-bash ../utils/create-client.sh
-```
-
-- **Keycloak Admin login:** Hit enter (it will use the value from the state file).
-- **Ingress Host:** Hit enter (it will use the value from the state file).
-- **Keycloak Base Domain:** Hit enter (it will use the value from the state file).
-- **Realm:** `eoepca`.
-- **Confidential Client?:** `true` 
-- **Client ID:** `identity-api` (use "identity-api" as the client ID).
-- **Client Name/Description:** For example, `Identity API Client` or "Identity API client".
-- **Client Secret:** The Identity API client secret from `~/.eoepca/state` under `IDENTITY_API_CLIENT_SECRET`. Copy and paste it when asked.
-- **Subdomain:** `identity-api` (this sets the redirect URI/host as `identity-api.${INGRESS_HOST}`).
-- **Additional Hosts:** Leave blank.
-
-```bash
-source ~/.eoepca/state
-bash ../utils/create-client.sh <<EOF
-n
-n
-n
-n
-n
-true
-identity-api
-Identity API Client
-Identity API client
-${IDENTITY_API_CLIENT_SECRET}
-identity-api
-
-
-EOF
-```{{exec}}
+> REPEAT the above for the `identity-api`{{}} client
