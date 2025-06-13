@@ -91,6 +91,14 @@ helm upgrade -i apisix apisix/apisix \
   --set ingress-controller.enabled=true \
   >> /tmp/killercoda_setup.log 2>&1
 
+# apisix - wait for all pods
+echo -n "waiting for apisix readiness..." >> /tmp/killercoda_setup.log
+kubectl -n ingress-apisix rollout status \
+  deployment.apps/apisix \
+  deployment.apps/apisix-ingress-controller \
+  statefulset.apps/apisix-etcd \
+  >> /tmp/killercoda_setup.log 2>&1
+echo "-> READY"  >> /tmp/killercoda_setup.log
 
 # REMOVE_ME
 # kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml >> /tmp/killercoda_setup.log 2>&1
