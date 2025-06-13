@@ -14,8 +14,8 @@
         "text": "2-prerequisites.md"
       },
       {
-        "title": "Environment Configuration",
-        "text": "3-environment.md"
+        "title": "IAM Configuration",
+        "text": "3-iam-configuration.md"
       },
       {
         "title": "Applying Secrets",
