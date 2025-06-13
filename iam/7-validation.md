@@ -21,8 +21,8 @@ Call the Keycloak API to obtain an access token.
 ACCESS_TOKEN=$( \
   curl --silent --show-error \
     -X POST \
-    -d "username=${eoepcauser}" \
-    --data-urlencode "password=${eoepcapassword}" \
+    -d "username=eoepcauser" \
+    --data-urlencode "password=eoepcapassword" \
     -d "grant_type=password" \
     -d "client_id=admin-cli" \
     "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
@@ -54,9 +54,9 @@ The following examples use the policy here - https://github.com/EOEPCA/iam-polic
 curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json"
-```{exec}
+```{[exec]}
 
-Expect result `zzz`{{}}
+Expect result `{"result":true}`{{}}
 
 **User 'bob' is a privileged use...**
 
@@ -67,9 +67,9 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{"input": {"identity": {"attributes": { "preferred_username": ["bob"]}}}}'
-```{exec}
+```{{exec}}
 
-Expect result `zzz`{{}}
+Expect result `{"result":true}`{{}}
 
 **User 'larry' is NOT a privileged use...**
 
@@ -78,9 +78,9 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{"input": {"identity": {"attributes": { "preferred_username": ["larry"]}}}}'
-```{exec}
+```{{exec}}
 
-Expect result `zzz`{{}}
+Expect result `{"result":false}`{{}}
 
 **User larry has a verified email**
 
@@ -89,6 +89,6 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/email_verified" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{"input": {"identity": {"attributes": { "preferred_username": ["larry"], "email_verified": ["true"]}}}}'
-```{exec}
+```{{exec}}
 
-Expect result `zzz`{{}}
+Expect result `{"result":true}`{{}}

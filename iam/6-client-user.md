@@ -41,13 +41,13 @@ Before running the script we will need the client secret that was previously gen
 cat ~/.eoepca/state | grep OPA_CLIENT_SECRET
 ```{{exec}}
 
-The vakue of this secret will be used below.
+The value of this secret will be used below.
 
 Run the script:
 
 ```bash
 bash ../utils/create-client.sh
-```
+```{{exec}}
 
 Use the following provided values:<br>
 _Select the provided values to inject them into the terminal prompts_
