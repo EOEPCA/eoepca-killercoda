@@ -11,33 +11,84 @@ Run the script to carry out some basic tests:
 bash validation.sh
 ```{{exec}}
 
-### 2. Check Pods and Services
+### 2. Keycloak Validation
 
-To double-check everything, list the pods and services:
+**Authenticate as user `eoepcauser`{{}}**
 
-```bash
-kubectl get pods -n iam
-kubectl get svc -n iam
-```{{exec}}
-
-All pods (Keycloak, Postgres, OPAL) should show as Running. Keycloak and OPA services should be `ClusterIP` type, as ingress handles external access. Also, check the APISIX services:
+Call the Keycloak API to obtain an access token.
 
 ```bash
-kubectl -n ingress-apisix get svc
+ACCESS_TOKEN=$( \
+  curl --silent --show-error \
+    -X POST \
+    -d "username=${eoepcauser}" \
+    --data-urlencode "password=${eoepcapassword}" \
+    -d "grant_type=password" \
+    -d "client_id=admin-cli" \
+    "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
+)
 ```{{exec}}
 
-If everything looks good, you can try a manual test: get an access token for the test user and call OPA.
+Check the access token, which will be used in the following steps.
 
 ```bash
-source ~/.eoepca/state
-
-# Get a token from Keycloak
-TOKEN=$(curl -k -X POST \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "client_id=opa" -d "client_secret=${OPA_CLIENT_SECRET}" \
-    -d "grant_type=client_credentials" \
-    "https://${KEYCLOAK_HOST}/realms/eoepca/protocol/openid-connect/token" | jq -r .access_token)
-
-# Use the token to query OPA
-curl -k -H "Authorization: Bearer $TOKEN" "https://opa.${INGRESS_HOST}:6443/v1/data"
+echo "${ACCESS_TOKEN}"
 ```{{exec}}
+
+### 3. Open Policy Agent Validation
+
+Check the OPA endpoint with some policy decision requests.
+
+During deployment, OPA was configured with a git repository that provides its policies - https://github.com/EOEPCA/iam-policies.<br>
+Ref.
+
+```bash
+grep policyRepoUrl generated-values.yaml
+```{{exec}}
+
+The following examples use the policy here - https://github.com/EOEPCA/iam-policies/blob/main/policies/example/policies.rego
+
+**Simple 'allow all' policy...**
+
+```bash
+curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -H "Content-Type: application/json"
+```{exec}
+
+Expect result `zzz`{{}}
+
+**User 'bob' is a privileged use...**
+
+Ref. https://github.com/EOEPCA/iam-policies/blob/main/policies/example/data.json
+
+```bash
+curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["bob"]}}}}'
+```{exec}
+
+Expect result `zzz`{{}}
+
+**User 'larry' is NOT a privileged use...**
+
+```bash
+curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["larry"]}}}}'
+```{exec}
+
+Expect result `zzz`{{}}
+
+**User larry has a verified email**
+
+```bash
+curl -X POST "http://opa.eoepca.local/v1/data/example/email_verified" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["larry"], "email_verified": ["true"]}}}}'
+```{exec}
+
+Expect result `zzz`{{}}
