@@ -37,14 +37,14 @@ bash check-prerequisites.sh
 
 This will ask a few questions about the Kubernetes cluster configuration and check if all the necessary prerequirements are installed. 
 
-First, we choose th `http` scheme since we are not using certificates and encryption for our tutorial:
-```
-http
-```{{exec}}
-
-We choose the nginx ingress controller:
+For this tutorial, we will not deploy authentication, thus we choose the nginx ingress controller:
 ```
 nginx
+```{{exec}}
+
+Then, we choose th `http` scheme since we are not using certificates and encryption for our tutorial:
+```
+http
 ```{{exec}}
 
 We enter the top-level domain for our EOEPCA services:
