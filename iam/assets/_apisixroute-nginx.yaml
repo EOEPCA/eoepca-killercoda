@@ -1,0 +1,45 @@
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: nginx
+spec:
+  http:
+    # Open access
+    - name: nginx-open
+      match:
+        hosts:
+          - nginx-open.{{ getenv "INGRESS_HOST" }}
+        paths:
+          - /*
+      backends:
+        - serviceName: nginx
+          servicePort: 80
+    # Protected access
+    - name: nginx
+      match:
+        hosts:
+          - nginx.{{ getenv "INGRESS_HOST" }}
+        paths:
+          - /*
+      backends:
+        - serviceName: nginx
+          servicePort: 80
+      plugins:
+        # Authenticate - expect JWT in `Authorization: Bearer` header
+        - name: openid-connect
+          enable: true
+          config:
+            discovery: "{{ getenv "OIDC_ISSUER_URL" }}/.well-known/openid-configuration"
+            realm: {{ getenv "OPA_CLIENT_SECRET" }}
+            client_id: {{ getenv "OPA_CLIENT_ID" }}
+            client_secret: {{ getenv "OPA_CLIENT_SECRET" }}
+            use_jwks: true
+            bearer_only: true
+            set_access_token_header: true
+            access_token_in_authorization_header: true
+        # Authorization - required for access to API
+        - name: opa
+          enable: true
+          config:
+            host: http://iam-opal-client.iam:8181
+            policy: example/tutorial/protected
