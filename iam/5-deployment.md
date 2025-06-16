@@ -12,7 +12,8 @@ helm upgrade -i iam eoepca-dev/iam-bb \
   --version 2.0.0-rc1 \
   --namespace iam --create-namespace \
   --values generated-values.yaml \
-  --set iam.identityApi.enabled=false
+  --set iam.identityApi.enabled=false \
+  --set identityApi.enabled=false
 ```{{exec}}
 
 ### Wait for deployment completion
