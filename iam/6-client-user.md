@@ -3,7 +3,7 @@
 
 We can use the Keycloak API to perform some post-deploy steps:
 * add a test user
-* set up an OIDC client for OPA and Identity API
+* set up an OIDC client for OPA
 
 There are utility scripts to help with this.
 
@@ -78,4 +78,4 @@ _Select the provided values to inject them into the terminal prompts_
 
 ### 3. Register the Identity API Client in Keycloak
 
-> REPEAT the above for the `identity-api`{{}} client
+> To accelerate the deployment we previously suppressed the deployment of the Identity API. Hence it is not necessary to create the Keycloak client for the Identity API.

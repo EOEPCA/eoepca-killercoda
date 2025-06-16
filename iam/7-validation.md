@@ -7,6 +7,8 @@ Now that everything is deployed and set up, let's check that the IAM system is w
 
 Run the script to carry out some basic tests:
 
+> The checks for the Identity API and associated Client will fail, since we suppressed these deployment steps for brevity.
+
 ```bash
 bash validation.sh
 ```{{exec}}
@@ -18,6 +20,7 @@ bash validation.sh
 Call the Keycloak API to obtain an access token.
 
 ```bash
+source ~/.eoepca/state
 ACCESS_TOKEN=$( \
   curl --silent --show-error \
     -X POST \
@@ -55,7 +58,7 @@ The following examples use the policy here - https://github.com/EOEPCA/iam-polic
 curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json"
-```{[exec]}
+```{{exec}}
 
 Expect result `{"result":true}`{{}}
 
