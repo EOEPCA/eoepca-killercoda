@@ -62,7 +62,7 @@ curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'bob'{{}} is a privileged use...**
+**User 'bob' is a privileged use...**
 
 Ref. https://github.com/EOEPCA/iam-policies/blob/main/policies/example/data.json
 
@@ -75,7 +75,7 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'eric'{{}} is NOT a privileged use...**
+**User 'eric' is NOT a privileged use...**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
@@ -86,7 +86,7 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
 
 Expect result `{"result":false}`{{}}
 
-**User `eric`{{}} has a verified email**
+**User 'eric' has a verified email**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/email_verified" \

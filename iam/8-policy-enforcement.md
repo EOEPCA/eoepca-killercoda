@@ -23,13 +23,13 @@ For convenience we have a template into which we can inject our values:
 
 ```bash
 source ~/.eoepca/state
-gomplate -f apisixroute-nginx.yaml | kubectl apply -f -
+gomplate -f /tmp/assets/apisixroute-nginx.yaml | kubectl apply -f -
 ```{{exec}}
 
 Inspect the route that has been applied:
 
 ```bash
-kubectl describe apisixroute/nginx
+kubectl get -oyaml apisixroute/nginx
 ```{{exec}}
 
 The `ApisixRoute`{{}} route includes two routes:
@@ -60,7 +60,8 @@ First we attempt to access the protected endpoint with a simple unauthenticated 
 curl http://nginx.eoepca.local -v
 ```{{exec}}
 
-This returns a `302` response that triggers an OIDC login flow via Keycloak's `/auth`{{}} endpoint. See the `Location`{{}} response header.
+This returns a `302` response with a `Location`{{}} response header that points to Keycloak's `/auth`{{}} endpoint.<br>
+The policy enforcement has recognised the absence of the access token, and has triggered an OIDC login flow via Keycloak.
 
 ### 5. Check the protection (Allowed)
 
@@ -144,6 +145,5 @@ echo "ACCESS TOKEN: ${ACCESS_TOKEN}"
 curl "http://nginx.eoepca.local" -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```{{exec}}
 
-The typical nginx landing page html is returned - indicating that the request was authorized.
-
 This returns a `403`{{}} response which indicates that the request is forbidden.
+The policy enforcement has recognised the presence of the access token, from which it is able to assert that the referenced user (`eric`{{}}) is not authorized to access the requested resource.
