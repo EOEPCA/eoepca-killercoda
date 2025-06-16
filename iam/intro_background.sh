@@ -99,6 +99,7 @@ kubectl -n ingress-apisix rollout status \
   statefulset.apps/apisix-etcd \
   >> /tmp/killercoda_setup.log 2>&1
 echo "-> READY"  >> /tmp/killercoda_setup.log
+echo "APISIX successfully deployed" >> /tmp/killercoda_setup.log
 
 echo -n "installing k9s......" >> /tmp/killercoda_setup.log
 curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
