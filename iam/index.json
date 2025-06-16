@@ -32,11 +32,15 @@
       {
         "title": "Validation of Deployment",
         "text": "7-validation.md"
+      },
+      {
+        "title": "Policy Enforcement",
+        "text": "8-policy-enforcement.md"
       }
     ],
     "finish": {
       "title": "IAM Setup Complete",
-      "text": "8-finish.md"
+      "text": "9-finish.md"
     },
     "assets": {
       "host01": [

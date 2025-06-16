@@ -24,7 +24,8 @@ ACCESS_TOKEN=$( \
     -d "username=eoepcauser" \
     --data-urlencode "password=eoepcapassword" \
     -d "grant_type=password" \
-    -d "client_id=admin-cli" \
+    -d "client_id=opa" \
+    -d "client_secret=${OPA_CLIENT_SECRET}" \
     "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
 )
 ```{{exec}}
@@ -58,7 +59,7 @@ curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'bob' is a privileged use...**
+**User 'bob'{{}} is a privileged use...**
 
 Ref. https://github.com/EOEPCA/iam-policies/blob/main/policies/example/data.json
 
@@ -71,24 +72,24 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'larry' is NOT a privileged use...**
+**User 'eric'{{}} is NOT a privileged use...**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"input": {"identity": {"attributes": { "preferred_username": ["larry"]}}}}'
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eric"]}}}}'
 ```{{exec}}
 
 Expect result `{"result":false}`{{}}
 
-**User larry has a verified email**
+**User `eric`{{}} has a verified email**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/email_verified" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"input": {"identity": {"attributes": { "preferred_username": ["larry"], "email_verified": ["true"]}}}}'
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eric"], "email_verified": ["true"]}}}}'
 ```{{exec}}
 
 Expect result `{"result":true}`{{}}
