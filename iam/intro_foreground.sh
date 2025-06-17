@@ -1,1 +1,1 @@
-../../eoepca-killercoda/commons/intro_foreground.sh
+../commons/intro_foreground.sh
