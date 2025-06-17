@@ -21,13 +21,13 @@ helm upgrade -i sharinghub sharinghub-0.4.0/deploy/helm/sharinghub/ -n sharinghu
 --create-namespace --values sharinghub/generated-values.yaml
 ```{{exec}}
 
-**Cleanup (as we're on a very resource-tight environment)**:
+**Cleanup** (as we're on a very resource-tight environment):
 
 ```bash
 rm -rf sharinghub-0.4.0
 apt-get clean
 crictl rmi --prune
-```
+```{{exec}}
 
 **Deploy MLflow**:
 
