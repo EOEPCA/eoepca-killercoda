@@ -9,33 +9,46 @@ git clone https://github.com/EOEPCA/deployment-guide.git -b killercoda-jh-change
 cd deployment-guide/scripts/mlops
 ```{{exec}}
 
-### Get your Killercoda temporary URL from the top corner 
-1. Traffic / Ports
-2. Custom Ports
-3. 30080 
-4. Access
-5. Copy the URL excluding the https://
+```bash
+cat <<EOF > gitlab.rb
+puma['worker_processes'] = 1
+puma['per_worker_max_memory_mb'] = 1024
+sidekiq['min_concurrency'] = 1
+sidekiq['max_concurrency'] = 2
+postgresql['shared_buffers'] = "256MB"
+postgresql['max_worker_processes'] = 4
+gitaly['concurrency'] = [
+  { 'rpc' => "/gitaly.SmartHTTPService/PostReceivePack", 'max_per_repo' => 1 },
+  { 'rpc' => "/gitaly.SSHService/SSHUploadPack", 'max_per_repo' => 1 },
+  { 'rpc' => "/gitaly.RepositoryService/ApplyGitattributes", 'max_per_repo' => 1 }
+]
+prometheus_monitoring['enable'] = false
+grafana['enable'] = false
+alertmanager['enable'] = false
+gitlab_exporter['enable'] = false
 
-You should get something like
-```
-XXXXXXXXXXX-XX-XXX-X-XXX-30080.spca.r.killercoda.com
-```
+gitlab_runner['enable'] = false
+registry['enable'] = false
+gitlab_kas['enable'] = false
+codesuggestions['enable'] = false
 
-Now run
+gitlab_rails['env'] = {
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+EOF
+docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:18.0.0-ce.0
+```{{exec}}
 
 ```bash
-export INGRESS_HOST=<YOUR UNIQUE KILLERCODA URL>
+export INGRESS_HOST={{TRAFFIC_HOST1_30080}}
+export GITLAB_URL={{TRAFFIC_HOST1_8080}}
 ```
 
 We will also supply you with the Gitlab and secret for this demonstration.
 
 ```bash
 export PATH_BASED_ROUTING=true
-export GITLAB_URL="https://gitlab.test.eoepca.org"
-export GITLAB_APP_ID="281ed7984b08581e2adec68db96fb207a715c3216ba1f4ca6b0706c483d52269"
-```{{exec}}
-
-```bash
+export GITLAB_APP_ID=""
 export GITLAB_APP_SECRET=""
 ```
 
