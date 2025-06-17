@@ -30,17 +30,21 @@
         "text": "6-client-user.md"
       },
       {
+        "title": "Keycloak Admin UI",
+        "text": "7-keycloak-ui.md"
+      },
+      {
         "title": "Validation of Deployment",
-        "text": "7-validation.md"
+        "text": "8-validation.md"
       },
       {
         "title": "Policy Enforcement",
-        "text": "8-policy-enforcement.md"
+        "text": "9-policy-enforcement.md"
       }
     ],
     "finish": {
       "title": "IAM Setup Complete",
-      "text": "9-finish.md"
+      "text": "10-finish.md"
     },
     "assets": {
       "host01": [
