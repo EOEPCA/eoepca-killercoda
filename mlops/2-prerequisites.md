@@ -26,12 +26,12 @@ cat <<EOF > gitlab.rb
 puma['worker_processes'] = 0
 puma['min_threads'] = 1
 puma['max_threads'] = 1
-puma['per_worker_max_memory_mb'] = 650
+puma['per_worker_max_memory_mb'] = 400
 
-sidekiq['concurrency'] = 5
+sidekiq['concurrency'] = 2
 
 postgresql['shared_buffers'] = "256MB"
-postgresql['max_worker_processes'] = 4
+postgresql['max_worker_processes'] = 2
 postgresql['max_connections'] = 100
 postgresql['effective_cache_size'] = '512MB'
 
@@ -42,10 +42,10 @@ gitaly['configuration'] = {
   concurrency: [
     {
       'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
-      'max_per_repo' => 3,
+      'max_per_repo' => 1,
     }, {
       'rpc' => "/gitaly.SSHService/SSHUploadPack",
-      'max_per_repo' => 3,
+      'max_per_repo' => 1,
     },
   ]
 }
