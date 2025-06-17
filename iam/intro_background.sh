@@ -74,38 +74,43 @@ EOF
 fi
 
 # install apisix
-echo "installing apisix..." >> /tmp/killercoda_setup.log
-helm repo add apisix https://charts.apiseven.com >> /tmp/killercoda_setup.log 2>&1
-helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
+if [[ -e /tmp/assets/apisix ]]; then
+  echo "installing apisix..." >> /tmp/killercoda_setup.log
+  helm repo add apisix https://charts.apiseven.com >> /tmp/killercoda_setup.log 2>&1
+  helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
 
-helm upgrade -i apisix apisix/apisix \
-  --version 2.9.0 \
-  --namespace ingress-apisix --create-namespace \
-  --set securityContext.runAsUser=0 \
-  --set hostNetwork=true \
-  --set service.http.containerPort=80 \
-  --set apisix.ssl.containerPort=443 \
-  --set etcd.replicaCount=1 \
-  --set apisix.enableIPv6=false \
-  --set apisix.enableServerTokens=false \
-  --set ingress-controller.enabled=true \
-  >> /tmp/killercoda_setup.log 2>&1
+  helm upgrade -i apisix apisix/apisix \
+    --version 2.9.0 \
+    --namespace ingress-apisix --create-namespace \
+    --set securityContext.runAsUser=0 \
+    --set hostNetwork=true \
+    --set service.http.containerPort=80 \
+    --set apisix.ssl.containerPort=443 \
+    --set etcd.replicaCount=1 \
+    --set apisix.enableIPv6=false \
+    --set apisix.enableServerTokens=false \
+    --set ingress-controller.enabled=true \
+    >> /tmp/killercoda_setup.log 2>&1
 
-# apisix - wait for all pods
-echo -n "waiting for apisix readiness..." >> /tmp/killercoda_setup.log
-kubectl -n ingress-apisix rollout status \
-  deployment.apps/apisix \
-  deployment.apps/apisix-ingress-controller \
-  statefulset.apps/apisix-etcd \
-  >> /tmp/killercoda_setup.log 2>&1
-echo "-> READY"  >> /tmp/killercoda_setup.log
-echo "APISIX successfully deployed" >> /tmp/killercoda_setup.log
+  # apisix - wait for all pods
+  echo -n "waiting for apisix readiness..." >> /tmp/killercoda_setup.log
+  kubectl -n ingress-apisix rollout status \
+    deployment.apps/apisix \
+    deployment.apps/apisix-ingress-controller \
+    statefulset.apps/apisix-etcd \
+    >> /tmp/killercoda_setup.log 2>&1
+  echo "-> READY"  >> /tmp/killercoda_setup.log
+  echo "APISIX successfully deployed" >> /tmp/killercoda_setup.log
+fi
 
-echo -n "installing k9s......" >> /tmp/killercoda_setup.log
-curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
-apt install -y ./k9s_linux_amd64.deb
-rm -f ./k9s_linux_amd64.deb
-echo "-> DONE" >> /tmp/killercoda_setup.log
+# k9s - useful for debugging
+if [[ -e /tmp/assets/k9s ]]; then
+  echo -n "installing k9s......" >> /tmp/killercoda_setup.log
+  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
+  apt install -y ./k9s_linux_amd64.deb
+  rm -f ./k9s_linux_amd64.deb
+  echo "-> DONE" >> /tmp/killercoda_setup.log
+fi
 
-#Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
+# Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
