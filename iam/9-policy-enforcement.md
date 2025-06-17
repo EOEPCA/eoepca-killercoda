@@ -46,54 +46,26 @@ The protected `nginx`{{}} route uses 2 plugins:
 
 First we can use the open endpoint to check the service is running.
 
-```bash
-curl http://nginx-open.eoepca.local
-```{{exec}}
+Open [the 'open' endpoint]({{TRAFFIC_HOST1_92}}) in your browser.
 
-The typical nginx landing page html is returned.
+The typical nginx `Welcome`{{}} page html is returned.
 
 ### 4. Check the protection (Unauthorized)
 
-First we attempt to access the protected endpoint with a simple unauthenticated request (i.e. no access token).
+We attempt to access the protected endpoint with a simple unauthenticated request (i.e. no access token).
 
-```bash
-curl http://nginx.eoepca.local -v
-```{{exec}}
+Open [the 'protected' endpoint]({{TRAFFIC_HOST1_93}}) in your browser.
 
-This returns a `302` response with a `Location`{{}} response header that points to Keycloak's `/auth`{{}} endpoint.<br>
+The browser should be redirected to Keycloak for login.<br>
 The policy enforcement has recognised the absence of the access token, and has triggered an OIDC login flow via Keycloak.
 
 ### 5. Check the protection (Allowed)
 
 For allowed access we need to authenticate as a user that is identified as `privileged`{{}} in accordance with the policy - such as our `eoepcauser`{{}} test user.
 
-**Authenticate to obtain an access token**
+At the Keycloak login prompt, enter the credentials for the `eoepcauser` - password `eoepcapassword`.
 
-> For convenience we are reusing the existing `opa`{{}} Keycloak client. Ordinarily a dedicated Keycloak client would be created to represent the endpoints of each specific application
-
-```bash
-source ~/.eoepca/state
-# Authenticate as test user `eoepcauser`
-ACCESS_TOKEN=$( \
-  curl --silent --show-error \
-    -X POST \
-    -d "username=eoepcauser" \
-    --data-urlencode "password=eoepcapassword" \
-    -d "grant_type=password" \
-    -d "client_id=opa" \
-    -d "client_secret=${OPA_CLIENT_SECRET}" \
-    "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
-)
-echo "ACCESS TOKEN: ${ACCESS_TOKEN}"
-```{{exec}}
-
-**Use the access token for the protected service**
-
-```bash
-curl "http://nginx.eoepca.local" -H "Authorization: Bearer ${ACCESS_TOKEN}"
-```{{exec}}
-
-The typical nginx landing page html is returned - indicating that the request was authorized.
+Following successful login, the browser should be redirected back to the [protected service endpoint]({{TRAFFIC_HOST1_93}}) - showing the nginx `Welcome`{{}} page.
 
 ### 6. Check the protection (Forbidden)
 
@@ -121,29 +93,18 @@ _Select the provided values to inject them into the terminal prompts_
 * Password: `eoepcapassword`{{exec}}<br>
   Password for the newly created user
 
-**Obtain access token for (unprivileged) user `eric`{{}}**
+**Ensure we are logged out from `eoepcauser`**
 
-```bash
-source ~/.eoepca/state
-# Authenticate as test user `eric`
-ACCESS_TOKEN=$( \
-  curl --silent --show-error \
-    -X POST \
-    -d "username=eric" \
-    --data-urlencode "password=eoepcapassword" \
-    -d "grant_type=password" \
-    -d "client_id=opa" \
-    -d "client_secret=${OPA_CLIENT_SECRET}" \
-    "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
-)
-echo "ACCESS TOKEN: ${ACCESS_TOKEN}"
-```{{exec}}
+Navigate to the [Keycloak user dashboard]({{TRAFFIC_HOST1_90}}/realms/eoepca/account) and select to logout.
 
-**Use the access token for the protected service**
+**Attempt access for an unprivileged user**
 
-```bash
-curl "http://nginx.eoepca.local" -H "Authorization: Bearer ${ACCESS_TOKEN}"
-```{{exec}}
+Repeat the access attempt to [the 'protected' endpoint]({{TRAFFIC_HOST1_93}}) in your browser.
 
-This returns a `403`{{}} response which indicates that the request is forbidden.
+As before, the browser should be redirected to Keycloak for login.
+
+At the Keycloak login prompt, enter the credentials for the `eric` - password `eoepcapassword`.
+
+Following successful login, the browser should be redirected back to the [protected service endpoint]({{TRAFFIC_HOST1_93}}) - but access should be **Forbidden**.
+
 The policy enforcement has recognised the presence of the access token, from which it is able to assert that the referenced user (`eric`{{}}) is not authorized to access the requested resource.
