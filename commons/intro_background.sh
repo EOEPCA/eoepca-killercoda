@@ -67,6 +67,12 @@ http {
   access_log /dev/null;
   gzip on;
 EOF
+  #All the proxy redirects must be placed into all the proxied sites, otherwise cross-site
+  #redirections like the ones done by OPA will not work...
+  echo -n "" > /tmp/assets/killercodaproxy_redirects
+  while read port dest types; do
+    echo "         proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
+  done < /tmp/assets/killercodaproxy
   while read port dest types; do
 cat <<EOF>>/etc/nginx/nginx.conf
     server {
@@ -77,9 +83,9 @@ cat <<EOF>>/etc/nginx/nginx.conf
          proxy_pass  http://$dest;
          proxy_set_header   Host             $dest:80;
          proxy_set_header Accept-Encoding "";
-         proxy_redirect http://$dest `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
 EOF
-  [[ "$types" != "NONE" || "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
+    cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
+    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
          subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
          subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
          subs_filter_types ${types//\'/};
