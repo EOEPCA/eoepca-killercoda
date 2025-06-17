@@ -24,11 +24,11 @@ Wait for all IAM pods to be `Running`, which may take ~5 minutes to complete:
 
 ```bash
 kubectl -n iam rollout status \
-  deployment.apps/iam-opal-client \
-  deployment.apps/iam-opal-pgsql \
   deployment.apps/iam-opal-server \
-  statefulset.apps/iam-keycloak \
+  deployment.apps/iam-opal-pgsql \
   statefulset.apps/iam-postgresql \
+  deployment.apps/iam-opal-client \
+  statefulset.apps/iam-keycloak \
   deployment.apps/identity-api
 ```{{exec}}
 
