@@ -3,6 +3,7 @@
     { "path": "discovery" },
     { "path": "access" },
     { "path": "processing" },
+    { "path": "iam" },
     { "path": "basic" },
     { "path": "mlops" }
   ]

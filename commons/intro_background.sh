@@ -25,6 +25,24 @@ if [[ -e /tmp/assets/nginxingress ]]; then
     --namespace ingress-nginx --create-namespace \
     --set controller.hostNetwork=true
 fi
+if [[ -e /tmp/assets/apisix ]]; then
+  # Install apisix
+  echo "installing apisix ingress..." >> /tmp/killercoda_setup.log
+  helm repo add apisix https://charts.apiseven.com
+  helm repo update apisix
+
+  helm upgrade -i apisix apisix/apisix \
+    --version 2.9.0 \
+    --namespace ingress-apisix --create-namespace \
+    --set securityContext.runAsUser=0 \
+    --set hostNetwork=true \
+    --set service.http.containerPort=80 \
+    --set apisix.ssl.containerPort=443 \
+    --set etcd.replicaCount=1 \
+    --set apisix.enableIPv6=false \
+    --set apisix.enableServerTokens=false \
+    --set ingress-controller.enabled=true \
+fi
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
   #to work with killercoda proxy

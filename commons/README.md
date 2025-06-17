@@ -44,6 +44,7 @@ The available assets you can select are described in the following table. Please
 | `minio.7z` | minio s3 storage service installed locally (NOTE: no buckets are created. To create a bucket use `miniobuckets` below) |
 | `miniobuckets` | minio buckets. Requires minio.7z to be enabled. Contains a space-separated list of buckets to be created |
 | `nginxingress` | nginx ingress installed in the K8S cluster |
+| `apisix` | apisix ingress installed in the K8S cluster |
 | `readwritemany` | local storage class supporting ReadWriteMany K8S persistent volumes provisioning |
 | `htcondor` | HPC batch system (HTCondor) |
 | `killercodaproxy` | Install a local proxy and cofigure it to proxy the internal ingress on an external host name with domain substitution. To configure it, set in the file a port , a destination and a content type. For example, with `81 resource-catalogue.eoepca.local 'application/json text/html'` it will allow you to access the `resource-catalogue.eoepca.local` service via `{{TRAFFIC_HOST1_81}}` and replace in all the `application/json` and `text/html` pages the `resource-catalogue.eoepca.local` address with `{{TRAFFIC_HOST1_81}}` |
