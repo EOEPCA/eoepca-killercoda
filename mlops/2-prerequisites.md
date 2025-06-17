@@ -4,7 +4,7 @@
 Initial cleanups:
 
 ```bash
-apt remove firefox
+apt remove firefox -y
 crictl rmi --prune
 ```{{exec}}
 
@@ -19,38 +19,52 @@ cd deployment-guide/scripts/mlops
 
 ```bash
 cat <<EOF > gitlab.rb
-puma['worker_processes'] = 0
-puma['per_worker_max_memory_mb'] = 1024
-sidekiq['min_concurrency'] = 1
-sidekiq['max_concurrency'] = 2
+puma['worker_processes'] = 2
+puma['min_threads'] = 1
+puma['max_threads'] = 1
+puma['per_worker_max_memory_mb'] = 650
+
+sidekiq['concurrency'] = 5
+
 postgresql['shared_buffers'] = "256MB"
 postgresql['max_worker_processes'] = 4
+postgresql['max_connections'] = 100
+postgresql['effective_cache_size'] = '512MB'
+
 gitaly['configuration'] = {
-    concurrency: [
-      {
-        'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
-        'max_per_repo' => 3,
-      }, {
-        'rpc' => "/gitaly.SSHService/SSHUploadPack",
-        'max_per_repo' => 3,
-      },
-    ]
+  git: {
+    catfile_cache_size: 10
+  },
+  concurrency: [
+    {
+      'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
+      'max_per_repo' => 3,
+    }, {
+      'rpc' => "/gitaly.SSHService/SSHUploadPack",
+      'max_per_repo' => 3,
+    },
+  ]
 }
-gitaly['env'] = {
-  'GITALY_COMMAND_SPAWN_MAX_PARALLEL' => '2'
-}
+
 prometheus_monitoring['enable'] = false
 alertmanager['enable'] = false
+node_exporter['enable'] = false
+redis_exporter['enable'] = false
+postgres_exporter['enable'] = false
 gitlab_exporter['enable'] = false
-
 registry['enable'] = false
 gitlab_kas['enable'] = false
+gitlab_pages['enable'] = false
+spamcheck['enable'] = false
 
 gitlab_rails['env'] = {
   'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
 }
-
 gitaly['env'] = {
+  'GITALY_COMMAND_SPAWN_MAX_PARALLEL' => '2',
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+gitlab_workhorse['env'] = {
   'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
 }
 EOF
@@ -62,12 +76,8 @@ export INGRESS_HOST={{TRAFFIC_HOST1_30080}}
 export GITLAB_URL={{TRAFFIC_HOST1_8080}}
 ```
 
-We will also supply you with the Gitlab and secret for this demonstration.
-
 ```bash
 export PATH_BASED_ROUTING=true
-export GITLAB_APP_ID=""
-export GITLAB_APP_SECRET=""
 ```
 
 Run the prerequisites check:
