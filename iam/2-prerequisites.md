@@ -24,7 +24,7 @@ For this tutorial we define some values that are consistent with the local tutor
 _Select the provided values to inject them into the terminal prompts_
 
 * HTTP scheme: `http`{{exec}}<br>
-  The protocol to use for ingress traffic - see also `Cert-manager enabled`{{}}
+  We use HTTP to avoid generating trusted certificates for this tutorial
 * Ingress class: `apisix`{{exec}}<br>
   The name of the ingress controller that handles incoming requests.<br>
   For this tutorial we use the APISIX Ingress Controller, which has already been provisioned within this environment.
@@ -32,9 +32,9 @@ _Select the provided values to inject them into the terminal prompts_
   The base part of the hostnames through which the deployed services are accessed.
 * Storage class: `local-path`{{exec}}<br>
   The name of the storage class for the dynamic provisioning of volumes for persistence.<br>
-  The tutorial environment provides a simple `local-path`{{}} provisioner.
+  The IAM component does not need specific storage classes, so we will use the basic local-path provisioner included in this environment.
 * Cert-manager enabled: `no`{{exec}}<br>
-  Indicates whether `Cert Manager`{{}} should be used for provisioning of TLS certificates for service ingress.<br>
+  Indicates whether *Cert Manager* should be used for provisioning of TLS certificates for service ingress.<br>
   For simplicity, the tutorial uses only http.
 
 ### EOEPCA State File

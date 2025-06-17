@@ -1,9 +1,8 @@
 {
-  "title": "IAM Building Block Deployment",
-  "description": "Deploy EOEPCA IAM Building Block with Keycloak, OPA and APISIX",
+  "title": "EOEPCA IAM BB",
+  "description": "Deploy EOEPCA Identity and Access Management (IAM) Building Block with Keycloak, OPA and APISIX",
   "details": {
     "intro": {
-      "title": "Intro to IAM",
       "text": "1-introduction.md",
       "foreground": "intro_foreground.sh",
       "background": "intro_background.sh"

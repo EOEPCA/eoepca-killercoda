@@ -25,6 +25,24 @@ if [[ -e /tmp/assets/nginxingress ]]; then
     --namespace ingress-nginx --create-namespace \
     --set controller.hostNetwork=true
 fi
+if [[ -e /tmp/assets/apisix ]]; then
+  # Install apisix
+  echo "installing apisix ingress..." >> /tmp/killercoda_setup.log
+  helm repo add apisix https://charts.apiseven.com
+  helm repo update apisix
+
+  helm upgrade -i apisix apisix/apisix \
+    --version 2.9.0 \
+    --namespace ingress-apisix --create-namespace \
+    --set securityContext.runAsUser=0 \
+    --set hostNetwork=true \
+    --set service.http.containerPort=80 \
+    --set apisix.ssl.containerPort=443 \
+    --set etcd.replicaCount=1 \
+    --set apisix.enableIPv6=false \
+    --set apisix.enableServerTokens=false \
+    --set ingress-controller.enabled=true
+fi
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
   #to work with killercoda proxy
@@ -49,6 +67,12 @@ http {
   access_log /dev/null;
   gzip on;
 EOF
+  #All the proxy redirects must be placed into all the proxied sites, otherwise cross-site
+  #redirections like the ones done by OPA will not work...
+  echo -n "" > /tmp/assets/killercodaproxy_redirects
+  while read port dest types; do
+    echo "         proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
+  done < /tmp/assets/killercodaproxy
   while read port dest types; do
 cat <<EOF>>/etc/nginx/nginx.conf
     server {
@@ -59,9 +83,14 @@ cat <<EOF>>/etc/nginx/nginx.conf
          proxy_pass  http://$dest;
          proxy_set_header   Host             $dest:80;
          proxy_set_header Accept-Encoding "";
+EOF
+    cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
+    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
          subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
          subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
          subs_filter_types ${types//\'/};
+EOF
+cat <<EOF>>/etc/nginx/nginx.conf
         }
     }
 EOF
@@ -100,25 +129,10 @@ if [[ -e /tmp/assets/readwritemany ]]; then
   echo 'export STORAGE_CLASS="standard"'>>~/.eoepca/state
 fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
-  ### Avoid applyiing resource limits
+  ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo -n "setting resource limits..."  >> /tmp/killercoda_setup.log
+  echo setting resource limits...  >> /tmp/killercoda_setup.log
   kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
-  kubectl scale --replicas=1 deploy/gatekeeper-controller-manager -n gatekeeper-system
-  echo -n "-> waiting for webhook readiness..."  >> /tmp/killercoda_setup.log
-  # wait for pods
-  kubectl rollout status deploy/gatekeeper-controller-manager -n gatekeeper-system
-  kubectl rollout status deploy/gatekeeper-audit -n gatekeeper-system
-  # wait for service readiness
-  POD_NAME=$(kubectl -n gatekeeper-system get pods -l gatekeeper.sh/operation=webhook -o jsonpath='{.items[0].metadata.name}')
-  kubectl -n gatekeeper-system port-forward pod/$POD_NAME 9090:9090 &
-  PF_PID=$!
-  until curl -f localhost:9090/readyz >/dev/null 2>&1; do
-    echo "Waiting for Gatekeeper webhook to be ready..."
-    sleep 1
-  done
-  kill $PF_PID
-  echo "-> READY"  >> /tmp/killercoda_setup.log
   cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
 kind: Assign
@@ -182,43 +196,6 @@ n[0]="/usr/bin/docker"
 if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
 os.execv(n[0],n)' > /usr/local/bin/docker
   chmod +x /usr/local/bin/docker
-fi
-# install apisix
-if [[ -e /tmp/assets/apisix ]]; then
-  echo "installing apisix..." >> /tmp/killercoda_setup.log
-  helm repo add apisix https://charts.apiseven.com >> /tmp/killercoda_setup.log 2>&1
-  helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
-
-  helm upgrade -i apisix apisix/apisix \
-    --version 2.9.0 \
-    --namespace ingress-apisix --create-namespace \
-    --set securityContext.runAsUser=0 \
-    --set hostNetwork=true \
-    --set service.http.containerPort=80 \
-    --set apisix.ssl.containerPort=443 \
-    --set etcd.replicaCount=1 \
-    --set apisix.enableIPv6=false \
-    --set apisix.enableServerTokens=false \
-    --set ingress-controller.enabled=true \
-    >> /tmp/killercoda_setup.log 2>&1
-
-  # apisix - wait for all pods
-  echo -n "waiting for apisix readiness..." >> /tmp/killercoda_setup.log
-  kubectl -n ingress-apisix rollout status \
-    deployment.apps/apisix \
-    deployment.apps/apisix-ingress-controller \
-    statefulset.apps/apisix-etcd \
-    >> /tmp/killercoda_setup.log 2>&1
-  echo "-> READY"  >> /tmp/killercoda_setup.log
-  echo "APISIX successfully deployed" >> /tmp/killercoda_setup.log
-fi
-# k9s - useful for debugging
-if [[ -e /tmp/assets/k9s ]]; then
-  echo -n "installing k9s......" >> /tmp/killercoda_setup.log
-  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
-  apt install -y ./k9s_linux_amd64.deb
-  rm -f ./k9s_linux_amd64.deb
-  echo "-> DONE" >> /tmp/killercoda_setup.log
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
