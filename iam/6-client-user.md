@@ -71,9 +71,9 @@ _Select the provided values to inject them into the terminal prompts_
   The secret that, together with the Client ID, provides the client credentials
 * Subdomain: `opa`{{exec}}<br>
   The main redirect URL for OIDC flows - within the `INGRESS_HOST`{{}} domain
-* Additional Subdomains: <Leave blank><br>
+* Additional Subdomains: <Leave blank>``{{exec}}<br>
   Additional redirect URLs for OIDC flows - within the `INGRESS_HOST`{{}} domain
-* Additional Hosts: <Leave blank><br>
+* Additional Hosts: <Leave blank>``{{exec}}<br>
   Additional redirect URLs for OIDC flows - external (outside the `INGRESS_HOST`{{}} domain)
 
 ### 3. Register the Identity API Client in Keycloak

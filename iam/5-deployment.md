@@ -1,6 +1,3 @@
-
-## Deploying IAM Components
-
 Now that you have configured the IAM environment and applied the necessary secrets, it's time to deploy the IAM components using Helm charts. This will set up Keycloak for identity management and OPA with OPAL for policy enforcement.
 
 ```bash
@@ -12,9 +9,7 @@ helm upgrade -i iam eoepca-dev/iam-bb \
   --values generated-values.yaml
 ```{{exec}}
 
-### Wait for deployment completion
-
-Check the status of the IAM deployment:
+Now you can check the status of the IAM deployment:
 
 ```bash
 kubectl get pods -n iam
@@ -33,8 +28,6 @@ kubectl -n iam rollout status \
 ```{{exec}}
 
 > DO NOT proceed until the above command completes, indicating that the IAM services are deployed.
-
-### Check services
 
 Once all pods are running and ready, you can check the Keycloak service discovery endpoint...
 

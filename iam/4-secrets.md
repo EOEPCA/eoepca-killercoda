@@ -1,6 +1,3 @@
-
-## Applying Secrets
-
 With the IAM configuration ready, the next step is to create the Kubernetes secrets for the credentials and other sensitive values. The `apply-secrets.sh`{{}} script uses information from `~/.eoepca/state`{{}} (set up in the previous step) to create the required resources in your cluster.
 
 To apply the secrets, run:
@@ -17,4 +14,13 @@ After running the script, you can check that the secrets were created with:
 kubectl -n iam get secrets
 ```{{exec}}
 
-You should see secrets such as `iam-keycloak-admin-credentials`{{}}, `iam-keycloak-db-password`{{}}, and `iam-opa-client-secret`{{}} (the names might be slightly different or combined). These hold the credentials that were generated.
+You should see secrets such as the following:
+
+```
+NAME                  TYPE     DATA   AGE
+kc-postgres           Opaque   2      2s
+keycloak-admin        Opaque   1      2s
+opa-keycloak-client   Opaque   2      2s
+```
+
+These hold the credentials that were generated.

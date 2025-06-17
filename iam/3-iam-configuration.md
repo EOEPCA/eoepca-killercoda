@@ -1,6 +1,3 @@
-
-## IAM Configuration
-
 In addition to the core platform configuration, there is additonal information required to fully tailor the deployment of the IAM building block to a target platform environment. The following command runs a script that prompts for the information required to tailor the IAM.
 
 ```bash
