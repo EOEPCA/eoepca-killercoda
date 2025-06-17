@@ -41,7 +41,7 @@ if [[ -e /tmp/assets/apisix ]]; then
     --set etcd.replicaCount=1 \
     --set apisix.enableIPv6=false \
     --set apisix.enableServerTokens=false \
-    --set ingress-controller.enabled=true \
+    --set ingress-controller.enabled=true
 fi
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
