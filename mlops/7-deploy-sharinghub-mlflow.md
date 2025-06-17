@@ -1,6 +1,12 @@
 
 ## Deploying SharingHub & MLflow
 
+**Temporarily turn off GitLab docker container**:
+
+```bash
+docker stop $(docker ps -qf "name=gitlab")
+```{{exec}}
+
 **Update Helm Repositories**:
 
 ```bash
@@ -37,3 +43,13 @@ rm -rf mlflow-sharinghub-0.2.0
 ```bash
 kubectl apply -f mlflow/generated-ingress.yaml
 ```{{exec}}
+
+**Turn GitLab back on**:
+
+```bash
+docker start $(docker ps -qaf "name=gitlab")
+```{{exec}}
+
+Now you must wait for GitLab to start up. This can take a few minutes. 
+
+You should be able [to visit GitLab]({{TRAFFIC_HOST1_8080}}) and [SharingHub]({{TRAFFIC_HOST1_30080}}) before proceeding to the next step.

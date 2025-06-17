@@ -5,6 +5,10 @@ Initial cleanups:
 
 ```bash
 apt remove firefox -y
+apt autoremove -y
+rm -rf /var/lib/apt/lists/*
+rm -rf /var/cache/apt/archives/*
+rm -rf /var/cache/apt/archives/partial/*
 crictl rmi --prune
 ```{{exec}}
 
@@ -19,7 +23,7 @@ cd deployment-guide/scripts/mlops
 
 ```bash
 cat <<EOF > gitlab.rb
-puma['worker_processes'] = 2
+puma['worker_processes'] = 0
 puma['min_threads'] = 1
 puma['max_threads'] = 1
 puma['per_worker_max_memory_mb'] = 650
@@ -72,13 +76,10 @@ docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb g
 ```{{exec}}
 
 ```bash
-export INGRESS_HOST={{TRAFFIC_HOST1_30080}}
+export INGRESS_HOST=$(echo "{{TRAFFIC_HOST1_30080}}" | sed -E 's~^https?://~~;s~/.*~~')
 export GITLAB_URL={{TRAFFIC_HOST1_8080}}
-```
-
-```bash
 export PATH_BASED_ROUTING=true
-```
+```{{exec}}
 
 Run the prerequisites check:
 
