@@ -23,7 +23,7 @@ cd deployment-guide/scripts/mlops
 
 ```bash
 cat <<EOF > gitlab.rb
-puma['worker_processes'] = 0
+puma['worker_processes'] = 1
 puma['min_threads'] = 1
 puma['max_threads'] = 1
 puma['per_worker_max_memory_mb'] = 400

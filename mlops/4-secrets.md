@@ -10,7 +10,7 @@ docker exec -it $(docker ps -qf "name=gitlab") cat /etc/gitlab/initial_root_pass
 
 1. Navigate to [GitLab]({{TRAFFIC_HOST1_8080}})
 2. Log in with the root user and the password you retrieved.
-3. Then go to [Add new application](https://{{TRAFFIC_HOST1_8080}}/admin/applications/new) in the admin area.
+3. Then go to [Add new application]({{TRAFFIC_HOST1_8080}}/admin/applications/new) in the admin area.
 4. Fill in the form:
    - **Name**: SharingHub
    - **Redirect URI**: 
@@ -23,12 +23,8 @@ docker exec -it $(docker ps -qf "name=gitlab") cat /etc/gitlab/initial_root_pass
 Then run this to apply application credentials to the state:
 
 ```bash
-kubectl create namespace sharinghub
-bash utils/save-application-credentials-to-state.sh <<EOF
-n
-n
-EOF
 bash apply-secrets.sh
+bash utils/save-application-credentials-to-state.sh
 ```{{exec}}
 
 Verify secrets were created:

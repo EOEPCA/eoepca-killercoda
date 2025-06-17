@@ -21,13 +21,16 @@ helm upgrade -i sharinghub sharinghub-0.4.0/deploy/helm/sharinghub/ -n sharinghu
 --create-namespace --values sharinghub/generated-values.yaml
 ```{{exec}}
 
-**Deploy MLflow**:
+**Cleanup (as we're on a very resource-tight environment)**:
 
 ```bash
 rm -rf sharinghub-0.4.0
 apt-get clean
 crictl rmi --prune
 ```
+
+**Deploy MLflow**:
+
 
 ```bash
 helm dependency build mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/
@@ -52,4 +55,8 @@ docker start $(docker ps -qaf "name=gitlab")
 
 Now you must wait for GitLab to start up. This can take a few minutes. 
 
-You should be able [to visit GitLab]({{TRAFFIC_HOST1_8080}}) and [SharingHub]({{TRAFFIC_HOST1_30080}}) before proceeding to the next step.
+Confirm that you can:
+- [Visit GitLab]({{TRAFFIC_HOST1_8080}});
+- And [SharingHub]({{TRAFFIC_HOST1_30080}}) 
+
+before proceeding to the next step.
