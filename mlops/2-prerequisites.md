@@ -1,6 +1,14 @@
 
 ## Prerequisites and Initial Configuration
 
+Initial cleanups:
+
+```bash
+apt remove firefox
+crictl rmi --prune
+```{{exec}}
+
+
 Clone deployment scripts:
 
 ```bash
@@ -11,28 +19,38 @@ cd deployment-guide/scripts/mlops
 
 ```bash
 cat <<EOF > gitlab.rb
-puma['worker_processes'] = 1
+puma['worker_processes'] = 0
 puma['per_worker_max_memory_mb'] = 1024
 sidekiq['min_concurrency'] = 1
 sidekiq['max_concurrency'] = 2
 postgresql['shared_buffers'] = "256MB"
 postgresql['max_worker_processes'] = 4
-gitaly['concurrency'] = [
-  { 'rpc' => "/gitaly.SmartHTTPService/PostReceivePack", 'max_per_repo' => 1 },
-  { 'rpc' => "/gitaly.SSHService/SSHUploadPack", 'max_per_repo' => 1 },
-  { 'rpc' => "/gitaly.RepositoryService/ApplyGitattributes", 'max_per_repo' => 1 }
-]
+gitaly['configuration'] = {
+    concurrency: [
+      {
+        'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
+        'max_per_repo' => 3,
+      }, {
+        'rpc' => "/gitaly.SSHService/SSHUploadPack",
+        'max_per_repo' => 3,
+      },
+    ]
+}
+gitaly['env'] = {
+  'GITALY_COMMAND_SPAWN_MAX_PARALLEL' => '2'
+}
 prometheus_monitoring['enable'] = false
-grafana['enable'] = false
 alertmanager['enable'] = false
 gitlab_exporter['enable'] = false
 
-gitlab_runner['enable'] = false
 registry['enable'] = false
 gitlab_kas['enable'] = false
-codesuggestions['enable'] = false
 
 gitlab_rails['env'] = {
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+
+gitaly['env'] = {
   'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
 }
 EOF
