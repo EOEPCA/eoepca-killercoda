@@ -7,8 +7,6 @@ Now that everything is deployed and set up, let's check that the IAM system is w
 
 Run the script to carry out some basic tests:
 
-> The checks for the Identity API and associated Client will fail, since we suppressed these deployment steps for brevity.
-
 ```bash
 bash validation.sh
 ```{{exec}}

@@ -3,17 +3,13 @@
 
 Now that you have configured the IAM environment and applied the necessary secrets, it's time to deploy the IAM components using Helm charts. This will set up Keycloak for identity management and OPA with OPAL for policy enforcement.
 
-> To accelerate the deployment we suppress the deployment of the Identity API that is not required in this tutorial.
-
 ```bash
 helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
 helm repo update eoepca-dev
 helm upgrade -i iam eoepca-dev/iam-bb \
   --version 2.0.0-rc1 \
   --namespace iam --create-namespace \
-  --values generated-values.yaml \
-  --set iam.identityApi.enabled=false \
-  --set identityApi.enabled=false
+  --values generated-values.yaml
 ```{{exec}}
 
 ### Wait for deployment completion
@@ -32,7 +28,8 @@ kubectl -n iam rollout status \
   deployment.apps/iam-opal-pgsql \
   deployment.apps/iam-opal-server \
   statefulset.apps/iam-keycloak \
-  statefulset.apps/iam-postgresql
+  statefulset.apps/iam-postgresql \
+  deployment.apps/identity-api
 ```{{exec}}
 
 > DO NOT proceed until the above command completes, indicating that the IAM services are deployed.

@@ -24,7 +24,7 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   echo -n "setting resource limits..."  >> /tmp/killercoda_setup.log
   kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
   kubectl scale --replicas=1 deploy/gatekeeper-controller-manager -n gatekeeper-system
-  echo -n "-> waiting for gatekeeper readiness..."  >> /tmp/killercoda_setup.log
+  echo -n "-> waiting for webhook readiness..."  >> /tmp/killercoda_setup.log
   # wait for pods
   kubectl rollout status deploy/gatekeeper-controller-manager -n gatekeeper-system
   kubectl rollout status deploy/gatekeeper-audit -n gatekeeper-system

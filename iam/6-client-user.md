@@ -78,4 +78,45 @@ _Select the provided values to inject them into the terminal prompts_
 
 ### 3. Register the Identity API Client in Keycloak
 
-> To accelerate the deployment we previously suppressed the deployment of the Identity API. Hence it is not necessary to create the Keycloak client for the Identity API.
+Similarly, we need to create an OIDC client in Keycloak for the Identity API.
+
+Before running the script we will need the client secret that was previously generated:
+
+```bash
+cat ~/.eoepca/state | grep IDENTITY_API_CLIENT_SECRET
+```{{exec}}
+
+The value of this secret will be used below.
+
+Run the script:
+
+```bash
+bash ../utils/create-client.sh
+```{{exec}}
+
+Use the following provided values:<br>
+_Select the provided values to inject them into the terminal prompts_
+
+> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
+
+* `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
+* `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}
+* `INGRESS_HOST`{{}} already set: `n`{{exec}}
+* `KEYCLOAK_HOST`{{}} already set: `n`{{exec}}
+* `REALM`{{}} already set: `n`{{exec}}
+* Confidential client?: `true`{{exec}}<br>
+  A confidential client is able to maintain its client secret securely (e.g. a backend service)
+* Client ID: `identity-api`{{exec}}<br>
+  The ID of the OIDC client to be used by the Identity API service
+* Client Name: `Identity API`{{exec}}<br>
+  Display name for the client
+* Client Description: `Identity API`{{exec}}<br>
+  Description for the client
+* Client Secret: <Paste value from above><br>
+  The secret that, together with the Client ID, provides the client credentials
+* Subdomain: `identity-api`{{exec}}<br>
+  The main redirect URL for OIDC flows - within the `INGRESS_HOST`{{}} domain
+* Additional Subdomains: <Leave blank><br>
+  Additional redirect URLs for OIDC flows - within the `INGRESS_HOST`{{}} domain
+* Additional Hosts: <Leave blank><br>
+  Additional redirect URLs for OIDC flows - external (outside the `INGRESS_HOST`{{}} domain)
