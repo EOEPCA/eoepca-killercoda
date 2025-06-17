@@ -4,7 +4,7 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  WEBSITES="minio.eoepca.local zoo.eoepca.local toil-wes.hpc.local"
+  WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
@@ -25,6 +25,51 @@ if [[ -e /tmp/assets/nginxingress ]]; then
     --namespace ingress-nginx --create-namespace \
     --set controller.hostNetwork=true
 fi
+if [[ -e /tmp/assets/killercodaproxy ]]; then
+  #Use an NGinx proxy to force the Host and replace the links to allow most applciations
+  #to work with killercoda proxy
+  echo configuring proxy for killercoda external access... >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  #Install nginx with substitution mode
+  apt-get install -y nginx libnginx-mod-http-subs-filter
+  #write nginx configuration
+  cat <<EOF >/etc/nginx/nginx.conf
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+  worker_connections 768;
+  # multi_accept on;
+}
+
+http {
+  access_log /dev/null;
+  gzip on;
+EOF
+  while read port dest types; do
+cat <<EOF>>/etc/nginx/nginx.conf
+    server {
+
+        listen       $port;
+
+        location / {
+         proxy_pass  http://$dest;
+         proxy_set_header   Host             $dest:80;
+         proxy_set_header Accept-Encoding "";
+         subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
+         subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
+         subs_filter_types ${types//\'/};
+        }
+    }
+EOF
+  done < /tmp/assets/killercodaproxy
+echo "}" >> /etc/nginx/nginx.conf
+  #restart nginx
+  service nginx restart
+fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
   echo installing object storage...  >> /tmp/killercoda_setup.log
@@ -36,11 +81,17 @@ if [[ -e /tmp/assets/minio.7z ]]; then
   mkdir -p ~/minio && MINIO_ROOT_USER=eoepca MINIO_ROOT_PASSWORD=eoepcatest nohup minio server --quiet ~/minio &>/dev/null &
   sleep 1
   while ! mc config host add minio-local http://minio.eoepca.local:9000/ eoepca eoepcatest; do sleep 1; done
-  mc mb minio-local/eoepca
   mkdir -p ~/.eoepca && echo 'export S3_ENDPOINT="http://minio.eoepca.local:9000/"
 export S3_ACCESS_KEY="eoepca"
 export S3_SECRET_KEY="eoepcatest"
 export S3_REGION="us-east-1"' >> ~/.eoepca/state
+fi
+if [[ -e /tmp/assets/miniobuckets ]]; then
+  BUCKETS="`tr -d '\n' < /tmp/assets/miniobuckets`"
+  echo "creating object storage buckets: $BUCKETS..."  >> /tmp/killercoda_setup.log
+  for bkt in $BUCKETS; do
+    mc mb minio-local/$bkt
+  done
 fi
 if [[ -e /tmp/assets/readwritemany ]]; then
   ### Prerequisites: readwritemany StorageClass
@@ -49,10 +100,25 @@ if [[ -e /tmp/assets/readwritemany ]]; then
   echo 'export STORAGE_CLASS="standard"'>>~/.eoepca/state
 fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
-  ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
+  ### Avoid applyiing resource limits
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo setting resource limits...  >> /tmp/killercoda_setup.log
+  echo -n "setting resource limits..."  >> /tmp/killercoda_setup.log
   kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+  kubectl scale --replicas=1 deploy/gatekeeper-controller-manager -n gatekeeper-system
+  echo -n "-> waiting for webhook readiness..."  >> /tmp/killercoda_setup.log
+  # wait for pods
+  kubectl rollout status deploy/gatekeeper-controller-manager -n gatekeeper-system
+  kubectl rollout status deploy/gatekeeper-audit -n gatekeeper-system
+  # wait for service readiness
+  POD_NAME=$(kubectl -n gatekeeper-system get pods -l gatekeeper.sh/operation=webhook -o jsonpath='{.items[0].metadata.name}')
+  kubectl -n gatekeeper-system port-forward pod/$POD_NAME 9090:9090 &
+  PF_PID=$!
+  until curl -f localhost:9090/readyz >/dev/null 2>&1; do
+    echo "Waiting for Gatekeeper webhook to be ready..."
+    sleep 1
+  done
+  kill $PF_PID
+  echo "-> READY"  >> /tmp/killercoda_setup.log
   cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
 kind: Assign
@@ -116,6 +182,43 @@ n[0]="/usr/bin/docker"
 if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
 os.execv(n[0],n)' > /usr/local/bin/docker
   chmod +x /usr/local/bin/docker
+fi
+# install apisix
+if [[ -e /tmp/assets/apisix ]]; then
+  echo "installing apisix..." >> /tmp/killercoda_setup.log
+  helm repo add apisix https://charts.apiseven.com >> /tmp/killercoda_setup.log 2>&1
+  helm repo update apisix >> /tmp/killercoda_setup.log 2>&1
+
+  helm upgrade -i apisix apisix/apisix \
+    --version 2.9.0 \
+    --namespace ingress-apisix --create-namespace \
+    --set securityContext.runAsUser=0 \
+    --set hostNetwork=true \
+    --set service.http.containerPort=80 \
+    --set apisix.ssl.containerPort=443 \
+    --set etcd.replicaCount=1 \
+    --set apisix.enableIPv6=false \
+    --set apisix.enableServerTokens=false \
+    --set ingress-controller.enabled=true \
+    >> /tmp/killercoda_setup.log 2>&1
+
+  # apisix - wait for all pods
+  echo -n "waiting for apisix readiness..." >> /tmp/killercoda_setup.log
+  kubectl -n ingress-apisix rollout status \
+    deployment.apps/apisix \
+    deployment.apps/apisix-ingress-controller \
+    statefulset.apps/apisix-etcd \
+    >> /tmp/killercoda_setup.log 2>&1
+  echo "-> READY"  >> /tmp/killercoda_setup.log
+  echo "APISIX successfully deployed" >> /tmp/killercoda_setup.log
+fi
+# k9s - useful for debugging
+if [[ -e /tmp/assets/k9s ]]; then
+  echo -n "installing k9s......" >> /tmp/killercoda_setup.log
+  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.6/k9s_linux_amd64.deb
+  apt install -y ./k9s_linux_amd64.deb
+  rm -f ./k9s_linux_amd64.deb
+  echo "-> DONE" >> /tmp/killercoda_setup.log
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
