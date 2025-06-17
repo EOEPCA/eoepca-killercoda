@@ -25,8 +25,18 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
   kubectl scale --replicas=1 deploy/gatekeeper-controller-manager -n gatekeeper-system
   echo -n "-> waiting for gatekeeper readiness..."  >> /tmp/killercoda_setup.log
+  # wait for pods
   kubectl rollout status deploy/gatekeeper-controller-manager -n gatekeeper-system
   kubectl rollout status deploy/gatekeeper-audit -n gatekeeper-system
+  # wait for service readiness
+  POD_NAME=$(kubectl -n gatekeeper-system get pods -l gatekeeper.sh/operation=webhook -o jsonpath='{.items[0].metadata.name}')
+  kubectl -n gatekeeper-system port-forward pod/$POD_NAME 9090:9090 &
+  PF_PID=$!
+  until curl -f localhost:9090/readyz >/dev/null 2>&1; do
+    echo "Waiting for Gatekeeper webhook to be ready..."
+    sleep 1
+  done
+  kill $PF_PID
   echo "-> READY"  >> /tmp/killercoda_setup.log
   cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
