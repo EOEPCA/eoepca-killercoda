@@ -9,6 +9,6 @@ In addtion, the IAM request authorization approach relies upon APISIX which acts
 
 The focus of this tutorial is the deployment of Keycloak and OPA as an integrated IAM solution - with demonstrations of access protection and policy enforcement.
 
-The deployment of the APISIX Ingress Controller has already been triggered as a prerequisite dependency if this tutorial.
+The deployment of the APISIX Ingress Controller has already been triggered as a prerequisite dependency of this tutorial.
 
 Please wait until the APISIX deployment has completed, as indicated by the terminal messages.
