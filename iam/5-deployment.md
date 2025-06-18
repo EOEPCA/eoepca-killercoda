@@ -27,9 +27,11 @@ kubectl -n iam rollout status \
   deployment.apps/identity-api
 ```{{exec}}
 
-> DO NOT proceed until the above command completes, indicating that the IAM services are deployed.
+> DO NOT proceed until the above command completes, indicating that the IAM pods are now running.
 
 Once all pods are running and ready, you can check the Keycloak service discovery endpoint...
+
+> There may still be a short delay until the IAM services are ready and responding to requests.
 
 ```bash
 curl -k http://auth.eoepca.local/realms/eoepca/.well-known/openid-configuration | jq
