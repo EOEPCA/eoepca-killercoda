@@ -1,6 +1,6 @@
 Welcome to the **[EOEPCA Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/)** building block tutorial!
 
-The Resource Discovery serivce plays a key role in enabling users and services to search, discover, and access data assets using standard web APIs.
+The Resource Discovery service plays a key role in enabling users and services to search, discover, and access data assets using standard web APIs.
 
 In this scenario, you will learn how to deploy and interact with the EOEPCA Resource Discovery — a core component responsible for exposing Earth Observation datasets and services through metadata that complies with the [STAC (SpatioTemporal Asset Catalog)](https://stacspec.org/en) standard.
 
@@ -31,4 +31,8 @@ This tutorial simulates the deployment of the data catalogue, the registration o
 Note that the registration shown here is a very simple single product registration. For automatic registration of common EO datasets and to perform all data management operations (e.g. keep the datasets in sync), the [EOEPCA Resource Registration Building Block](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/) is provided.
 
 ---
+
+### Assumptions
+
+Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...). If you want to know more about them, you can follow the [EOEPCA Pre-requisites](../prerequisites) before continuing with this tutorial.
 

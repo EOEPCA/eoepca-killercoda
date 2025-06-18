@@ -1,4 +1,4 @@
-We can now deploy the Resouce Discovery building block. 
+We can now deploy the Resource Discovery building block. 
 
 First must add the software helm repository.
 
@@ -24,15 +24,15 @@ And we create the ingress for our newly created Resource Discovery service to ma
 kubectl apply -f generated-ingress.yaml
 ```{{exec}}
 
-Now we wait for the Resource Discovery pods to start. This may take some time, expecially in this demo environment. To automatically wait till all service to are ready you and the catalogue responds correctly you can run:
+Now we wait for the Resource Discovery pods to start. This may take some time, especially in this demo environment. To automatically wait till all service to are ready you and the catalogue responds correctly you can run:
 
 ```
 while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
 ```{{exec}}
 
-Once deployed, the Resouce Discovery STAC API should be accessible at `http://resouce-catalogue.eoepca.local`
+Once deployed, the Resource Discovery STAC API should be accessible at `http://resouce-catalogue.eoepca.local`{{}}
 
-We can validate it with the provided script `validation.sh`
+We can validate it with the provided script `validation.sh`{{}}
 
 ```
 bash validation.sh
