@@ -1,4 +1,4 @@
-we are configuration the Calrissian Kubernetes processing engine, so we need to select it
+we are configuring the Calrissian Kubernetes processing engine, so we need to select it
 
 ```
 calrissian

@@ -8,7 +8,7 @@ For more information about EOEPCA and the EOEPCA Processing Building Block, and 
  - [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/)
  - [General EOEPCA Documentation](https://eoepca.readthedocs.io/)
  - [OGC Process API](https://ogcapi.ogc.org/processes/)
- - [OGC Best Practices for Earth Observation Application Pakcage](https://docs.ogc.org/bp/20-089r1.html)
+ - [OGC Best Practices for Earth Observation Application Package](https://docs.ogc.org/bp/20-089r1.html)
  - [Zoo Project Documentation](https://zoo-project.org/resources/userguide/)
  - [Calrissian Documentation](https://duke-gcb.github.io/calrissian/)
 

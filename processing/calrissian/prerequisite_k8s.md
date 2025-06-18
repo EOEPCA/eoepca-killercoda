@@ -8,7 +8,7 @@ To check the Kubernetes cluster is properly installed, run
 kubectl get -n ingress-nginx pods
 ```{{exec}}
 
-, which should return an `ingress-nginx-controller`{{}} pod, and try to access the storage and data processing endpoints with
+which should return an `ingress-nginx-controller`{{}} pod, and try to access the storage and data processing endpoints with
 
 ```
 curl -s -S http://zoo.eoepca.local
