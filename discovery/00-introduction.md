@@ -34,5 +34,5 @@ Note that the registration shown here is a very simple single product registrati
 
 ### Assumptions
 
-Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...). If you want to know more about them, you can follow the [EOEPCA Pre-requisites](../prerequisites) before continuing with this tutorial.
+Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the [EOEPCA Pre-requisites](../prerequisites) tutorial.
 

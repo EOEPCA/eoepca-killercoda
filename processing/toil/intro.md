@@ -8,4 +8,4 @@ For the OGC Process API interface, different "execution engines" are available, 
 
 This tutorial will focus on deploying an [OGC Process API](https://ogcapi.ogc.org/processes/) interface, via the [Zoo software](https://zoo-project.org/), submitting data processing jobs to a Toil Workflow Execution Service HPC cluster via [Toil](https://toil.readthedocs.io/en/master/running/server/wes.html) cookiecutter Zoo template.
 
-Note that this tutorial assumes a generic knowledge of EOEPCA and its pre-requisites. If you did not already, it is then strongly suggested to follow the [EOEPCA introduction tutorials](../intro) before continuing with this tutorial.
+Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the [EOEPCA Pre-requisites](../../prerequisites) tutorial.

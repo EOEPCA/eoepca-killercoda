@@ -1,5 +1,6 @@
 {
   "items": [
+    { "path": "prerequisites" },
     { "path": "discovery" },
     { "path": "access" },
     { "path": "processing" },
