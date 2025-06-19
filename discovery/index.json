@@ -1,57 +1,42 @@
 {
-  "title": "EOEPCA Prerequisites",
-  "description": "Deploy and configure the base components on Kubernetes cluster necessary for deploying EOEPCA Building Blocks.",
+  "title": "EOEPCA Resource Discovery BB",
+  "description": "Catalogue, search and discover EO data using STAC API.",
   "details": {
     "intro": {
-      "background": "intro_background.sh",
-      "foreground": "intro_foreground.sh",
       "text": "00-introduction.md",
-      "title": "Intro"
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
     },
     "steps": [
       {
-        "text": "01-prerequisites.md",
-        "title": "Prerequisites"
+        "title": "Check Prerequisites",
+        "text": "01-prerequisites.md"
       },
       {
-        "text": "01b-checks.md",
-        "title": "Deployment Guide and Prerequisites Check"
+        "title": "Configure Resource Discovery",
+        "text": "02-configure.md"
       },
       {
-        "text": "02-kubernetes.md",
-        "title": "Kubernetes and Wildcard DNS"
+        "title": "Deploy Resource Catalogue", 
+        "text": "03-deploy.md"
       },
-      {
-        "text": "03-storage.md",
-        "title": "Storage"
-      },
-      {
-        "text": "04-ingress.md",
-        "title": "Ingress and Load Balancer"
-      },
-      {
-        "text": "05-cert-manager.md",
-        "title": "Cert-Manager"
-      },
-      {
-        "text": "06-prerequisites-2.md",
-        "title": "Prerequisites 2"
-      },
-      {
-        "text": "07-minio.md",
-        "title": "S3 Object Storage"
-      },
-      {
-        "text": "08-harbor.md",
-        "title": "Container Registry"
+      { 
+        "title": "Add STAC Collections and Items", 
+        "text": "04-add-stac.md" 
       }
     ],
     "finish": {
-      "text": "99-finish.md",
-      "title": "Finish"
+     "title": "Finish",
+     "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
     }
   },
   "backend": {
-    "imageid": "kubernetes-kubeadm-1node"
+    "imageid": "kubernetes-kubeadm-1node-4GB"
   }
 }

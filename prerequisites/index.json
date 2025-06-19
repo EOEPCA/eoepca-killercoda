@@ -3,56 +3,55 @@
   "description": "Deploy and configure the base components on Kubernetes cluster necessary for deploying EOEPCA Building Blocks.",
   "details": {
     "intro": {
-      "title": "Intro",
-      "text": "00-introduction.md",
+      "background": "intro_background.sh",
       "foreground": "intro_foreground.sh",
-      "background": "intro_background.sh"
+      "text": "00-introduction.md",
+      "title": "Intro"
     },
-		"steps": [
+    "steps": [
       {
-        "title": "Prerequisites",
-        "text": "01-prerequisites.md"
+        "text": "01-prerequisites.md",
+        "title": "Prerequisites"
       },
       {
-        "title": "Deployment Guide and Prerequisites Check",
-        "text": "01b-checks.md"
+        "text": "01b-checks.md",
+        "title": "Deployment Guide and Prerequisites Check"
       },
       {
-        "title": "Kubernetes and Wildcard DNS",
-        "text": "02-kubernetes.md"
+        "text": "02-kubernetes.md",
+        "title": "Kubernetes and Wildcard DNS"
       },
       {
-        "title": "Storage",
-        "text": "03-storage.md"
+        "text": "03-storage.md",
+        "title": "Storage"
       },
       {
-        "title": "Ingress and Load Balancer",
-        "text": "04-ingress.md"
+        "text": "04-ingress.md",
+        "title": "Ingress and Load Balancer"
       },
       {
-        "title": "Cert-Manager",
-        "text": "05-cert-manager.md"
+        "text": "05-cert-manager.md",
+        "title": "Cert-Manager"
       },
       {
-        "title": "Prerequisites 2",
-        "text": "06-prerequisites-2.md"
+        "text": "06-prerequisites-2.md",
+        "title": "Prerequisites 2"
       },
       {
-        "title": "S3 Object Storage",
-        "text": "07-minio.md"
+        "text": "07-minio.md",
+        "title": "S3 Object Storage"
       },
       {
-        "title": "Container Registry",
-        "text": "08-harbor.md"
+        "text": "08-harbor.md",
+        "title": "Container Registry"
       }
-      ],
-	"finish": {
-		"title": "Finish",
-		"text": "99-finish.md"
-	}
+    ],
+    "finish": {
+      "text": "99-finish.md",
+      "title": "Finish"
     }
   },
   "backend": {
-    "imageid": "kubernetes-kubeadm-1node-2GB"
+    "imageid": "kubernetes-kubeadm-1node"
   }
 }
