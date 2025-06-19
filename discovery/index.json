@@ -33,8 +33,8 @@
     "assets": {
       "host01": [
         {"file": "*", "target": "/tmp/assets"},
-        {"file": "gomplate.7z", "target": "/tmp/assets/gomplate.7z"},
-        {"file": "nginxingress", "target": "/tmp/assets/nginxingress"}
+        {"file": "../commons/assets/gomplate.7z", "target": "/tmp/assets/gomplate.7z"},
+        {"file": "../commons/assets/nginxingress", "target": "/tmp/assets/nginxingress"}
       ]
     }
   },
