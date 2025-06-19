@@ -6,6 +6,7 @@
     { "path": "processing" },
     { "path": "iam" },
     { "path": "basic" },
+    { "path": "lps" },
     { "path": "mlops" }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "title": "EOEPCA LPS Tutorial",
+  "description": "A quick overview of EOEPCA for LPS 2025",
+  "items": [
+    { "path": "../resource/discovery" },
+    { "path": "../processing/toil" },
+    { "path": "../iam" }
+  ]
+}
