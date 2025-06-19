@@ -1,9 +1,0 @@
-{
-  "title": "Course: EOEPCA LPS",
-  "description": "A quick overview of EOEPCA for LPS 2025",
-  "items": [
-    { "path": "L1-discovery" },
-    { "path": "L2-processing-toil", "title": "EOEPCA Processing BB (for HPC)" },
-    { "path": "L3-iam" }
-  ]
-}
