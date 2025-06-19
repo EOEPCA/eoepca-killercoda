@@ -2,7 +2,7 @@
   "title": "EOEPCA Deployment Basics",
   "description": "Deploy the fundamental EOEPCA Building Blocks in a sample scenario, to form a basic data exploitation platform",
   "items": [
-    { "path": "../intro/concepts", "title": "Lesson 1: EOEPCA Concepts and pre-requisites" },
+    { "path": "../prerequisites", "title": "Lesson 1: EOEPCA Pre-requisites" },
     { "path": "../resource/discovery", "title": "Lesson 2: Data discovery" },
     { "path": "../processing/calrissian", "title": "Lesson 3: Data processing" }
   ]
