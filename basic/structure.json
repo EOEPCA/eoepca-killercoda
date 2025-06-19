@@ -1,0 +1,10 @@
+{
+  "title": "Course: EOEPCA Basics",
+  "description": "Deploy the fundamental EOEPCA Building Blocks in a sample scenario, to form a basic data exploitation platform",
+  "items": [
+    { "path": "../prerequisites", "title": "Lesson 1: EOEPCA Pre-requisites" },
+    { "path": "../discovery/", "title": "Lesson 2: Data discovery" },
+    { "path": "../processing/calrissian", "title": "Lesson 3: Data processing (with Calrissian)" },
+    { "path": "../iam", "title": "Lesson 4: Securing the services via IAM" }
+  ]
+}
