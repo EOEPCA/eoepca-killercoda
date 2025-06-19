@@ -1,9 +1,9 @@
 Most of the EOEPCA deployment explained in the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) is assisted by the Deployment Guide scripts available on te [EOEPCA Deployment Guide Github](https://github.com/EOEPCA/deployment-guide/).
 
-Thus, we can download and uncompress the **eoepca-2.0-rc1** version of the EOEPCA Deployment Guide, to which this tutorial refers. This contains the deployment scripts we will use for our EOEPCA deployment
+Thus, we can download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers. This contains the deployment scripts we will use for our EOEPCA deployment
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 In the Deployment Guide scripts there is a special script for checking if the Kubernetes and infrastructure prerequisites are met. Let's run it now:
@@ -27,13 +27,13 @@ bash check-prerequisites.sh
 ```{{exec}}
 
 And we are faced with some questions about the configuration we are going to use - this will be explained in details in the next steps:
-- APISIX ingress controller
-  ```
-  apisix
-  ```{{exec}}
 - HTTP scheme for the EOEPCA services
   ```
   http
+  ```{{exec}}
+- APISIX ingress controller
+  ```
+  apisix
   ```{{exec}}
 - Base domain
   ```
