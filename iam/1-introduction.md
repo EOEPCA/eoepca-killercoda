@@ -8,5 +8,5 @@ In addtion, the IAM request authorization approach relies upon [APISIX](https://
 
 The focus of this tutorial is the deployment of Keycloak and OPA as an integrated IAM solution - with demonstrations of access protection and policy enforcement.
 
-The deployment of the APISIX Ingress Controller has been already performed in the setup of this tutorial. If you want more information about installing APISIX, you can take a look at the [EOEPCA introduction tutorials](../intro) before continuing with this tutorial.
+Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). In particular, it relieas on the APISIX Ingress Controller, which is a pre-requisite for enabling authorization on the EOPEPCA Building Blocks. If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the <a href="../../scenario/prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
 
