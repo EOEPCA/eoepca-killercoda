@@ -1,4 +1,6 @@
 {
+  "title": "EOEPCA Scenarios",
+  "description": "A collection of scenarios to demonstrate the EOEPCA Building Blocks",
   "items": [
     { "path": "prerequisites", "title": "Lesson 0: Prerequisites" },
     { "path": "discovery", "title": "Lesson 1: Data discovery" },
