@@ -2,26 +2,25 @@
 
 Before deploying the IAM components, ensure your environment is ready. This scenario provides a Kubernetes cluster (v1.28+) with **kubectl** access, **Helm 3**, and an **APISIX** ingress controller already provisioned.
 
-### Clone Deployment Scripts
+### Download Deployment Scripts
 
-First, clone the EOEPCA Deployment Guide repository to get the helper scripts and navigate to the IAM scripts directory:
+First, we download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
-```bash
-git clone https://github.com/EOEPCA/deployment-guide.git
-cd deployment-guide/scripts/iam
+```
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
-and checkout the current release
+and navigate to the deployment scripts
 
-```bash
-git checkout eoepca-2.0-rc1
+```
+cd deployment-guide/scripts/iam
 ```{{exec}}
 
 ### Check IAM Prerequisites
 
 Before deploying the IAM components, you need to ensure your environment is properly configured. The following command runs a script that checks for all necessary prerequisites. The script prompts for information that reflects the intended configuration of your deployment.
 
-```bash
+```
 bash check-prerequisites.sh
 ```{{exec}}
 
@@ -44,7 +43,7 @@ _Select the provided values to inject them into the terminal prompts_
 
 ### EOEPCA State File
 
-The outcome of the script is a set of environment variables that are maintained in the file `~/.eoepca/state`{{}}. The Deployment Guide scripts rely upon these variables to configure the deployment of the provisioned services.
+The outcome of the script is a set of environment variables that are maintained in the file `~/.eoepca/state`{{}} . The Deployment Guide scripts rely upon these variables to configure the deployment of the provisioned services.
 
 See how the contents of the EOEPCA state file reflect your inputs:
 
