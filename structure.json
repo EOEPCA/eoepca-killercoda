@@ -1,7 +1,7 @@
 {
   "items": [
     { "path": "prerequisites" },
-    { "path": "resource/discovery" },
+    { "path": "discovery" },
     { "path": "processing" },
     { "path": "iam" },
     { "path": "basic" },
