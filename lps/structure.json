@@ -1,9 +1,10 @@
 {
   "title": "EOEPCA LPS Tutorial",
-  "description": "A quick overview of EOEPCA for LPS 2025",
+  "description": "Deploy the fundamental EOEPCA Building Blocks in a sample scenario, to form a basic data exploitation platform",
   "items": [
-    { "path": "../resource/discovery" },
-    { "path": "../processing/toil" },
-    { "path": "../iam" }
+    { "path": "../prerequisites", "title": "Lesson 1: EOEPCA pre-requisites" },
+    { "path": "../resource/discovery", "title": "Lesson 2: Data discovery" },
+    { "path": "../processing/calrissian", "title": "Lesson 3: Data processing (with Calrissian)" },
+    { "path": "../iam", "title": "Lesson 4: Securing the services via IAM" }
   ]
 }
