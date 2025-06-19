@@ -3,8 +3,6 @@
   "description": "Data processing with different engines",
   "items": [
     { "path": "calrissian", "title": "Lesson 1: Data processing (with Calrissian)" },
-    { "path": "toil", "title": "Lesson 2: Data processing (with Toil)" },
-    { "path": "argo", "title": "Lesson 3: Data processing (with Argo)" },
-    { "path": "openeo", "title": "Lesson 4: Data processing (with openEO)" }
+    { "path": "toil", "title": "Lesson 2: Data processing (with Toil)" }
   ]
 }
