@@ -6,16 +6,16 @@ bash configure-oapip.sh
 
 The script will start with the general EOEPCA configuration.
 
+For the demo deployment we are not generating certificates, so we will restrict ourself to the http scheme
+
+```
+http
+```{{exec}}
+
 As said in the previous chapter, we will use the nginx ingress in this demo deployment
 
 ```
 nginx
-```{{exec}}
-
-for the demo deployment we are not generating certificates, so we will restrict ourself to the http scheme
-
-```
-http
 ```{{exec}}
 
 as a domain, we use eoepca.local, which is mapped to the local machine in this demo

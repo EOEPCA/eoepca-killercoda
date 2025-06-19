@@ -1,4 +1,4 @@
-Now the application is running. We can see, after few seconds, that a new Toil WES request has been performed and is in processing:
+Now the application is running. We can see, after a few seconds, that a new Toil WES request has been performed and is in processing:
 
 ```
 tail -n 10 ~ubuntu/celery.log

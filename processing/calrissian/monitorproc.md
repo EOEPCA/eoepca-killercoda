@@ -1,4 +1,4 @@
-Now the application is running. We can see, after few seconds, that a new namespace starting with `convert-url`{{}} is created,
+Now the application is running. We can see, after a few seconds, that a new namespace starting with `convert-url`{{}} is created,
 
 ```
 kubectl get namespaces
