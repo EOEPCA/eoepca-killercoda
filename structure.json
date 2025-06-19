@@ -2,11 +2,9 @@
   "items": [
     { "path": "prerequisites" },
     { "path": "discovery" },
-    { "path": "access" },
     { "path": "processing" },
     { "path": "iam" },
     { "path": "basic" },
-    { "path": "lps" },
-    { "path": "mlops" }
+    { "path": "lps" }
   ]
 }
