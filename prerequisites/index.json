@@ -3,8 +3,6 @@
   "description": "Deploy and configure the base components on Kubernetes cluster necessary for deploying EOEPCA Building Blocks.",
   "details": {
     "intro": {
-      "background": "intro_background.sh",
-      "foreground": "intro_foreground.sh",
       "text": "00-introduction.md",
       "title": "Intro"
     },
