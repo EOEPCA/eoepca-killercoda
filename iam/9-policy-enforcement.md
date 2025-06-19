@@ -50,7 +50,7 @@ spec:
         - serviceName: nginx
           servicePort: 80
       plugins:
-        # Authenticate - expect JWT in `Authorization: Bearer` header
+        # Authenticate - expect JWT in 'Authorization: Bearer' header
         - name: openid-connect
           enable: true
           config:
