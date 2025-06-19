@@ -2,8 +2,8 @@
   "title": "Course: EOEPCA LPS",
   "description": "Deploy the fundamental EOEPCA Building Blocks in a sample scenario, to form a basic data exploitation platform",
   "items": [
-    { "path": "../discovery" },
-    { "path": "../processing/toil" },
-    { "path": "../iam" }
+    { "path": "../discovery",  "title": "Lesson 1: Data discovery" },
+    { "path": "../processing/toil", "title": "Lesson 2: Data processing (with Toil)" },
+    { "path": "../iam" , "title": "Lesson 3: Securing the services via IAM" }
   ]
 }
