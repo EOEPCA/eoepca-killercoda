@@ -27,9 +27,9 @@ bash check-prerequisites.sh
 ```{{exec}}
 
 And we are faced with some questions about the configuration we are going to use - this will be explained in details in the next steps:
-- Nginx ingress controller
+- APISIX ingress controller
   ```
-  nginx
+  apisix
   ```{{exec}}
 - HTTP scheme for the EOEPCA services
   ```

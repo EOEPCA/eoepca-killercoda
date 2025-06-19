@@ -38,12 +38,20 @@ Now we can delete the pod:
 kubectl delete pod root-check
 ```{{exec}}
 
-Next, considering the Wildcard DNS, we have not way to set this up in our sandbox environment, but we can use the /etc/hosts and the internal Kubernetes CoreDNS service to bind some DNS names to our cluster. For example, with the code below, we can map the `test.eoepca.local` domain to the sandbox Kubernetes cluster IP `172.30.1.2`. Note that the need for CoreDNS setup below is to make this address accessible also from the internal Kubernetes cluster network
+Next, considering the Wildcard DNS, we have not way to set this up in our sandbox environment, but we can use the /etc/hosts and the internal Kubernetes CoreDNS service to bind some DNS names to our cluster. For example, with the code below, we can map the `test.eoepca.local`{{}} domain to the sandbox Kubernetes cluster IP `172.30.1.2`{{}}. Note that the need for CoreDNS setup below is to make this address accessible also from the internal Kubernetes cluster network
 
 ```
-WEBSITES="test.eoepca.local"
+WEBSITES="test.eoepca.local minio.eoepca.local console-minio.eoepca.local harbor.eoepca.local"
 echo "172.30.1.2 $WEBSITES" >> /etc/hosts
 kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
 sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
 kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
 ```{{exec}}
+
+We can check this works by trying to access this address.
+
+```
+curl -v http://test.eoepca.local
+```{{exec}}
+
+as you can see, we cannot connect to the server, as we did not deploy any Ingress controller for our Kubernetes cluster (we will do in the next step), but the `test.eoepca.local`{{}} address is resolved correctly

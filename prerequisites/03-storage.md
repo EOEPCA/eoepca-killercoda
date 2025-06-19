@@ -10,7 +10,7 @@ To see the storage classes deployed in our sandbox environment we can run
 
 ```
 kubectl get storageclass
-```
+```{{exec}}
 
 As you can see, by default the `local-path`{{}} storage class is available. This is a local provisioner which supports only [ReadWriteOnly](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) access mode.
 

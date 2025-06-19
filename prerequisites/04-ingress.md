@@ -61,8 +61,9 @@ spec:
 EOF
 ```{{exec}}
 
-Now we can check if our ingress works. We can do it by simply attempting to connect one of the services we have configured in DNS:
+Now we can check if our ingress works. We need first to wait some time for the ingress to be cnfigured properly, then we can attempt to connect one of the services we have configured in DNS:
 ```
+sleep 5
 curl -s -S http://test.eoepca.local
 ```{{exec}}
 

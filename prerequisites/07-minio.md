@@ -14,7 +14,7 @@ First, we check the prerequisites. At this point all of them should be met:
 bash check-prerequisites.sh
 ```{{exec}}
 
-Now we configure MinIO, answering `no` to all questions since these values are already set correctly:
+Now we configure MinIO, answering `no`{{}} to all questions since these values are already set correctly:
 ```
 bash configure-minio.sh
 no
@@ -37,14 +37,14 @@ helm upgrade -i minio minio/minio \
   --create-namespace
 ```{{exec}}
 
-We wait until the all pods in the `ingress-nginx` namespace are ready:
+We wait until the all pods in the `minio`{{}} namespace are ready:
 ```
 kubectl --namespace minio wait pod --all --timeout=10m --for=condition=Ready
 ```{{exec}}
 
 ---
 
-We must now create an Access Key for the user. Since we are working in a command line environment and cannot access MinIO Console with the browser, we will create the Access Key manually with the `mc` client that has been preinstalled.
+We must now create an Access Key for the user. Since we are working in a command line environment and cannot access MinIO Console with the browser, we will create the Access Key manually with the `mc`{{}} client that has been preinstalled.
 
 First, we set the values of Access Key and Secret Key using the provided script:
 ```
@@ -53,15 +53,15 @@ eoepca
 eoepcatest
 ```{{exec}}
 
-Now we create our access key in MinIO. To do so we need first to install the MinIO client via:
+Now we create our access key in MinIO. To do so we need first to install the MinIO client:
 
 ```
-wget -q https://dl.min.io/client/mc/release/linux-amd64/mc -O  /usr/local/bin/mc && chmod +x /usr/local/bin/mc
+wget https://dl.min.io/client/mc/release/linux-amd64/mc -O  /usr/local/bin/mc && chmod +x /usr/local/bin/mc
 ```{{exec}}
 
-The variables `MINIO_USER` and `MINIO_PASSWORD` have been set by the script `configure-minio.sh` and the variables `S3_ACCESS_KEY`, `S3_SECRET_KEY` have been set by the script `apply-secrets.sh` in the file `~/.eoepca/state`.
+The variables `MINIO_USER`{{}} and `MINIO_PASSWORD`{{}} have been set by the script `configure-minio.sh`{{}} and the variables `S3_ACCESS_KEY`{{}}, `S3_SECRET_KEY`{{}} have been set by the script `apply-secrets.sh`{{}} in the file `~/.eoepca/state`{{}}.
 
-Set an alias in `mc` for our MinIO endpoint:
+Set an alias in `mc`{{}} for our MinIO endpoint:
 ```
 source ~/.eoepca/state
 mc alias set minio-local http://minio.eoepca.local/ ${MINIO_USER} ${MINIO_PASSWORD}
@@ -72,13 +72,14 @@ Create Access Key:
 mc admin accesskey create minio-local/ user --access-key ${S3_ACCESS_KEY} --secret-key ${S3_SECRET_KEY}
 ```{{exec}}
 
-We can now validate our deployment with the provided script `validation.sh`. This requires `s3cmd` which has been preinstalled:
+We can now validate our deployment with the provided script `validation.sh`{{}}. This requires `s3cmd`{{}} which we need to install before:
 ```
+apt update && apt install -y s3cmd
 bash validation.sh
 y
 ```{{exec}}
 
-Let's also do some manual checks using the `mc` client.
+Let's also do some manual checks using the `mc`{{}} client.
 1. List the existing buckets in MinIO:
 ```
 mc ls minio-local
