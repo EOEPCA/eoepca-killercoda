@@ -32,8 +32,9 @@
     },
     "assets": {
       "host01": [
-        {"file": "../commons/assets/gomplate.7z", "target": "/tmp/assets/gomplate.7z"},
-        {"file": "../commons/assets/nginxingress", "target": "/tmp/assets/nginxingress"}
+        {"file": "assets/*", "target": "/tmp/assets"},
+        {"file": "../commons/assets/gomplate.7z", "target": "/tmp/assets/"},
+        {"file": "../commons/assets/nginxingress", "target": "/tmp/assets/"}
       ]
     }
   },
