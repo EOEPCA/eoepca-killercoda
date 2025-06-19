@@ -8,7 +8,7 @@ If we have a look at the `test`{{}} user namespace, as in the command below, we 
 curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/  | jq -r .processes[].id
 ```{{exec}}
 
-To deploy the application, we can do a POST to the the processes endpoint, including the CWL representing the [OGC Application Pakcage](https://docs.ogc.org/bp/20-089r1.html):
+To deploy the application, we can do a POST to the the processes endpoint, including the CWL representing the [OGC Application Package](https://docs.ogc.org/bp/20-089r1.html):
 
 ```
 curl -s -S -X POST -H "Content-Type: application/cwl+yaml" -H "Accept: application/json" -d "$(cat ~/deployment-guide/scripts/processing/oapip/examples/convert-url-app.cwl)" http://zoo.eoepca.local/test/ogc-api/processes/  | jq

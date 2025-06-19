@@ -4,7 +4,7 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
-  WEBSITES="minio.eoepca.local zoo.eoepca.local toil-wes.hpc.local"
+  WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
@@ -25,6 +25,80 @@ if [[ -e /tmp/assets/nginxingress ]]; then
     --namespace ingress-nginx --create-namespace \
     --set controller.hostNetwork=true
 fi
+if [[ -e /tmp/assets/apisix ]]; then
+  # Install apisix
+  echo "installing apisix ingress..." >> /tmp/killercoda_setup.log
+  helm repo add apisix https://charts.apiseven.com
+  helm repo update apisix
+
+  helm upgrade -i apisix apisix/apisix \
+    --version 2.9.0 \
+    --namespace ingress-apisix --create-namespace \
+    --set securityContext.runAsUser=0 \
+    --set hostNetwork=true \
+    --set service.http.containerPort=80 \
+    --set apisix.ssl.containerPort=443 \
+    --set etcd.replicaCount=1 \
+    --set apisix.enableIPv6=false \
+    --set apisix.enableServerTokens=false \
+    --set ingress-controller.enabled=true
+fi
+if [[ -e /tmp/assets/killercodaproxy ]]; then
+  #Use an NGinx proxy to force the Host and replace the links to allow most applciations
+  #to work with killercoda proxy
+  echo configuring proxy for killercoda external access... >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  #Install nginx with substitution mode
+  apt-get install -y nginx libnginx-mod-http-subs-filter
+  #write nginx configuration
+  cat <<EOF >/etc/nginx/nginx.conf
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+  worker_connections 768;
+  # multi_accept on;
+}
+
+http {
+  access_log /dev/null;
+  gzip on;
+EOF
+  #All the proxy redirects must be placed into all the proxied sites, otherwise cross-site
+  #redirections like the ones done by OPA will not work...
+  echo -n "" > /tmp/assets/killercodaproxy_redirects
+  while read port dest types; do
+    echo "         proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
+  done < /tmp/assets/killercodaproxy
+  while read port dest types; do
+cat <<EOF>>/etc/nginx/nginx.conf
+    server {
+
+        listen       $port;
+
+        location / {
+         proxy_pass  http://$dest;
+         proxy_set_header   Host             $dest:80;
+         proxy_set_header Accept-Encoding "";
+EOF
+    cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
+    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
+         subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
+         subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
+         subs_filter_types ${types//\'/};
+EOF
+cat <<EOF>>/etc/nginx/nginx.conf
+        }
+    }
+EOF
+  done < /tmp/assets/killercodaproxy
+echo "}" >> /etc/nginx/nginx.conf
+  #restart nginx
+  service nginx restart
+fi
 if [[ -e /tmp/assets/minio.7z ]]; then
   #Installing Minio (basic)
   echo installing object storage...  >> /tmp/killercoda_setup.log
@@ -36,11 +110,17 @@ if [[ -e /tmp/assets/minio.7z ]]; then
   mkdir -p ~/minio && MINIO_ROOT_USER=eoepca MINIO_ROOT_PASSWORD=eoepcatest nohup minio server --quiet ~/minio &>/dev/null &
   sleep 1
   while ! mc config host add minio-local http://minio.eoepca.local:9000/ eoepca eoepcatest; do sleep 1; done
-  mc mb minio-local/eoepca
   mkdir -p ~/.eoepca && echo 'export S3_ENDPOINT="http://minio.eoepca.local:9000/"
 export S3_ACCESS_KEY="eoepca"
 export S3_SECRET_KEY="eoepcatest"
 export S3_REGION="us-east-1"' >> ~/.eoepca/state
+fi
+if [[ -e /tmp/assets/miniobuckets ]]; then
+  BUCKETS="`tr -d '\n' < /tmp/assets/miniobuckets`"
+  echo "creating object storage buckets: $BUCKETS..."  >> /tmp/killercoda_setup.log
+  for bkt in $BUCKETS; do
+    mc mb minio-local/$bkt
+  done
 fi
 if [[ -e /tmp/assets/readwritemany ]]; then
   ### Prerequisites: readwritemany StorageClass

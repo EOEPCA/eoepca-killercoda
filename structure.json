@@ -1,6 +1,8 @@
 {
   "items": [
+    { "path": "prerequisites" },
+    { "path": "discovery" },
     { "path": "processing" },
-    { "path": "basic" }
+    { "path": "iam" }
   ]
 }

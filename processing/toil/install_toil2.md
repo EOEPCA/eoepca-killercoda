@@ -1,4 +1,4 @@
-to test Toil is correctly installed, we will use a [OGC Best Practices for Earth Observation Application Pakcage](https://docs.ogc.org/bp/20-089r1.html) applications, which are the ones the EOEPCA Building Block [OGC Process API](https://ogcapi.ogc.org/processes/) interface supports for execution.
+to test Toil is correctly installed, we will use a [OGC Best Practices for Earth Observation Application Package](https://docs.ogc.org/bp/20-089r1.html) applications, which are the ones the EOEPCA Building Block [OGC Process API](https://ogcapi.ogc.org/processes/) interface supports for execution.
 
 We will go in more details about such applications later in the tutorial, in the mean time, we will just test now that Toil works correctly by running one of these example applications
 

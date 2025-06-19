@@ -1,0 +1,60 @@
+{
+  "title": "EOEPCA IAM BB",
+  "description": "Identity and Access Management (IAM) to secure your services",
+  "details": {
+    "intro": {
+      "text": "1-introduction.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Prerequisite Checks",
+        "text": "2-prerequisites.md"
+      },
+      {
+        "title": "IAM Configuration",
+        "text": "3-iam-configuration.md"
+      },
+      {
+        "title": "Applying Secrets",
+        "text": "4-secrets.md"
+      },
+      {
+        "title": "Deploying IAM Components",
+        "text": "5-deployment.md"
+      },
+      {
+        "title": "Client and User Setup",
+        "text": "6-client-user.md"
+      },
+      {
+        "title": "Keycloak Admin UI",
+        "text": "7-keycloak-ui.md"
+      },
+      {
+        "title": "Validation of Deployment",
+        "text": "8-validation.md"
+      },
+      {
+        "title": "Policy Enforcement",
+        "text": "9-policy-enforcement.md"
+      }
+    ],
+    "finish": {
+      "title": "IAM Setup Complete",
+      "text": "10-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

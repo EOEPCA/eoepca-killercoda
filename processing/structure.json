@@ -1,10 +1,8 @@
 {
-  "title": "EOEPCA Processing Building Block",
+  "title": "EOEPCA Processing BB",
   "description": "Data processing with different engines",
   "items": [
     { "path": "calrissian" },
-    { "path": "toil" },
-    { "path": "argo" },
-    { "path": "openeo" }
+    { "path": "toil" }
   ]
 }

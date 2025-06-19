@@ -1,0 +1,4 @@
+90 auth.eoepca.local 'NONE'
+91 opa.eoepca.local 'NONE'
+92 nginx-open.eoepca.local 'NONE'
+93 nginx.eoepca.local 'NONE'
