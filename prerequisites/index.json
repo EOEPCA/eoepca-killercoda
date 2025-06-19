@@ -1,6 +1,6 @@
 {
   "title": "EOEPCA Prerequisites",
-  "description": "Deploy and configure the base components on Kubernetes cluster necessary for deploying EOEPCA Building Blocks.",
+  "description": "Optional and mandatory pre-requisites for deploying EOEPCA Building Blocks.",
   "details": {
     "intro": {
       "text": "00-introduction.md",
