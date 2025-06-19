@@ -1,10 +1,12 @@
 {
+  "title": "EOEPCA Scenarios",
+  "description": "A collection of scenarios to demonstrate the EOEPCA Building Blocks",
   "items": [
-    { "path": "prerequisites" },
-    { "path": "discovery" },
-    { "path": "processing" },
-    { "path": "iam" },
-    { "path": "basic" },
-    { "path": "lps" }
+    { "path": "prerequisites", "title": "Lesson 0: Prerequisites" },
+    { "path": "discovery", "title": "Lesson 1: Data discovery" },
+    { "path": "processing", "title": "Lesson 2: Data processing" },
+    { "path": "iam", "title": "Lesson 3: Securing the services via IAM" },
+    { "path": "basic", "title": "Lesson 4: Basic usage" },
+    { "path": "lps", "title": "Lesson 5: LPS integration" }
   ]
 }
