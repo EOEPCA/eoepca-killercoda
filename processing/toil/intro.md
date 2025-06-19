@@ -2,7 +2,7 @@ Welcome to the EOEPCA Processing Building Block, [OGC Process API](https://ogcap
 
 EOEPCA provides different data processing solutions tailored to different use cases. In general, bulk data processing and systematic processing operations are performed using the [OGC Process API](https://ogcapi.ogc.org/processes/) interface, while interactive data processing tasks and data analytics is performed via the [OpenEO API](https://api.openeo.org/) interface.
 
-This is anyway not a given, and a lot will depend on the different use-cases and preferences of the user communities. EOEPCA allows in any case to deploy, at the same time and sharing the same infrastructure resources, both [OGC Process API](https://ogcapi.ogc.org/processes/) and [OpenEO API](https://api.openeo.org/) interafaces.
+This is anyway not a given, and a lot will depend on the different use-cases and preferences of the user communities. EOEPCA allows in any case to deploy, at the same time and sharing the same infrastructure resources, both [OGC Process API](https://ogcapi.ogc.org/processes/) and [OpenEO API](https://api.openeo.org/) interfaces.
 
 For the OGC Process API interface, different "execution engines" are available, allowing to submit data processing jobs to different backends. At the time, [Argo workflows](./argo), K8S jobs (via Calrissian) or HPC jobs (via [Toil](./toil)) are supported.
 
