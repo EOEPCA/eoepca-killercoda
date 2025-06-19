@@ -4,7 +4,7 @@ To do so, we can use the catalogue STAC APIs, for which you will see details in 
 
 ### Add a collection
 
-As first thing, we can add a Collection for our data. Let's save first the following STAC
+First, we can add a Collection for our data. Let's save first the following STAC
 
 ```
 cat <<EOF | tee CAT_DEMO.json | jq

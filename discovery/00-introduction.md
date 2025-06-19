@@ -26,7 +26,7 @@ Once published, other users can query it by:
 
 and see all the data information, download the data or process it using the [EOEPCA Processing Building Block](https://eoepca.readthedocs.io/projects/processing/en/latest/)
 
-This tutorial simulates the deployment of the data catalogue, the registration of some sample data and the discovery of such data.
+This tutorial deploys the data catalogue service, the registration of some sample data and the discovery of such data.
 
 Note that the registration shown here is a very simple single product registration. For automatic registration of common EO datasets and to perform all data management operations (e.g. keep the datasets in sync), the [EOEPCA Resource Registration Building Block](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/) is provided.
 
