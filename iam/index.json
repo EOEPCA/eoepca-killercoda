@@ -1,6 +1,6 @@
 {
   "title": "EOEPCA IAM BB",
-  "description": "Deploy EOEPCA Identity and Access Management (IAM) Building Block with Keycloak, OPA and APISIX",
+  "description": "Identity and Access Management (IAM) to secure your services",
   "details": {
     "intro": {
       "text": "1-introduction.md",
