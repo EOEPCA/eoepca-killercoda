@@ -46,11 +46,4 @@ As specified in the [Deployment Guide](https://eoepca.readthedocs.io/projects/de
 
    In EOEPCA, as default, MinIO will serve as the local object storage backend for various services. There is anyway the possibility to configure an alternative S3-compatible object storage solution instead of MinIO e.g. use an external S3 storage provided by the cloud platform.
 
-8. **Container Registry** \[Optional\]
-
-   EOEPCA Building Blocks are built on a micro-services approach, with several Docker images composing the different micro-services orchestrated by the platform. It can be then useful in production to have your own local container registry, and allow faster access to images and lower startup times.
-
-   EOEPCA recommens [Harbor](https://goharbor.io/), an open-source container registry, to manage images for applications on the platform, including those of the EOEPCA services and the ones contianing user code running within the Processing building block.
-
-
 In the following steps we will do in more details about the prerequisites above.

@@ -38,10 +38,6 @@
       {
         "text": "07-minio.md",
         "title": "S3 Object Storage"
-      },
-      {
-        "text": "08-harbor.md",
-        "title": "Container Registry"
       }
     ],
     "finish": {
