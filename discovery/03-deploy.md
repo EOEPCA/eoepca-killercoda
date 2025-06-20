@@ -30,7 +30,7 @@ Now we wait for the Resource Discovery pods to start. This may take some time, e
 while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
 ```{{exec}}
 
-Once deployed, the Resource Discovery STAC API should be accessible at `http://resouce-catalogue.eoepca.local`{{}}
+Once deployed, the Resource Discovery STAC API should be accessible at `http://resource-catalogue.eoepca.local`{{}}
 
 We can validate it with the provided script `validation.sh`{{}}
 

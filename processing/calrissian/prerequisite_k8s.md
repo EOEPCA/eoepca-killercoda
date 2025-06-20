@@ -1,6 +1,6 @@
 a kubernetes cluster, with some minimal constraints, such as the availability of an ingress controller to expose the EOEPCA building block interfaces, DNS entries to map the EOEPCA interface endpoints and certificates to provide SSL support is required by EOEPCA components
 
-Here for simplicity, we will use the basic nginx ingress controller, static DNS entries and no SSL support, as described in the [EOEPCA pre-requisites tutorial](../pre-requisites).
+Here for simplicity, we will use the basic nginx ingress controller, static DNS entries and no SSL support.
 
 To check the Kubernetes cluster is properly installed, run
 
