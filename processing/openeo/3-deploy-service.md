@@ -37,6 +37,8 @@ spec:
           value: "/opt"
         - name: OPENEO_LOCAL_DEBUGGING
           value: "false"
+        - name: OPENEO_ENABLE_BASIC_AUTH
+          value: "true"
         - name: GDAL_PAM_ENABLED
           value: "NO"
         - name: FLASK_DEBUG
