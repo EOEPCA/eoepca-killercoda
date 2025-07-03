@@ -30,10 +30,10 @@ spec:
     spec:
       containers:
       - name: openeo
-        # Using the same image but running it as a simple web service
-        image: eoepca/openeo-geotrellis-kube:2.0-beta2
+        # THIS IS THE FIX: Use a lightweight base image instead of the huge one.
+        image: openeodata/openeo-geopyspark-driver-base:0.8.2
         imagePullPolicy: IfNotPresent
-        # The command to start the lightweight web service
+        # This command is correct for starting the lightweight web service
         command: ["/opt/openeo/bin/gunicorn", "--bind=0.0.0.0:8080", "--workers=1", "openeogeotrellis.deploy.local_web_service:app"]
         ports:
         - name: http
