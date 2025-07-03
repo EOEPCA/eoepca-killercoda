@@ -31,7 +31,7 @@ spec:
       containers:
       - name: openeo
         # THIS IS THE FIX: Use a lightweight base image instead of the huge one.
-        image: openeodata/openeo-geopyspark-driver-base:0.8.2
+        image: vito-docker.artifactory.vgt.vito.be/openeo-base:latest
         imagePullPolicy: IfNotPresent
         # This command is correct for starting the lightweight web service
         command: ["/opt/openeo/bin/gunicorn", "--bind=0.0.0.0:8080", "--workers=1", "openeogeotrellis.deploy.local_web_service:app"]
