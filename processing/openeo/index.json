@@ -18,16 +18,8 @@
         "text": "2-configure.md"
       },
       {
-        "title": "Deploy Spark Operator",
-        "text": "3-deploy-spark-operator.md"
-      },
-      {
-        "title": "Deploy ZooKeeper",
-        "text": "4-deploy-zookeeper.md"
-      },
-      {
-        "title": "Deploy OpenEO Geotrellis",
-        "text": "5-deploy-openeo.md"
+        "title": "Deploy Service",
+        "text": "3-deploy-service.md"
       },
       {
         "title": "Validation",

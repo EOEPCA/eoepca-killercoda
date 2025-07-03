@@ -1,39 +1,37 @@
 ## Validating the Deployment
 
-Let's verify that everything has been deployed correctly.
+Let's verify that the service has been deployed correctly.
 
-### Automated Validation
+### Check the Pod
 
-Run the provided validation script to check the status of pods and API endpoints.
+Check that the `openeo-geopyspark-driver` pod is running.
 
 ```bash
-bash validation.sh
+kubectl get pods -n openeo
 ```{{exec}}
-
-The script will confirm that all pods are running and key API endpoints are responding correctly.
 
 ### Manual Validation
 
-You can also manually check the API endpoints. First, source the state file to get the `INGRESS_HOST`.
+You can manually check the API endpoints. First, source the state file to get the `INGRESS_HOST`.
 
 ```bash
 source ~/.eoepca/state
 ```{{exec}}
 
-Check the API metadata:
+Check the main capabilities endpoint (note the URL change and basic auth):
 
 ```bash
-curl -L https://openeo.${INGRESS_HOST}/openeo/1.2/ | jq .
+curl -u openeo:openeo -L http://openeo.${INGRESS_HOST}/ | jq .
 ```{{exec}}
 
 List the available collections:
 
 ```bash
-curl -L https://openeo.${INGRESS_HOST}/openeo/1.2/collections | jq .
+curl -u openeo:openeo -L http://openeo.${INGRESS_HOST}/collections | jq .
 ```{{exec}}
 
 List the supported processes:
 
 ```bash
-curl -L https://openeo.${INGRESS_HOST}/openeo/1.2/processes | jq .
+curl -u openeo:openeo -L http://openeo.${INGRESS_HOST}/processes | jq .
 ```{{exec}}

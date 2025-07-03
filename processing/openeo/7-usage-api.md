@@ -1,13 +1,13 @@
 ## Usage: Interacting with the API
 
-You can interact with the OpenEO API directly using `curl` or other clients. As this is an open deployment, no authentication token is needed.
+You can interact with the OpenEO API directly using `curl`. As noted in the documentation for this lightweight service, you must use Basic Authentication with username `openeo` and password `openeo`.
 
 ### Submit a Job
 
-Here's an example that uses the "sum" process to add two numbers.
+Here's an example that uses the "sum" process to add two numbers. Note the `-u` flag for authentication and the updated URL.
 
 ```bash
-curl -X POST "https://openeo.${INGRESS_HOST}/openeo/1.2/result" \
+curl -u openeo:openeo -X POST "http://openeo.${INGRESS_HOST}/result" \
   -H "Content-Type: application/json" \
   -d '{
         "process": {
