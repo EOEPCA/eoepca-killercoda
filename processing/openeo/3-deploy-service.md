@@ -83,19 +83,32 @@ kubectl apply -f openeo-deployment.yaml
 Finally, deploy an Ingress to expose the service publicly. Note that the service port is now `80`.
 
 ```bash
-bash configure-openeo.sh <<EOF
-eoepca.local
-local-path
-no
-EOF
+cat <<EOF > openeo-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oeo
+  namespace: openeo-geotrellis
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: openeo.eoepca.local
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: openeo-service
+                port:
+                  number: 80
+```{{exec}}
 
-# Modify the generated ingress to point to our new service
-sed -i 's/name: openeo-geotrellis-openeo/name: openeo-service/' openeo-geotrellis/generated-ingress.yaml
-sed -i 's/number: 50001/number: 80/' openeo-geotrellis/generated-ingress.yaml
-sed -i 's/namespace: openeo-geotrellis/namespace: openeo/' openeo-geotrellis/generated-ingress.yaml
-
-# Apply the modified ingress
-kubectl apply -f openeo-geotrellis/generated-ingress.yaml -n openeo
+```bash
+kubectl apply -f openeo-ingress.yaml
 ```{{exec}}
 
 This deploys the service and makes it accessible at `http://openeo.eoepca.local`.
