@@ -64,18 +64,16 @@ spec:
         memory: "0"
 EOF
 
-if [[ -e /tmp/assets/nginxingress ]]; then
-  #Installing Ingress (basic)
-  echo installing nginx ingress... >> /tmp/killercoda_setup.log
-  helm upgrade --install ingress-nginx ingress-nginx \
-    --repo https://kubernetes.github.io/ingress-nginx \
-    --namespace ingress-nginx --create-namespace \
-    --set controller.service.type=NodePort \
-    --set controller.service.nodePorts.http=30080 \
-    --set controller.service.nodePorts.https=30443 \
-    --set controller.allowSnippetAnnotations=true \
-    --set controller.config.annotations-risk-level=Critical
-fi
+#Installing Ingress (basic)
+echo installing nginx ingress... >> /tmp/killercoda_setup.log
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace \
+  --set controller.service.type=NodePort \
+  --set controller.service.nodePorts.http=30080 \
+  --set controller.service.nodePorts.https=30443 \
+  --set controller.allowSnippetAnnotations=true \
+  --set controller.config.annotations-risk-level=Critical
 
 
 helm plugin install https://github.com/aslafy-z/helm-git --version 1.3.0

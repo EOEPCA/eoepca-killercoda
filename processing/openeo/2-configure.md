@@ -4,12 +4,13 @@ Next, we'll run the configuration script.
 
 This will configure the OpenEO building block with the following:
 
-- **Ingress Host**: `eoepca.local`
-- **Storage Class**: `standard`
+```bash
+export INGRESS_HOST=$(echo "{{TRAFFIC_HOST1_30080}}" | sed -E 's~^https?://~~;s~/.*~~')
+```{{exec}}
 
 ```bash
 bash configure-openeo.sh <<EOF
-eoepca.local
+no
 local-path
 no
 EOF

@@ -88,14 +88,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: oeo
-  namespace: openeo-geotrellis
+  namespace: openeo
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   ingressClassName: nginx
   rules:
-    - host: openeo.eoepca.local
+    - host: ${INGRESS_HOST}
       http:
         paths:
           - path: "/"

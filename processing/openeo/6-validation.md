@@ -21,17 +21,17 @@ source ~/.eoepca/state
 Check the main capabilities endpoint (note the URL change and basic auth):
 
 ```bash
-curl -u openeo:openeo -L http://openeo.${INGRESS_HOST}/ | jq .
+curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/ | jq .
 ```{{exec}}
 
 List the available collections:
 
 ```bash
-curl -u openeo:openeo -L http://openeo.${INGRESS_HOST}/collections | jq .
+curl -u openeo:openeo -L https://openeo.${INGRESS_HOST}/openeo/1.2/collections | jq .
 ```{{exec}}
 
 List the supported processes:
 
 ```bash
-curl -u openeo:openeo -L http://openeo.${INGRESS_HOST}/processes | jq .
+curl -u openeo:openeo -L https://openeo.${INGRESS_HOST}/openeo/1.2/processes | jq .
 ```{{exec}}
