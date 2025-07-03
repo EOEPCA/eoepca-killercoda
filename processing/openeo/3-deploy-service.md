@@ -105,6 +105,7 @@ spec:
                 name: openeo-service
                 port:
                   number: 80
+EOF
 ```{{exec}}
 
 ```bash
