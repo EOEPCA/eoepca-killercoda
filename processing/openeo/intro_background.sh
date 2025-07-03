@@ -4,7 +4,7 @@ echo setting-up your MLOps environment... wait until this completes before start
 
 if [[ -e /tmp/assets/localdns ]]; then
   echo "setting local dns entries..." >> /tmp/killercoda_setup.log
-  WEBSITES="minio.eoepca.local gitlab.eoepca.local sharinghub.eoepca.local mlflow.eoepca.local"
+  WEBSITES="minio.eoepca.local openeo.eoepca.local"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml

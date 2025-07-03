@@ -16,8 +16,6 @@ kind: Deployment
 metadata:
   name: openeo-geopyspark-driver
   namespace: openeo
-  labels:
-    app: openeo-geopyspark-driver
 spec:
   replicas: 1
   selector:
@@ -30,11 +28,26 @@ spec:
     spec:
       containers:
       - name: openeo
-        # THIS IS THE FIX: Use a lightweight base image instead of the huge one.
         image: vito-docker.artifactory.vgt.vito.be/openeo-base:latest
         imagePullPolicy: IfNotPresent
-        # This command is correct for starting the lightweight web service
-        command: ["/opt/openeo/bin/gunicorn", "--bind=0.0.0.0:8080", "--workers=1", "openeogeotrellis.deploy.local_web_service:app"]
+        env:
+        - name: PYTHONPATH
+          value: "/usr/local/spark/python/lib/py4j-0.10.9.7-src.zip:/usr/local/spark/python"
+        - name: GEOPYSPARK_JARS_PATH
+          value: "/opt"
+        - name: OPENEO_LOCAL_DEBUGGING
+          value: "false"
+        - name: GDAL_PAM_ENABLED
+          value: "NO"
+        - name: FLASK_DEBUG
+          value: "0"
+        - name: OPENEO_DEV_GUNICORN_HOST
+          value: "0.0.0.0"
+
+        command: ["/opt/venv/bin/python3"]
+        args:
+          - "/opt/venv/bin/openeo_local.py"
+
         ports:
         - name: http
           containerPort: 8080
