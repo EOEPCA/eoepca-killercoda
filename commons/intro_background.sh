@@ -3,9 +3,9 @@
 echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
 if [[ -e /tmp/assets/k3s ]]; then
   echo "installing kubernetes via k3s..." >> /tmp/killercoda_setup.log
-  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --disable=servicelb --disable=metrics-server --kubelet-arg=--enforce-node-allocatable=''" sh -
+  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --disable=servicelb --disable=metrics-server" sh -
   echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc
-  source ~/.bashrc
+  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
   echo "waiting for kubernetes to start..." >> /tmp/killercoda_setup.log
   while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=1m &>/dev/null; do sleep 1; done
 fi
