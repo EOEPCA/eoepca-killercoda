@@ -1,6 +1,11 @@
 #!/bin/bash
 #Script to set pre-requisites for EOEPCA components
 echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
+if [[ -e /tmp/assets/k3s ]]; then
+  echo "installing kubernetes..."
+  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --kubelet-arg=--enforce-node-allocatable=''" sh -
+  while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=1m &>/dev/null; do sleep 1; done
+fi
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
@@ -196,6 +201,18 @@ n[0]="/usr/bin/docker"
 if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
 os.execv(n[0],n)' > /usr/local/bin/docker
   chmod +x /usr/local/bin/docker
+fi
+if [[ -e /tmp/assets/postgrespostgis ]]; then
+  echo "installing PostgreSQL+PostGIS..."  >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  apt-get install -y postgresql-16-postgis-3 < /dev/null
+  su - postgres -c "echo \"listen_addresses = '*'\" >> /etc/postgresql/16/main/postgresql.conf"
+  su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/16/main/pg_hba.conf"
+  service postgresql restart
+  while read dbname dbuser dbpass initscript; do
+    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass';\"; createdb -O $dbuser eoapi"
+    [[ $loadpostgis == true ]] && su - postgres -c "psql -c \"CREATE EXTENSION postgis;\""
+  done < /tmp/assets/postgrespostgis
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
