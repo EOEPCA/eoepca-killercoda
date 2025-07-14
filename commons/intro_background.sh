@@ -2,8 +2,9 @@
 #Script to set pre-requisites for EOEPCA components
 echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
 if [[ -e /tmp/assets/k3s ]]; then
-  echo "installing kubernetes..."
+  echo "installing kubernetes..." >> /tmp/killercoda_setup.log
   curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --kubelet-arg=--enforce-node-allocatable=''" sh -
+  echo "waiting for kubernetes to start..." >> /tmp/killercoda_setup.log
   while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=1m &>/dev/null; do sleep 1; done
 fi
 if [[ -e /tmp/assets/localdns ]]; then
@@ -12,7 +13,7 @@ if [[ -e /tmp/assets/localdns ]]; then
   WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
-  sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
+  sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
   kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
 fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
