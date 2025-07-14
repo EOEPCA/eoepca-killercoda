@@ -40,7 +40,7 @@ The available assets you can select are described in the following table. Please
 | --- | --- |
 | `k3s` | install a light version of kubernetes, for more computing resources available to the application. Use only with ubuntu basic images |
 | `gomplate.7z` | gomplate software. Required by most EOEPCA deployment-guide script |
-| `ignoreresrequests` | install gatekeeper with mutation hook to override all resource requests, setting them to 0 (disabled). This allows to avoid honoring resource requests which may not be available in the killercoda environment. do not use it if you have `k3s` enabled, as limits are already not enforced in that environment |
+| `ignoreresrequests` | install gatekeeper with mutation hook to override all resource requests, setting them to 0 (disabled). This allows to avoid honoring resource requests which may not be available in the killercoda environment. |
 | `localdns` | /etc/hosts configuration with eoepca.local dns entries pointing to the local ingress. Fill the localdns file in the asset folder with a space-separated list of hosts to be mapped |
 | `minio.7z` | minio s3 storage service installed locally (NOTE: no buckets are created. To create a bucket use `miniobuckets` below) |
 | `miniobuckets` | minio buckets. Requires minio.7z to be enabled. Contains a space-separated list of buckets to be created |

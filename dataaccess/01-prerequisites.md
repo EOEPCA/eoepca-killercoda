@@ -51,7 +51,7 @@ eoepca.local
 
 We use the default storage class, already configured in our Kubernetes cluster and selected as default for our EOEPCA deployment:
 ```
-standard
+local-path
 ```{{exec}}
 
 We also do not need automatically generated certificates or indeed any certificates at all for our tutorial:

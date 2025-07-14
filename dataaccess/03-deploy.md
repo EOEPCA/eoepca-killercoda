@@ -7,7 +7,10 @@ helm repo update eoapi
 helm upgrade -i eoapi eoapi/eoapi \
   --namespace data-access \
   --create-namespace \
-  --values eoapi/generated-values.yaml
+  --values eoapi/generated-values.yaml \
+  --set raster.enabled=false \
+  --set multidim.enabled=false \
+  --set vector.enabled=false
 ```{{exec}}
 
 ```
