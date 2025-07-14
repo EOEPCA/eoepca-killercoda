@@ -143,7 +143,12 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
   echo setting resource limits...  >> /tmp/killercoda_setup.log
-  kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+  helm install gatekeeper --name-template=gatekeeper --namespace gatekeeper-system --create-namespace \
+    --repo https://open-policy-agent.github.io/gatekeeper/charts \
+    --set postInstall.labelNamespace.enabled=false --set postInstall.probeWebhook.enabled=false \
+    --set replicas=1 --set resources={} \
+    --set audit.resources.limits.cpu=0,audit.resources.limits.memory=0,controllerManager.resources.limits.cpu=0,controllerManager.resources.limits.memory=0 \
+    --set audit.resources.requests.cpu=0,audit.resources.requests.memory=0,controllerManager.resources.requests.cpu=0,controllerManager.resources.requests.memory=0 \
   cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
 kind: Assign
