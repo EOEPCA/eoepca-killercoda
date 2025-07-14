@@ -4,6 +4,7 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/k3s ]]; then
   echo "installing kubernetes..." >> /tmp/killercoda_setup.log
   curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --kubelet-arg=--enforce-node-allocatable=''" sh -
+  echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc
   echo "waiting for kubernetes to start..." >> /tmp/killercoda_setup.log
   while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=1m &>/dev/null; do sleep 1; done
 fi
@@ -21,11 +22,14 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
   #Gomplate is a dependency of the deployment tool
   #Installing it from local instead then remote for speed
   #curl -s -S -L -o /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/v4.3.0/gomplate_linux-amd64 && chmod +x /usr/local/bin/gomplate
+  which 7z &>/dev/null || { [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }; apt-get install -y 7zip; }
+  which helm &>/dev/null || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/gomplate.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate
 fi
 if [[ -e /tmp/assets/nginxingress ]]; then
   #Installing Ingress (basic)
   echo installing nginx ingress... >> /tmp/killercoda_setup.log
+  which helm &>/dev/null || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace \
