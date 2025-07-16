@@ -10,8 +10,8 @@ The Building block is composed by several sub-components, which can be deployed 
 - [STAC Manager](https://github.com/developmentseed/stac-manager), which provides an UI to edi STAC Collections and items
 - [TiTiler-PgSTAC](https://github.com/stac-utils/titiler-pgstac) and [TiPg](https://github.com/developmentseed/tipg), which provide raster and vector data visualization via [OGC WFS](https://www.ogc.org/publications/standard/wfs/), [OGC API Features](https://ogcapi.ogc.org/features/), [OGC WMTS](https://www.ogc.org/standards/wmts/) and [OGC API Tiles](https://ogcapi.ogc.org/tiles/)
 - [TiTiler-OpenEO](https://github.com/sentinel-hub/titiler-openeo), which provides [OpenEO](https://openeo.org/) Synchronous API extensions on top of Titiler 
-- <span style="color:red">beta</span>[TiTiler-Multidim](https://github.com/developmentseed/titiler-multidim), which provides visualization support extensions for XArray
-- <span style="color:red">beta</span>[TiTiler-Maps-Plugin](https://github.com/EOEPCA/eoapi-maps-plugin), which provides [OGC Maps](https://ogcapi.ogc.org/maps/) support
+- *[beta]* [TiTiler-Multidim](https://github.com/developmentseed/titiler-multidim), which provides visualization support extensions for XArray
+- *[beta]* [TiTiler-Maps-Plugin](https://github.com/EOEPCA/eoapi-maps-plugin), which provides [OGC Maps](https://ogcapi.ogc.org/maps/) support
 
 In this tutorial we will deploy and explain them one-by-one.
 
