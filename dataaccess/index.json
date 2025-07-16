@@ -38,12 +38,20 @@
         "text": "06-rv-deploy.md"
       },
       {
-        "title": "Test visualization capabilities",
+        "title": "Test Raster and Vector capabilities",
         "text": "07-rv-test.md"
+      },
+      {
+        "title": "Deploy Data Access Synchronous OpenEO API capabilities",
+        "text": "08-openeo-deploy.md"
+      },
+      {
+        "title": "Test Synchronous OpenEO API capabilities",
+        "text": "09-openeo-deploy.md"
       },
       { 
         "title": "Others",
-        "text": "08-others.md" 
+        "text": "10-others.md" 
       }
     ],
 		"finish": {

@@ -92,7 +92,7 @@ cat <<EOF>>/etc/nginx/nginx.conf
 
         location / {
          proxy_pass  http://$dest;
-         proxy_set_header   Host             $dest:80;
+         proxy_set_header   Host             $dest;
          proxy_set_header Accept-Encoding "";
 EOF
     cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
@@ -226,8 +226,8 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
   su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf"
   service postgresql restart
   while read dbname dbuser dbpass; do
-    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'\"; createdb -O $dbuser eoapi"
-    su - postgres -c "psql -c \"CREATE EXTENSION postgis;\""
+    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'\"; createdb -O $dbuser $dbname"
+    su - postgres -c "psql -c \"CREATE EXTENSION postgis;\" $dbname"
   done < /tmp/assets/postgrespostgis
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)

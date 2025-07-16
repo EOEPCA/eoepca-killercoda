@@ -1,25 +1,9 @@
-```
-curl -s http://eoapi.eoepca.local/stac/collections | jq ".collections.[].id"
-```{{exec}}
+Explain that the STAC manager is an utility to edit the STAC
 
-```
-curl -s http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland | jq
-```{{exec}}
+Put here the deploy of the stac manager
 
-```
-curl -s http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items | jq
-```{{exec}}
+then connecting it via the UI to do some STAC editing stuff
 
-```
-curl -s http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items | jq ".features.[].id"
-```{{exec}}
 
-```
-curl -X POST "http://eoapi.eoepca.local/stac/search" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bbox": [-25, 63, -24, 65],
-    "datetime": "2023-01-01T00:00:00Z/2024-01-01T00:00:00Z",
-    "limit": 5
-  }' | jq ".features.[].{id | .datetime}"
-```{{exec}}
+then undeploy the STAC manager
+
