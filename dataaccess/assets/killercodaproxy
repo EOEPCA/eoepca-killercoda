@@ -1,1 +1,2 @@
 81 eoapi.eoepca.local 'application/json application/geo+json'
+82 eoapi.eoepca.local '*'

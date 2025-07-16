@@ -18,7 +18,9 @@ kubectl --namespace data-access wait pod --all --timeout=10m --for=condition=Rea
 
 then connecting it via the UI to do some STAC editing stuff
 
-[this link works]({{TRAFFIC_HOST1_81}}/manager)
+[this link works]({{TRAFFIC_HOST1_82}}/manager)
+
+and try to create some new things
 
 then undeploy the STAC manager
 
