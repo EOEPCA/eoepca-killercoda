@@ -11,9 +11,14 @@ helm upgrade -i stac-manager stac-manager/stac-manager \
   --values stac-manager/generated-values.yaml
 ```{{exec}}
 
+
+```
+kubectl --namespace data-access wait pod --all --timeout=10m --for=condition=Ready
+```{{exec}}
+
 then connecting it via the UI to do some STAC editing stuff
 
-[this link works]{{}}
+[this link works]({{TRAFFIC_HOST1_81}}/manager)
 
 then undeploy the STAC manager
 
