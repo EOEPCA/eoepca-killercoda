@@ -2,7 +2,7 @@ We now have a STAC catalogue, which we can access at
 
 ```
 curl -sS http://eoapi.eoepca.local/stac | jq
-```
+```{{exec}}
 
 We can fill it with a sample STAC collection
 
@@ -17,7 +17,7 @@ And some sample items (we restrict ourself to the first 20 demo items)
 
 ```
 i=0
-jq -c '.[]' collections/sentinel-2-iceland/items.json | while read -r item; do
+jq -c '.[]' collections/sentinel-2-iceland/items.json 2>/dev/null | while read -r item; do
   i=$((i+1))
   echo "$item" | curl -s -o /dev/null -w "$i %{http_code} %{url_effective}\n" \
     -X POST http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items \

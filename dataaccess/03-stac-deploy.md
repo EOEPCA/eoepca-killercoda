@@ -27,7 +27,7 @@ helm upgrade -i eoapi eoapi/eoapi --version 0.7.5 \
   --set browser.enabled=false --set docServer.enabled=false \
   --set stac.enabled=true \
   --set raster.enabled=false --set vector.enabled=false \
-  --set multidim.enabled=false \
+  --set multidim.enabled=false
 ```{{exec}}
 
 We need now to wait for the catalogue to go up. To do so we can run
