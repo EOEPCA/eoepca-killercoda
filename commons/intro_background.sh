@@ -216,13 +216,18 @@ fi
 if [[ -e /tmp/assets/postgrespostgis ]]; then
   echo "installing PostgreSQL+PostGIS..."  >> /tmp/killercoda_setup.log
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
-  apt-get install -y postgresql-16-postgis-3 < /dev/null
-  su - postgres -c "echo \"listen_addresses = '*'\" >> /etc/postgresql/16/main/postgresql.conf"
-  su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/16/main/pg_hba.conf"
+  #Install latest postgresql release
+  apt-get install -y postgresql-common </dev/null
+  /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+  apt-get install -y postgresql postgresql-postgis < /dev/null
+  #Locate installed version
+  PG_VERSION=`ls /etc/postgresql/`
+  su - postgres -c "echo \"listen_addresses = '*'\" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf"
+  su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf"
   service postgresql restart
-  while read dbname dbuser dbpass initscript; do
-    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'; ALTER USER $dbuser WITH SUPERUSER;\"; createdb -O $dbuser eoapi"
-    [[ $loadpostgis == true ]] && su - postgres -c "psql -c \"CREATE EXTENSION postgis;\""
+  while read dbname dbuser dbpass; do
+    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'; createdb -O $dbuser eoapi"
+    su - postgres -c "psql -c \"CREATE EXTENSION postgis;\""
   done < /tmp/assets/postgrespostgis
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
