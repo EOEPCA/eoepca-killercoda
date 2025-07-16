@@ -18,3 +18,7 @@ This opens an interactive UI to test API endpoints and inspect schemas.
 # The MAPS plugin (which is in beta)
 
 # The OpenEO client integrated
+
+# The multidim
+
+I really do not know what this does...
