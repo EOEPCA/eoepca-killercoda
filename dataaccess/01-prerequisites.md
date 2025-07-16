@@ -12,22 +12,16 @@ As ususal in this tutorial, we will use the EOEPCA Deployment Guide scripts to h
 
 We download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers. This contains the deployment scripts we will use for our EOEPCA deployment
 ```
-curl -s -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+#TODO: Pull request for killercoda-dataaccess to eoepca-2.0-rc1b and then update the tarball here with an official release (e.g. eoepca-2.0-rc1c)
+curl -s -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-dataaccess | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
-<!--
-First, we clone it in our environment:
-```
-git clone https://github.com/EOEPCA/deployment-guide
-```{{exec}}
--->
-
-The Rescource Catalogue deployment scripts are available in the `resource-discovery` directory:
+The Data Access deployment scripts are available in the `data-access` directory:
 ```
 cd deployment-guide/scripts/data-access
 ```{{exec}}
 
-Next, we check whether the prerequisites listed above for installing the Resource Discovery building block are met. The Deployment Guide scripts provide a dedicated script for this task:
+Next, we check whether the prerequisites listed above for installing the Data Access building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
 ```{{exec}}
@@ -49,7 +43,8 @@ We enter the top-level domain for our EOEPCA services:
 eoepca.local
 ```{{exec}}
 
-We use the default storage class, already configured in our Kubernetes cluster and selected as default for our EOEPCA deployment:
+We do not need special storage classes for this component (e.g. ReadWriteMany), so we can use the standard `local-path` {{}} storage class provided within this sandbox environment
+
 ```
 local-path
 ```{{exec}}

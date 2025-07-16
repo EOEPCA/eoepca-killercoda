@@ -226,7 +226,7 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
   su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf"
   service postgresql restart
   while read dbname dbuser dbpass; do
-    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'; createdb -O $dbuser eoapi"
+    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'\"; createdb -O $dbuser eoapi"
     su - postgres -c "psql -c \"CREATE EXTENSION postgis;\""
   done < /tmp/assets/postgrespostgis
 fi
