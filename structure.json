@@ -4,6 +4,7 @@
     { "path": "discovery" },
     { "path": "processing" },
     { "path": "dataaccess" },
-    { "path": "iam" }
+    { "path": "iam" },
+    { "path": "mlops" }
   ]
 }
