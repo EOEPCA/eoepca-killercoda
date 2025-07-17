@@ -14,11 +14,11 @@ At this point we can tetrieve the GitLab `root`{{}} user password:
 docker exec -it $(docker ps -qf "name=gitlab") cat /etc/gitlab/initial_root_password
 ```{{exec}}
 
-and we need to create a GitLab OIDC application with redirect URIs. To do so we can
+and we need to create a GitLab OIDC application with redirect URIs.
 
-First navigate to [GitLab]({{TRAFFIC_HOST1_8080}}/admin/applications/new)
+To do so we can open the [local GitLab instance]({{TRAFFIC_HOST1_8080}}/admin/applications/new)
 
-Then log in with the `root` user and the password you retrieved above.
+Log in with the `root` user and the password you retrieved above.
 
 Fill in the form:
    - **Name**:
@@ -39,16 +39,20 @@ Then run this coto apply application credentials to the state. When prompted, en
 bash utils/save-application-credentials-to-state.sh
 ```{{exec}}
 
-Save the secrets for the application
-
-```bash
-bash apply-secrets.sh
-```{{exec}}
-
 Verify secrets were created:
 
 ```bash
 kubectl -n sharinghub get secrets
 ```{{exec}}
 
-You should see secrets for the mlflow and sharinghub.
+You should see secrets for the mlflow and sharinghub as the following
+
+```
+mlflow-sharinghub            Opaque   1      5m33s
+mlflow-sharinghub-gitlab     Opaque   2      5m38s
+mlflow-sharinghub-postgres   Opaque   2      5m33s
+mlflow-sharinghub-s3         Opaque   2      5m33s
+sharinghub                   Opaque   1      5m33s
+sharinghub-oidc              Opaque   2      5m38s
+sharinghub-s3                Opaque   2      5m33s
+```{{}}

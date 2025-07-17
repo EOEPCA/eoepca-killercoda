@@ -27,28 +27,10 @@ mlopbb-sharinghub
 mlopbb-mlflow-sharinghub
 ```{{exec}}
 
-It prompts you for:
+the script now created the `mlflow/generated-values.yaml`{{}} and `sharinghub/generated-values.yaml`{{}} configuration values which we will use to deploy the software in the next steps
 
-- **Ingress Host**:
-  `eoepca.local`
-- **Storage Class**: `local-path`
-- **S3 endpoint & credentials** (already available from the MinIO setup)
-- **OIDC Configuration**: Enable (`true`) and provide the Keycloak URL, or disable (`false`).
-    
-
-Alternatively, pre-configure using the following without prompts:
+it also created some secrets, which we need now to apply
 
 ```bash
-bash configure-mlops.sh <<EOF
-n
-local-path
-https://minio.eoepca.local
-us-east-1
-{{S3_ACCESS_KEY}}
-{{S3_SECRET_KEY}}
-mlopbb-sharinghub
-mlopbb-mlflow-sharinghub
-EOF
+bash apply-secrets.sh
 ```{{exec}}
-
-Generated configuration and secrets will be stored securely in `~/.eoepca/state`.

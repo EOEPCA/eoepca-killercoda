@@ -1,45 +1,35 @@
-
-## Deploying SharingHub & MLflow
-
-**Temporarily turn off GitLab docker container**:
-
-```bash
-docker stop $(docker ps -qf "name=gitlab")
-```{{exec}}
-
-**Update Helm Repositories**:
+It is now time to deploy the SharingHub and the MLFlow application, to do so, we need first to download locally their helm charts, via
 
 ```bash
 curl -L https://github.com/csgroup-oss/sharinghub/archive/refs/tags/0.4.0.tar.gz | tar xvz 
 curl -L https://github.com/csgroup-oss/mlflow-sharinghub/archive/refs/tags/0.2.0.tar.gz | tar xvz
 ```{{exec}}
 
-**Deploy SharingHub**:
+Then we can deploy the SharingHub with the genrated configuration values via
 
 ```bash
 helm upgrade -i sharinghub sharinghub-0.4.0/deploy/helm/sharinghub/ -n sharinghub \
 --create-namespace --values sharinghub/generated-values.yaml
 ```{{exec}}
 
-**Cleanup** (as we're on a very resource-tight environment):
+and deploy MLflow. Note that we will disable the Postgres database deployed with MLFlow for performance reasons, using the `--set postgresql.enabled=false`{{}}. This is not suggested in production
 
 ```bash
-rm -rf sharinghub-0.4.0
-apt-get clean
-crictl rmi --prune
+helm upgrade -i mlflow-sharinghub mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/ --namespace sharinghub --values mlflow/generated-values.yaml --set postgresql.enabled=false
 ```{{exec}}
 
-**Deploy MLflow**:
 
+Let's wait for the container to start with
+
+
+
+At last, we need to create the ingresses
 
 ```bash
-helm dependency build mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/
-helm upgrade -i mlflow-sharinghub mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/ --namespace sharinghub --values mlflow/generated-values.yaml
+kubectl apply -f sharinghub/generated-ingress.yaml
+kubectl apply -f mlflow/generated-ingress.yaml
 ```{{exec}}
 
-```bash
-rm -rf mlflow-sharinghub-0.2.0
-```
 
 **Create Ingress for MLflow**:
 
