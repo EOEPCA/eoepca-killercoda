@@ -22,8 +22,8 @@
         "text": "3-environment.md"
       },
       {
-        "title": "Secrets and Gitlab configuration",
-        "text": "4-secrets.md"
+        "title": "Gitlab configuration",
+        "text": "4-gitlab.md"
       },
       {
         "title": "Deploying SharingHub & MLflow",
@@ -52,6 +52,6 @@
     }
   },
   "backend": {
-    "imageid": "ubuntu-4GB"
+    "imageid": "kubernetes-kubeadm-1node-4GB"
   }
 }

@@ -11,7 +11,7 @@ while ! docker logs gitlab 2>&1 | grep -q "Application boot finished"; do sleep 
 At this point we can tetrieve the GitLab `root`{{}} user password:
 
 ```bash
-docker exec -it $(docker ps -qf "name=gitlab") cat /etc/gitlab/initial_root_password
+docker exec -it $(docker ps -qf "name=gitlab") sed -n 's|^Password: \(.*\)$|\1|p' /etc/gitlab/initial_root_password
 ```{{exec}}
 
 and we need to create a GitLab OIDC application with redirect URIs.

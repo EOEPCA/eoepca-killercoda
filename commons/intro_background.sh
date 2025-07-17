@@ -236,14 +236,14 @@ cat <<EOF > gitlab.rb
 puma['worker_processes'] = 1
 puma['min_threads'] = 1
 puma['max_threads'] = 1
-puma['per_worker_max_memory_mb'] = 400
+puma['per_worker_max_memory_mb'] = 200
 
-sidekiq['concurrency'] = 2
+sidekiq['concurrency'] = 1
 
-postgresql['shared_buffers'] = "256MB"
-postgresql['max_worker_processes'] = 2
+postgresql['shared_buffers'] = "128MB"
+postgresql['max_worker_processes'] = 1
 postgresql['max_connections'] = 100
-postgresql['effective_cache_size'] = '512MB'
+postgresql['effective_cache_size'] = '256MB'
 
 gitaly['configuration'] = {
   git: {
