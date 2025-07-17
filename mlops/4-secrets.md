@@ -1,29 +1,48 @@
-## Set up a GitLab OIDC Application. 
+At this point we need to configure the integration between SharingHub, MLFlow and Gitlab.
 
-Retrieve the GitLab password:
+Gitlab is a pre-requisite for the MLOps Buildign Block, as it is used to manage data and experiments. In this tutorial, for simplicity, we are skipping the details on how to install a gitlab instance and we are using a local gitlab installation.
+
+Before continuing, we need to be sure our local gitlab installation has started correctly, as it may take up to 10 minutes. To check your installation has started correctly you can run the following commands (which will terminate once the gitlab application has started)
+
+```
+while ! docker logs gitlab 2>&1 | grep -q "Application boot finished"; do sleep 10; done
+```{{exec}}
+
+At this point we can tetrieve the GitLab `root`{{}} user password:
 
 ```bash
 docker exec -it $(docker ps -qf "name=gitlab") cat /etc/gitlab/initial_root_password
 ```{{exec}}
 
-## Create the GitLab OIDC application with redirect URIs:
+and we need to create a GitLab OIDC application with redirect URIs. To do so we can
 
-1. Navigate to [GitLab]({{TRAFFIC_HOST1_8080}}/admin/applications/new)
-2. Log in with the root user and the password you retrieved.
-3. Fill in the form:
-   - **Name**: SharingHub
-   - **Redirect URI** (use both http and https): 
-```plaintext
-{{TRAFFIC_HOST1_30080}}/api/auth/login/callback
+First navigate to [GitLab]({{TRAFFIC_HOST1_8080}}/admin/applications/new)
+
+Then log in with the `root` user and the password you retrieved above.
+
+Fill in the form:
+   - **Name**:
 ```
+SharingHub
+```{{copy}}
+   - **Redirect URI**: 
+```
+{{TRAFFIC_HOST1_30080}}/api/auth/login/callback
+```{{copy}}
    - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `openid`, `profile`, `email`
-6. Click **Save application**.
 
-Then run this to apply application credentials to the state. When prompted, enter the GitLab OIDC application ID and secret you just created:
+Abd at last click **Save application**.
+
+Then run this coto apply application credentials to the state. When prompted, enter the GitLab OIDC application ID and secret you just created:
+
+```bash
+bash utils/save-application-credentials-to-state.sh
+```{{exec}}
+
+Save the secrets for the application
 
 ```bash
 bash apply-secrets.sh
-bash utils/save-application-credentials-to-state.sh
 ```{{exec}}
 
 Verify secrets were created:

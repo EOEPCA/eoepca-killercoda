@@ -283,8 +283,7 @@ gitlab_workhorse['env'] = {
 }
 EOF
   docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:`cat /tmp/assets/gitlab`
-  echo "starting gitlab (this can take up to 10 minutes)..." >> /tmp/killercoda_setup.log
-  while ! docker logs gitlab 2>&1 | grep -q "Application boot finished"; do sleep 10; done
+  echo "gitlab is installed, but it can take up to 10 minutes to start. You can start the tutorial in the mean time..." >> /tmp/killercoda_setup.log
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done

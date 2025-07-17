@@ -1,6 +1,6 @@
 {
-  "title": "MLOps Building Block Deployment",
-  "description": "Deploy EOEPCA MLOps Building Block with GitLab, SharingHub and MLflow",
+  "title": "EOEPCA MLOps BB",
+  "description": "Integrated AI Machine Learning operations with MLflow",
   "details": {
     "intro": {
       "title": "Intro to MLOps",
@@ -10,15 +10,19 @@
     },
     "steps": [
       {
-        "title": "Prerequisite Checks",
-        "text": "2-prerequisites.md"
+        "title": "Prerequisites S3 storage",
+        "text": "2a-prerequisites_s3.md"
+      },
+      {
+        "title": "Prerequisites Check",
+        "text": "2b-prerequisites.md"
       },
       {
         "title": "Environment Configuration",
         "text": "3-environment.md"
       },
       {
-        "title": "Applying Secrets",
+        "title": "Secrets and Gitlab configuration",
         "text": "4-secrets.md"
       },
       {
