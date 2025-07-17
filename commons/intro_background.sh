@@ -230,5 +230,61 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
     su - postgres -c "psql -c \"CREATE EXTENSION postgis;\" $dbname"
   done < /tmp/assets/postgrespostgis
 fi
+if [[ -e /tmp/assets/gitlab ]]; then
+  echo "installing gitlab (this can take a few minutes)..." >> /tmp/killercoda_setup.log
+cat <<EOF > gitlab.rb
+puma['worker_processes'] = 1
+puma['min_threads'] = 1
+puma['max_threads'] = 1
+puma['per_worker_max_memory_mb'] = 400
+
+sidekiq['concurrency'] = 2
+
+postgresql['shared_buffers'] = "256MB"
+postgresql['max_worker_processes'] = 2
+postgresql['max_connections'] = 100
+postgresql['effective_cache_size'] = '512MB'
+
+gitaly['configuration'] = {
+  git: {
+    catfile_cache_size: 10
+  },
+  concurrency: [
+    {
+      'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
+      'max_per_repo' => 1,
+    }, {
+      'rpc' => "/gitaly.SSHService/SSHUploadPack",
+      'max_per_repo' => 1,
+    },
+  ]
+}
+
+prometheus_monitoring['enable'] = false
+alertmanager['enable'] = false
+node_exporter['enable'] = false
+redis_exporter['enable'] = false
+postgres_exporter['enable'] = false
+gitlab_exporter['enable'] = false
+registry['enable'] = false
+gitlab_kas['enable'] = false
+gitlab_pages['enable'] = false
+spamcheck['enable'] = false
+
+gitlab_rails['env'] = {
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+gitaly['env'] = {
+  'GITALY_COMMAND_SPAWN_MAX_PARALLEL' => '2',
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+gitlab_workhorse['env'] = {
+  'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
+}
+EOF
+  docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:`cat /tmp/assets/gitlab`
+  echo "starting gitlab (this can take up to 10 minutes)..." >> /tmp/killercoda_setup.log
+  while ! docker logs gitlab 2>&1 | grep -q "Application boot finished"; do sleep 10; done
+fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
