@@ -4,6 +4,18 @@ echo setting-up your environment... wait till this setup terminates before start
 if [[ -e /tmp/assets/killeditor ]]; then
   echo "disabling editor to recover RAM (editor tab on the left will not work anymore)..." >> /tmp/killercoda_setup.log
   killall /opt/theia/node
+  #Stop services 
+  echo "stopping optional services to recover RAM..." >> /tmp/killercoda_setup.log
+  #Unattended upgrades
+  killall /usr/bin/python3
+  #Disks management
+  service udisks2 stop
+  #Bluethooth management
+  service ModemManager stop
+  #Disk RAID services
+  service multipathd stop
+  #Local ssh
+  service ssh stop
 fi
 if [[ -e /tmp/assets/k3s ]]; then
   echo "installing kubernetes via k3s..." >> /tmp/killercoda_setup.log
