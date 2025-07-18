@@ -1,4 +1,15 @@
-The second part is the configuration for the MLOps basic environment. To do so, we can run the configuration script below. It will prompt you to set up the MLOps building block's key configuration:
+The second part is the configuration for the MLOps basic environment.
+
+First we need to point our MLOps environment to the installed gitlab and the Killercoda host address 
+
+```
+cat <<EOF >> ~/.eoepca/state
+export GITLAB_URL={{TRAFFIC_HOST1_8080}}
+export PATH_BASED_ROUTING=true
+EOF
+```{{exec}}
+
+To do so, we can run the configuration script below. It will prompt you to set up the MLOps building block's key configuration:
 
 ```bash
 bash configure-mlops.sh

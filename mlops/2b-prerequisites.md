@@ -11,7 +11,14 @@ The MLops deployment scripts are available in the `mlops` directory:
 cd deployment-guide/scripts/mlops
 ```{{exec}}
 
-Now we need to understand our pre-requisites. In general EOEPCA Building Blocks will require as minimal pre-requisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. In this tutorial, for simplicity, nginx is already installed and the `*.eoepca.local` domain is mapped to the nginx address.
+Now we need to understand our pre-requisites. In general EOEPCA Building Blocks will require as minimal pre-requisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. In this tutorial, for simplicity, nginx Ingress is already installed.
+
+We now need to setup the hostname for accessing our installation. For this, we will use the external killercoda access host.
+
+```
+cat <<EOF >>~/.eoepca/state
+export INGRESS_HOST=$(echo "{{TRAFFIC_HOST1_80}}" | sed -E 's~^https?://~~;s~/.*~~')
+```{{exec}}
 
 Next we need to check the specific Resource Discovery BB prerequisites for installing the Resource Discovery building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```

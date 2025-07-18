@@ -285,7 +285,6 @@ gitlab_workhorse['env'] = {
 gitlab_rails['rake_cache_clear'] = false
 gitlab_rails['sentry_enabled'] = false
 gitlab_rails['gitlab_shell_enabled'] = false
-nginx['enable'] = false
 gitlab_rails['microsoft_graph_mailer_enabled'] = false
 EOF
   docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:`cat /tmp/assets/gitlab`

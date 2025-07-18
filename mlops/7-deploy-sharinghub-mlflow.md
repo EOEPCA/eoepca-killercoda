@@ -19,9 +19,17 @@ helm upgrade -i mlflow-sharinghub mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sha
 ```{{exec}}
 
 
+Now we need to create the ingress for mlflow
+
+```
+
+```{{exec}}
+
 Let's wait for the container to start with
 
-
+```
+kubectl -n processing wait pod --all --timeout=10m --for=condition=Ready
+```{{exec}}
 
 At last, we need to create the ingresses
 
