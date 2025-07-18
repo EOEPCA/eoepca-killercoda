@@ -34,7 +34,9 @@ if [[ -e /tmp/assets/nginxingress ]]; then
   helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace \
-    --set controller.hostNetwork=true
+    --set controller.hostNetwork=true \
+    --set controller.allowSnippetAnnotations=true \
+    --set controller.config.annotations-risk-level=Critical
 fi
 if [[ -e /tmp/assets/apisix ]]; then
   # Install apisix

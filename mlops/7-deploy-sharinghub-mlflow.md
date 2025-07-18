@@ -19,10 +19,10 @@ helm upgrade -i mlflow-sharinghub mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sha
 ```{{exec}}
 
 
-Now we need to create the ingress for mlflow
+Now we need to create the ingress for mlflow (the one of sharinghub is already created)
 
 ```
-
+kubectl apply -f mlflow/generated-ingress.yaml
 ```{{exec}}
 
 Let's wait for the container to start with
@@ -34,21 +34,14 @@ kubectl -n processing wait pod --all --timeout=10m --for=condition=Ready
 At last, we need to create the ingresses
 
 ```bash
-kubectl apply -f sharinghub/generated-ingress.yaml
 kubectl apply -f mlflow/generated-ingress.yaml
 ```{{exec}}
 
-
-**Create Ingress for MLflow**:
-
-```bash
-kubectl apply -f mlflow/generated-ingress.yaml
-```{{exec}}
 
 **Turn GitLab back on**:
 
 ```bash
-docker start $(docker ps -qaf "name=gitlab")
+docker start gitlab
 ```{{exec}}
 
 Now you must wait for GitLab to start up. This can take a few minutes. 

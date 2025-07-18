@@ -17,7 +17,8 @@ We now need to setup the hostname for accessing our installation. For this, we w
 
 ```
 cat <<EOF >>~/.eoepca/state
-export INGRESS_HOST=$(echo "{{TRAFFIC_HOST1_80}}" | sed -E 's~^https?://~~;s~/.*~~')
+export INGRESS_HOST="$(echo "{{TRAFFIC_HOST1_80}}" | sed -E 's~^https?://~~;s~/.*~~')"
+EOF
 ```{{exec}}
 
 Next we need to check the specific Resource Discovery BB prerequisites for installing the Resource Discovery building block are met. The Deployment Guide scripts provide a dedicated script for this task:
@@ -38,9 +39,9 @@ EOEPCA components can work with different Ingress services installed in your Kub
 nginx
 ```{{exec}}
 
-We enter the top-level domain for our EOEPCA services:
+The top-leve domain for our EOEPCA services is the one we have setup before, we do not need to update it.
 ```
-eoepca.local
+no
 ```{{exec}}
 
 We do not need a specific Storage Class for this component, so for this example we will use the basic storage class provided in this sandbox. Note that, in an operational environment, you should use a reliable (and possibly redundant and backed up) storage class, as this storage class will be used to store all the metadata of your data
