@@ -1,12 +1,14 @@
-# Usage
+#### Create a model project
 
-Navigate to [GitLab]({{TRAFFIC_HOST1_8080}}) and create a new project named `mlops-test-project`.
+Navigate to [GitLab]({{TRAFFIC_HOST1_8080}}).
 
-Add `sharinghub:aimodel` to its tags.
+[Create a new project]({{TRAFFIC_HOST1_8080}}/projects/new#blank_project) named `mlops-test-project`.
+
+Go to the [project Settings]({{TRAFFIC_HOST1_8080}}/root/mlops-test-project/edit), add `sharinghub:aimodel` to the "Project Topics" and save the changes.
 
 Now go to [SharingHub]({{TRAFFIC_HOST1_80}}) and log in with your GitLab account.
 
-Click the **Show more...* button in the **AI Models** card.
+Click the [AI Models]({{TRAFFIC_HOST1_80}/#/ai-model) card in the top-left corner.
 
 - In the **AI Models** card, click on the `mlops-test-project` project card to open it.
 - In the top-right corner, click the **MLflow** link.

@@ -23,14 +23,14 @@ Log in with the `root` user and the password you retrieved above.
 Fill in the form:
    - **Name**:
 ```
-SharingHub
+EOEPCA MLOps BB
 ```{{copy}}
    - **Redirect URI**: 
+The HTTPS and HTTP url for the application, which you can obtain by running
 ```
-{{TRAFFIC_HOST1_80}}/api/auth/login/callback
-(the same above but with http)
-```{{copy}}
-   - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `openid`, `profile`, `email`
+sed -n 's|.*INGRESS_HOST="\([^"]*\).*|http://\1/api/auth/login/callback\nhttp://\1/mlflow/auth/authorize|p' ~/.eoepca/state
+```{{exec}}
+   - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `write_repository`, `openid`, `profile`, `email`
 
 And at last click **Save application**.
 
@@ -62,4 +62,4 @@ At this point, we do not need the Gitlab instance on anymore, and we can park it
 
 ```
 docker stop gitlab
-```{{bash}}
+```{{exec}}
