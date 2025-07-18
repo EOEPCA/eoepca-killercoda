@@ -1,6 +1,10 @@
 #!/bin/bash
 #Script to set pre-requisites for EOEPCA components
 echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
+if [[ -e /tmp/assets/killeditor ]]; then
+  echo "disabling editor to recover RAM (editor tab on the left will not work anymore)..." >> /tmp/killercoda_setup.log
+  killall /opt/theia/node
+fi
 if [[ -e /tmp/assets/k3s ]]; then
   echo "installing kubernetes via k3s..." >> /tmp/killercoda_setup.log
   curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --disable=servicelb --disable=metrics-server" sh -

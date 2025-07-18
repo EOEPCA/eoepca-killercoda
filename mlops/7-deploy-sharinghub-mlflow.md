@@ -28,15 +28,8 @@ kubectl apply -f mlflow/generated-ingress.yaml
 Let's wait for the container to start with
 
 ```
-kubectl -n processing wait pod --all --timeout=10m --for=condition=Ready
+kubectl -n sharinghub wait pod --all --timeout=10m --for=condition=Ready
 ```{{exec}}
-
-At last, we need to create the ingresses
-
-```bash
-kubectl apply -f mlflow/generated-ingress.yaml
-```{{exec}}
-
 
 **Turn GitLab back on**:
 
