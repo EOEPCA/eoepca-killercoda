@@ -4,7 +4,7 @@ Navigate to [GitLab]({{TRAFFIC_HOST1_8080}}) and create a new project named `mlo
 
 Add `sharinghub:aimodel` to its tags.
 
-Now go to [SharingHub]({{TRAFFIC_HOST1_30080}}) and log in with your GitLab account.
+Now go to [SharingHub]({{TRAFFIC_HOST1_80}}) and log in with your GitLab account.
 
 Click the **Show more...* button in the **AI Models** card.
 
@@ -13,7 +13,7 @@ Click the **Show more...* button in the **AI Models** card.
 - The MLflow Tracking UI will open in a new tab. The URL will look like:
 
 ```bash
-export MLFLOW_TRACKING_URI="{{TRAFFIC_HOST1_30080}}/mlflow/root/mlops-test-project/tracking/"
+export MLFLOW_TRACKING_URI="{{TRAFFIC_HOST1_80}}/mlflow/root/mlops-test-project/tracking/"
 ```{{exec}}
 
 ---

@@ -27,7 +27,7 @@ SharingHub
 ```{{copy}}
    - **Redirect URI**: 
 ```
-{{TRAFFIC_HOST1_30080}}/api/auth/login/callback
+{{TRAFFIC_HOST1_80}}/api/auth/login/callback
 ```{{copy}}
    - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `openid`, `profile`, `email`
 

@@ -48,6 +48,6 @@ Now you must wait for GitLab to start up. This can take a few minutes.
 
 Confirm that you can:
 - [Visit GitLab]({{TRAFFIC_HOST1_8080}});
-- And [SharingHub]({{TRAFFIC_HOST1_30080}}) 
+- And [SharingHub]({{TRAFFIC_HOST1_80}}) 
 
 before proceeding to the next step.
