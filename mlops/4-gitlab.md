@@ -5,7 +5,7 @@ Gitlab is a pre-requisite for the MLOps Buildign Block, as it is used to manage 
 Before continuing, we need to be sure our local gitlab installation has started correctly, as it may take up to 10 minutes. To check your installation has started correctly you can run the following commands (which will terminate once the gitlab application has started)
 
 ```
-while ! docker logs gitlab 2>&1 | grep -q "Application boot finished"; do sleep 10; done
+while [[ "`curl -s -o /dev/null -w "%{http_code}" "{{TRAFFIC_HOST1_8080}}"`" != "302" ]]; do sleep 10; done
 ```{{exec}}
 
 At this point we can tetrieve the GitLab `root`{{}} user password:
@@ -28,10 +28,11 @@ SharingHub
    - **Redirect URI**: 
 ```
 {{TRAFFIC_HOST1_80}}/api/auth/login/callback
+(the same above but with http)
 ```{{copy}}
    - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `openid`, `profile`, `email`
 
-Abd at last click **Save application**.
+And at last click **Save application**.
 
 Then run this coto apply application credentials to the state. When prompted, enter the GitLab OIDC application ID and secret you just created:
 
@@ -56,3 +57,9 @@ sharinghub                   Opaque   1      5m33s
 sharinghub-oidc              Opaque   2      5m38s
 sharinghub-s3                Opaque   2      5m33s
 ```{{}}
+
+At this point, we do not need the Gitlab instance on anymore, and we can park it till we have deployed the SharingHub and MLFlow components
+
+```
+docker stop gitlab
+```{{bash}}
