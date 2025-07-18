@@ -234,12 +234,16 @@ if [[ -e /tmp/assets/gitlab ]]; then
   echo "installing gitlab (this can take a few minutes)..." >> /tmp/killercoda_setup.log
 cat <<EOF > gitlab.rb
 puma['worker_processes'] = 0
-sidekiq['concurrency'] = 1
+puma['min_threads'] = 1
+puma['max_threads'] = 1
+puma['per_worker_max_memory_mb'] = 400
 
-postgresql['shared_buffers'] = "128MB"
-postgresql['max_worker_processes'] = 1
+sidekiq['concurrency'] = 2
+
+postgresql['shared_buffers'] = "256MB"
+postgresql['max_worker_processes'] = 2
 postgresql['max_connections'] = 100
-postgresql['effective_cache_size'] = '256MB'
+postgresql['effective_cache_size'] = '512MB'
 
 gitaly['configuration'] = {
   git: {
@@ -248,6 +252,9 @@ gitaly['configuration'] = {
   concurrency: [
     {
       'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
+      'max_per_repo' => 1,
+    }, {
+      'rpc' => "/gitaly.SSHService/SSHUploadPack",
       'max_per_repo' => 1,
     },
   ]
@@ -264,23 +271,6 @@ gitlab_kas['enable'] = false
 gitlab_pages['enable'] = false
 spamcheck['enable'] = false
 
-actioncable['worker_pool_size']=1
-gitlab_rails['manage_backup_path'] = false
-gitlab_rails['rack_attack_git_basic_auth'] = {
-  'enabled' => false,
-}
-gitlab_rails['rake_cache_clear'] = false
-gitlab_rails['sentry_enabled'] = false
-gitlab_rails['content_security_policy'] = {
-    enabled: false,
-    report_only: false
-}
-gitlab_rails['gitlab_shell_enabled'] = false
-
-nginx['enable'] = false
-gitlab_rails['microsoft_graph_mailer_enabled'] = false
-
-
 gitlab_rails['env'] = {
   'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
 }
@@ -291,6 +281,12 @@ gitaly['env'] = {
 gitlab_workhorse['env'] = {
   'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
 }
+
+gitlab_rails['rake_cache_clear'] = false
+gitlab_rails['sentry_enabled'] = false
+gitlab_rails['gitlab_shell_enabled'] = false
+nginx['enable'] = false
+gitlab_rails['microsoft_graph_mailer_enabled'] = false
 EOF
   docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:`cat /tmp/assets/gitlab`
   echo "gitlab is installed, but it can take up to 10 minutes to start. You can start the tutorial in the mean time..." >> /tmp/killercoda_setup.log
