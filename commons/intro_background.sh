@@ -233,11 +233,7 @@ fi
 if [[ -e /tmp/assets/gitlab ]]; then
   echo "installing gitlab (this can take a few minutes)..." >> /tmp/killercoda_setup.log
 cat <<EOF > gitlab.rb
-puma['worker_processes'] = 1
-puma['min_threads'] = 1
-puma['max_threads'] = 1
-puma['per_worker_max_memory_mb'] = 200
-
+puma['worker_processes'] = 0
 sidekiq['concurrency'] = 1
 
 postgresql['shared_buffers'] = "128MB"
@@ -253,9 +249,6 @@ gitaly['configuration'] = {
     {
       'rpc' => "/gitaly.SmartHTTPService/PostReceivePack",
       'max_per_repo' => 1,
-    }, {
-      'rpc' => "/gitaly.SSHService/SSHUploadPack",
-      'max_per_repo' => 1,
     },
   ]
 }
@@ -270,6 +263,23 @@ registry['enable'] = false
 gitlab_kas['enable'] = false
 gitlab_pages['enable'] = false
 spamcheck['enable'] = false
+
+actioncable['worker_pool_size']=1
+gitlab_rails['manage_backup_path'] = false
+gitlab_rails['rack_attack_git_basic_auth'] = {
+  'enabled' => false,
+}
+gitlab_rails['rake_cache_clear'] = false
+gitlab_rails['sentry_enabled'] = false
+gitlab_rails['content_security_policy'] = {
+    enabled: false,
+    report_only: false
+}
+gitlab_rails['gitlab_shell_enabled'] = false
+
+nginx['enable'] = false
+gitlab_rails['microsoft_graph_mailer_enabled'] = false
+
 
 gitlab_rails['env'] = {
   'MALLOC_CONF' => 'dirty_decay_ms:1000,muzzy_decay_ms:1000'
