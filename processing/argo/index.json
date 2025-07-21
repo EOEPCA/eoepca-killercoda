@@ -1,0 +1,74 @@
+{
+  "title": "Argo - OGC Process",
+  "description": "Deploy the EOEPCA Processing Building Block, with an OGC Process API interface and Argo Workflows execution engine",
+  "details": {
+    "intro": {
+      "title": "Intro",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Pre-requisites (1/4)",
+        "text": "1-prerequisites.md"
+      },
+      {
+        "title": "Pre-requisites (2/4)",
+        "text": "2-prerequisite_k8s.md"
+      },
+      {
+        "title": "Pre-requisites (3/4)",
+        "text": "3-prerequisite_rwm.md"
+      },
+      {
+        "title": "Pre-requisites (4/4)",
+        "text": "4-prerequisite_s3.md"
+      },
+      {
+        "title": "Deploy Argo",
+        "text": "5-deploy-argo.md"
+      },
+      {
+        "title": "Configure Deployment (1/2)",
+        "text": "5-configurezoo.md"
+      },
+      {
+        "title": "Configure Deployment (2/2)",
+        "text": "6-configurezoo2.md"
+      },
+      {
+        "title": "Deploy Zoo",
+        "text": "7-deployzoo.md"
+      },
+      {
+        "title": "Deploy an application (1/2)",
+        "text": "8-deployapp.md"
+      },
+      {
+        "title": "Deploy an application (2/2)",
+        "text": "9-deployapp2.md"
+      },
+      {
+        "title": "Execute an application",
+        "text": "10-submitproc.md"
+      },
+      {
+        "title": "Monitor a job",
+        "text": "11-monitorproc.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "12-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
