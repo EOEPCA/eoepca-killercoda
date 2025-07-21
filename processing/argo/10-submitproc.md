@@ -21,25 +21,23 @@ As you can see, and as you may recall from the CWL submitted in the previous ste
 As example, we can just use their default values in the job submission, via
 
 ```
-
-JOB\_ID=$(
-  curl --silent --show-error  
-    -X POST http://zoo.eoepca.local/test/ogc-api/processes/convert-url/execution  
-    -H "Content-Type: application/json"  
-    -H "Accept: application/json"  
-    -H "Prefer: respond-async"  
-    -d @- \<\<EOF | jq -r '.jobID'
-  {
-    "inputs": {
-      "fn": "resize",
-      "url":  "https://eoepca.org/media\_portal/images/logo6\_med.original.png",
-      "size": "50%"
-    }
-  }
+JOB_ID=$(
+  curl --silent --show-error \
+    -X POST http://zoo.eoepca.local/test/ogc-api/processes/convert-url/execution \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -H "Prefer: respond-async" \
+    -d @- <<EOF | jq -r '.jobID'
+  {
+    "inputs": {
+      "fn": "resize",
+      "url":  "https://eoepca.org/media_portal/images/logo6_med.original.png",
+      "size": "50%"
+    }
+  }
 EOF
 )
-echo "$JOB\_ID"
-
+echo "$JOB_ID"
 ```{{exec}}
 
 the execution returned us a job id, which we are saving in the `$JOB_ID`{{}} variable for later use
