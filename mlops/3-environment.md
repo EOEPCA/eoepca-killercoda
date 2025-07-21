@@ -11,17 +11,25 @@ The MLops deployment scripts are available in the `mlops` directory:
 cd deployment-guide/scripts/mlops
 ```{{exec}}
 
-We need now to configure the environment variable. These are stored into a file at `~/.eoepca/state`{{}} and for most installation are created via an helper script. In this case, as we are not using the standard Ingress integration, we need to create these variables ourself
+We need now to configure the environment variable. These are stored into a file at `~/.eoepca/state`{{}} and for most installation are created via an helper script.
+
+EOEPCA in general uses sub-domain based routing for the different Building Blocks. In our sandbox this is not possible, as we do not support wildcard DNS entries and we have only one single DNS address allocated to the Ingress, thus we need to enable path based routing and use the DNS entry provided by the sandbox environment as single DNS entry. To do so, we can create the appropriate configuration variables via
 
 ```
 cat <<EOF >> ~/.eoepca/state
-export INGRESS_HOST="`sed -e 's|^https://||' -e 's|PORT|30226|' /etc/killercoda/host`"
-export GITLAB_URL="`sed -e 's|^https://||' -e 's|PORT|8080|' /etc/killercoda/host`"
 export PATH_BASED_ROUTING=true
+export INGRESS_HOST="`sed -e 's|^https://||' -e 's|PORT|30226|' /etc/killercoda/host`"
 EOF
 ```{{exec}}
 
-We can now use the normal MLOps environment configuration script via
+We need also to provide the path to the Gitlab sub-compoenet installation. In this tutorial we are not deploying Gitlab inside the Kubernetes cluster but using an external gitlab installed into th same sandbox machine. We need then to specify its link via
+
+```
+cat <<EOF >> ~/.eoepca/state
+export GITLAB_URL="`sed -e 's|PORT|8080|' /etc/killercoda/host`"
+EOF
+
+We can now run the MLOps environment configuration script via
 
 ```bash
 bash configure-mlops.sh

@@ -14,7 +14,7 @@
         "text": "2a-prerequisites_s3.md"
       },
       {
-        "title": "Prerequisites (Ingress)",
+        "title": "Prerequisites (Kubernetes and Ingress)",
         "text": "2b-prerequisites_in.md"
       },
       {

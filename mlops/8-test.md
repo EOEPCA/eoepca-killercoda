@@ -15,15 +15,15 @@ Click the [AI Models]({{TRAFFIC_HOST1_80}/#/ai-model) card in the top-left corne
 - The MLflow Tracking UI will open in a new tab. The URL will look like:
 
 ```bash
-export MLFLOW_TRACKING_URI="{{TRAFFIC_HOST1_80}}/mlflow/root/mlops-test-project/tracking/"
+export MLFLOW_TRACKING_URI="{{TRAFFIC_HOST1_30336}}/root/mlops-test-project/tracking/"
 ```{{exec}}
 
 ---
 
-In GitLab create an access token
+In GitLab [create an access token]({{TRAFFIC_HOST1_8080}}/-/user_settings/personal_access_tokens)
 
 ```bash
-export MLFLOW_TRACKING_TOKEN="<YOUR-TOKEN>"
+read -p "Insert tracking token: " MLFLOW_TRACKING_TOKEN; echo "$MLFLOW_TRACKING_TOKEN" > ~/gitlab-access-token
 ```
 
 ---
@@ -39,7 +39,7 @@ apt install python3.12-venv --yes
 ```bash
 python -m venv venv
 source venv/bin/activate
-pip install mlflow scikit-learn
+pip install mlflow==2.14.2 scikit-learn
 ```{{exec}}
 
 **Run the example Machine Learning script:**

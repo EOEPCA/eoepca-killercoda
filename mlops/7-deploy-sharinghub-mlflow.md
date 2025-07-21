@@ -12,30 +12,17 @@ helm upgrade -i sharinghub sharinghub-0.4.0/deploy/helm/sharinghub/ -n sharinghu
 --create-namespace --values sharinghub/generated-values.yaml
 ```{{exec}}
 
-As said before, the EOEPCA installation assumes you are using an ingress. If we want to expose the service port directly, we need to patch the installation via
+Before deploying MLflow, we need to disable its internal postgresql database. This is not something we want to do in prouction, as the PostgreSQL database is used for persistence, but we can do in our sandbox environment to reduce resource consumption and speed-up deployment time. To do so, we run
 
 ```
-kubectl patch svc sharinghub -n sharinghub --type='json' \
-  -p='[{"op": "add","path": "/spec/ports/0/nodePort","value": 30226},
-       {"op": "replace","path": "/spec/type","value": "NodePort"}]'
+sed -i '/dependencies:/,$d' mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/Chart.yaml
 ```{{exec}}
 
-and deploy MLflow. Note that we will disable the Postgres database deployed with MLFlow for performance reasons, using the `--set postgresql.enabled=false`{{}}. This is not suggested in production
-
-Before deploying the MLFlow, we need to re-generate its configuration values referring now to th
+and deploy MLflow via
 
 ```bash
 helm upgrade -i mlflow-sharinghub mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/ --namespace sharinghub --values mlflow/generated-values.yaml --set postgresql.enabled=false
 ```{{exec}}
-
-And, as before, we need to patch its service to allow direct access without an ingress
-
-```
-kubectl patch svc mlflow-sharinghub -n sharinghub --type='json' \
-  -p='[{"op": "add","path": "/spec/ports/0/nodePort","value": 30336},
-       {"op": "replace","path": "/spec/type","value": "NodePort"}]'
-```{{exec}}
-
 
 Let's wait for the container to start with
 

@@ -29,9 +29,10 @@ EOEPCA MLOps BB
 The HTTPS and HTTP url for the application, which you can obtain by running
 ```
 #Generate URL for SharingHub authorization
-sed -e 's|^.*://\(.*-\)PORT\(\..*\)$|http://\130226\2/api/auth/login/callback|' /etc/killercoda/host
-#Generate URL for MLFlow authorization
-sed -e 's|^.*://\(.*-\)PORT\(\..*\)$|http://\130336\2/auth/authorize|' /etc/killercoda/host
+{ echo "Copy the URLs below in the \"Redirect URI\" field";
+  sed -e 's|^\(.*-\)PORT\(\..*\)$|\130226\2/api/auth/login/callback|' /etc/killercoda/host;
+  sed -e 's|^\(.*-\)PORT\(\..*\)$|\130336\2/auth/authorize|' /etc/killercoda/host;
+} | cat
 ```{{exec}}
    - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `write_repository`, `openid`, `profile`, `email`
 

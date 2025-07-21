@@ -1,9 +1,29 @@
-Another pre-requisite for the EOEPCA installation is the availability of an [Ingress controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), allowing [Ingresses](https://kubernetes.io/docs/concepts/services-networking/ingress/) to expose the services deployed by EOEPCA. To this Ingress controller, the DNS names of the services needs to be allocated.
+a kubernetes cluster, with some minimal constraints, such as the availability of an ingress controller to expose the EOEPCA building block interfaces, DNS entries to map the EOEPCA interface endpoints and certificates to provide SSL support is required by EOEPCA components
 
-In this sandbox environment, in order to reduce resource consumptions, we will not use an Ingress controller but access the services directly from their local node port. We will then use the proxy and DNS provided by the sandbox environment to access our specific services. In summary, when we will complete the deployment, we will be able to access the service via:
+Here for simplicity, we will use the basic nginx ingress controller, static DNS entries and no SSL support, as described in the [EOEPCA pre-requisites tutorial](../pre-requisites).
 
-- GitLab at: [{{TRAFFIC_HOST1_80}}]({{TRAFFIC_HOST1_8080}})
-- SharingHub at: [{{TRAFFIC_HOST1_30226}}]({{TRAFFIC_HOST1_30226}})
-- Mlflow at: [{{TRAFFIC_HOST1_30336}}]({{TRAFFIC_HOST1_30336}})
+To check the Kubernetes cluster is properly installed, run
 
-Note also that, with this solution, we will use directly GitLab authentication within the MLOps Building Block, while the default EOEPCA integration relies on the [APISIX](https://apisix.apache.org/) ingress controller for integrating authentication within the system.
+```
+kubectl get -n ingress-nginx pods
+```{{exec}}
+
+which should return an `ingress-nginx-controller`{{}} pod.
+
+This ingress is accessible from the sandbox environment via a reverse proxy, avaiable at
+
+```
+{{TRAFFIC_HOST1_80}}
+```{{copy}}
+
+At this time, if you try o access this URL, you will get a 404 "Not Found" error, as we did not deploy the Building Block yet.
+
+Note that the address above is a single DNS address for all the services hosted in the Kubernetes cluster, so for all the EOEPCA services. The EOEPCA services will need then to use path-based routing to properly route the requests to the different sub-components of the EOEPCA MLOps Building Block.
+
+At last, we will not deploy in this tutorial the Gitlab sub-component of the MLOps Building Block within the Kubernetes cluster, but use an external gitlab instance. This one is available at
+
+```
+{{TRAFFIC_HOST1_8080}}
+```{{copy}}
+
+In summary, the SharingHub and MLOps components will be accessible via the Ingress controller at port 80, while the Gitlab will be accessible directly via the port 8080.
