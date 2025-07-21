@@ -12,12 +12,12 @@ __DEV ONLY__
 
 ```
 git clone https://github.com/EOEPCA/deployment-guide.git -b killercoda-jh-changes
-```
+```{{exec}}
 
 the OGC API Process interface deployment scripts are available in the `processing/oapip` directory, let's open it
 
 ```
-cd \~/deployment-guide/scripts/processing/oapip
+cd ~/deployment-guide/scripts/processing/oapip
 ```{{exec}}
 
 As specified in the deployment guide, the OGC API Process interface, Argo Workflows engine, requires the following pre-requisites:
