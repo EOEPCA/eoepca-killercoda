@@ -27,11 +27,11 @@ curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/ | jq .
 List the available collections:
 
 ```bash
-curl -u openeo:openeo -L https://openeo.${INGRESS_HOST}/openeo/1.2/collections | jq .
+curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/collections | jq .
 ```{{exec}}
 
 List the supported processes:
 
 ```bash
-curl -u openeo:openeo -L https://openeo.${INGRESS_HOST}/openeo/1.2/processes | jq .
+curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/processes | jq .
 ```{{exec}}

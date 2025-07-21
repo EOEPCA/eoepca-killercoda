@@ -7,7 +7,7 @@ You can interact with the OpenEO API directly using `curl`. As noted in the docu
 Here's an example that uses the "sum" process to add two numbers. Note the `-u` flag for authentication and the updated URL.
 
 ```bash
-curl -u openeo:openeo -X POST "http://openeo.${INGRESS_HOST}/result" \
+curl -u openeo:openeo -X POST "https://${INGRESS_HOST}/openeo/1.2/result" \
   -H "Content-Type: application/json" \
   -d '{
         "process": {

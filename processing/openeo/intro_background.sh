@@ -15,6 +15,19 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/gomplate.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate
 fi
 
+if [[ -e /tmp/assets/nginxingress ]]; then
+  #Installing Ingress (basic)
+  echo installing nginx ingress... >> /tmp/killercoda_setup.log
+  helm upgrade --install ingress-nginx ingress-nginx \
+    --repo https://kubernetes.github.io/ingress-nginx \
+    --namespace ingress-nginx --create-namespace \
+    --set controller.service.type=NodePort \
+    --set controller.service.nodePorts.http=30080 \
+    --set controller.service.nodePorts.https=30443 \
+    --set controller.allowSnippetAnnotations=true \
+    --set controller.config.annotations-risk-level=Critical
+fi
+
 
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
@@ -64,16 +77,6 @@ spec:
         memory: "0"
 EOF
 
-#Installing Ingress (basic)
-echo installing nginx ingress... >> /tmp/killercoda_setup.log
-helm upgrade --install ingress-nginx ingress-nginx \
-  --repo https://kubernetes.github.io/ingress-nginx \
-  --namespace ingress-nginx --create-namespace \
-  --set controller.service.type=NodePort \
-  --set controller.service.nodePorts.http=30080 \
-  --set controller.service.nodePorts.https=30443 \
-  --set controller.allowSnippetAnnotations=true \
-  --set controller.config.annotations-risk-level=Critical
 
 
 helm plugin install https://github.com/aslafy-z/helm-git --version 1.3.0
