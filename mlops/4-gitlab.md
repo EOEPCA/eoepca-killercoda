@@ -28,7 +28,10 @@ EOEPCA MLOps BB
    - **Redirect URI**: 
 The HTTPS and HTTP url for the application, which you can obtain by running
 ```
-sed -n 's|.*INGRESS_HOST="\([^"]*\).*|http://\1/api/auth/login/callback\nhttp://\1/mlflow/auth/authorize|p' ~/.eoepca/state
+#Generate URL for SharingHub authorization
+sed -e 's|^.*://\(.*-\)PORT\(\..*\)$|http://\130226\2/api/auth/login/callback|' /etc/killercoda/host
+#Generate URL for MLFlow authorization
+sed -e 's|^.*://\(.*-\)PORT\(\..*\)$|http://\130336\2/auth/authorize|' /etc/killercoda/host
 ```{{exec}}
    - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `write_repository`, `openid`, `profile`, `email`
 

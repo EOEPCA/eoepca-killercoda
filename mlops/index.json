@@ -10,11 +10,11 @@
     },
     "steps": [
       {
-        "title": "Prerequisites S3 storage",
+        "title": "Prerequisites (S3 storage)",
         "text": "2a-prerequisites_s3.md"
       },
       {
-        "title": "Prerequisites Check",
+        "title": "Prerequisites (Ingress)",
         "text": "2b-prerequisites.md"
       },
       {
