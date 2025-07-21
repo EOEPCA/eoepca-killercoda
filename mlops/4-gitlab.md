@@ -32,8 +32,8 @@ Redirect URI: The HTTPS and HTTP url for the application, which you can obtain b
 ```
 #Generate URL for SharingHub authorization
 { echo "Copy the URLs below in the \"Redirect URI\" field";
-  sed -e 's|^\(.*-\)PORT\(\..*\)$|\130226\2/api/auth/login/callback|' /etc/killercoda/host;
-  sed -e 's|^\(.*-\)PORT\(\..*\)$|\130336\2/auth/authorize|' /etc/killercoda/host;
+  sed -e 's|^.*\(://.*-\)PORT\(\..*\)$|http\180\2/api/auth/login/callback|' /etc/killercoda/host;
+  sed -e 's|^.*\(://.*-\)PORT\(\..*\)$|http\180\2/mlflow/auth/authorize|' /etc/killercoda/host;
 } | cat
 ```{{exec}}
 

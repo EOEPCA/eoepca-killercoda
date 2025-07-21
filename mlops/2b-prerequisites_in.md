@@ -14,7 +14,7 @@ This ingress is accessible from the sandbox environment via a reverse proxy, ava
 
 ```
 {{TRAFFIC_HOST1_80}}
-```{{copy}}
+```{{}}
 
 At this time, if you try o access this URL, you will get a 404 "Not Found" error, as we did not deploy the Building Block yet.
 
@@ -24,6 +24,6 @@ At last, we will not deploy in this tutorial the Gitlab sub-component of the MLO
 
 ```
 {{TRAFFIC_HOST1_8080}}
-```{{copy}}
+```{{}}
 
 In summary, the SharingHub and MLOps components will be accessible via the Ingress controller at port 80, while the Gitlab will be accessible directly via the port 8080.

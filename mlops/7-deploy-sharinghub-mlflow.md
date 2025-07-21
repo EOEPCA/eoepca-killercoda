@@ -24,6 +24,12 @@ and deploy MLflow via
 helm upgrade -i mlflow-sharinghub mlflow-sharinghub-0.2.0/deploy/helm/mlflow-sharinghub/ --namespace sharinghub --values mlflow/generated-values.yaml --set postgresql.enabled=false
 ```{{exec}}
 
+then add the MLflow ingress via
+
+```
+kubectl apply -f mlflow/generated-ingress.yaml
+```{{exec}}
+
 Let's wait for the container to start with
 
 ```
