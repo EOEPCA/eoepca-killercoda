@@ -18,7 +18,7 @@ EOEPCA in general uses sub-domain based routing for the different Building Block
 ```
 cat <<EOF >> ~/.eoepca/state
 export PATH_BASED_ROUTING=true
-export INGRESS_HOST="`sed -e 's|^https://||' -e 's|PORT|30226|' /etc/killercoda/host`"
+export INGRESS_HOST="`sed -e 's|^https://||' -e 's|PORT|80|' /etc/killercoda/host`"
 EOF
 ```{{exec}}
 
@@ -28,6 +28,7 @@ We need also to provide the path to the Gitlab sub-compoenet installation. In th
 cat <<EOF >> ~/.eoepca/state
 export GITLAB_URL="`sed -e 's|PORT|8080|' /etc/killercoda/host`"
 EOF
+```{{exec}}
 
 We can now run the MLOps environment configuration script via
 

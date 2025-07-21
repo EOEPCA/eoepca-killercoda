@@ -47,7 +47,7 @@ while [[ "`curl -s -o /dev/null -w "%{http_code}" "{{TRAFFIC_HOST1_8080}}"`" != 
 
 Confirm that you can:
 - [Visit GitLab]({{TRAFFIC_HOST1_8080}});
-- And [SharingHub]({{TRAFFIC_HOST1_30226}}) 
-- And [MLFlow]({{TRAFFIC_HOST1_30336}})
+- And [SharingHub]({{TRAFFIC_HOST1_80}}) 
+- And [MLFlow]({{TRAFFIC_HOST1_80}}/mlflow)
 
 before proceeding to the next step.

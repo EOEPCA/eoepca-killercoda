@@ -21,12 +21,14 @@ To do so we can open the [local GitLab instance]({{TRAFFIC_HOST1_8080}}/admin/ap
 Log in with the `root` user and the password you retrieved above.
 
 Fill in the form:
-   - **Name**:
+
+Name:
 ```
 EOEPCA MLOps BB
 ```{{copy}}
-   - **Redirect URI**: 
-The HTTPS and HTTP url for the application, which you can obtain by running
+
+Redirect URI: The HTTPS and HTTP url for the application, which you can obtain by running
+
 ```
 #Generate URL for SharingHub authorization
 { echo "Copy the URLs below in the \"Redirect URI\" field";
@@ -34,11 +36,12 @@ The HTTPS and HTTP url for the application, which you can obtain by running
   sed -e 's|^\(.*-\)PORT\(\..*\)$|\130336\2/auth/authorize|' /etc/killercoda/host;
 } | cat
 ```{{exec}}
-   - **Scopes**: `api`, `read_api`, `read_user`, `read_repository`, `write_repository`, `openid`, `profile`, `email`
 
-And at last click **Save application**.
+Scopes: `api`, `read_api`, `read_user`, `read_repository`, `write_repository`, `openid`, `profile`, `email`
 
-Then run this coto apply application credentials to the state. When prompted, enter the GitLab OIDC application ID and secret you just created:
+And at last click *Save application*.
+
+Then run this command to apply application credentials to the state. When prompted, enter the GitLab OIDC application ID and secret you just created:
 
 ```bash
 bash utils/save-application-credentials-to-state.sh
