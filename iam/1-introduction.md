@@ -1,13 +1,12 @@
+Welcome to the [EOEPCA Identity and Access Management (IAM)](https://eoepca.readthedocs.io/projects/iam/en/latest/) Building Block Tutorial
 
-**Overview:** 
+The EOEPCA Identity and Access Management (IAM) Building Block comprises two main aspects:
+- [Keycloak](https://www.keycloak.org/) is the main Identity Provider, handling things like logging in, user roles, and connecting to other identity systems. 
+- OPA (with [OPAL](https://opal.ac/)) is used for making detailed policy decisions
 
-The EOEPCA Identity and Access Management (IAM) Building Block is made up of three main parts: Keycloak, Open Policy Agent (OPA) with OPAL and Apache APISIX. 
+In addtion, the IAM request authorization approach relies upon [APISIX](https://apisix.apache.org/) which acts as the API gateway that routes requests and enforces authorization policies defined in Keycloak and/or OPA.
 
-- Keycloak is the main Identity Provider, handling things like logging in, user roles, and connecting to other identity systems. 
-- OPA (with OPAL) is used for making detailed policy decisions and APISIX acts as the gateway that checks these policies.
-- Apache APISIX is the API gateway that routes requests and applies policies.
+The focus of this tutorial is the deployment of Keycloak and OPA as an integrated IAM solution - with demonstrations of access protection and policy enforcement.
 
-In this tutorial, you'll set up the EOEPCA IAM Building Block on a Kubernetes cluster using official scripts and Helm charts. We'll focus just on the IAM parts (Keycloak, OPA/OPAL, APISIX) in a development environment.
-
-This tutorial assumes you already know a bit about EOEPCA and its requirements. If not, it's a good idea to go through the [EOEPCA introduction tutorials](../intro) first.
+Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). In particular, it relieas on the APISIX Ingress Controller, which is a pre-requisite for enabling authorization on the EOPEPCA Building Blocks. If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
 

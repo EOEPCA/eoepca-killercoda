@@ -1,0 +1,51 @@
+{
+  "title": "EOEPCA Prerequisites",
+  "description": "Optional and mandatory pre-requisites for deploying EOEPCA Building Blocks.",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Intro"
+    },
+    "steps": [
+      {
+        "text": "01-prerequisites.md",
+        "title": "Prerequisites"
+      },
+      {
+        "text": "01b-checks.md",
+        "title": "Deployment Guide and Prerequisites Check"
+      },
+      {
+        "text": "02-kubernetes.md",
+        "title": "Kubernetes and Wildcard DNS"
+      },
+      {
+        "text": "03-storage.md",
+        "title": "Storage"
+      },
+      {
+        "text": "04-ingress.md",
+        "title": "Ingress and Load Balancer"
+      },
+      {
+        "text": "05-cert-manager.md",
+        "title": "Cert-Manager"
+      },
+      {
+        "text": "06-prerequisites-2.md",
+        "title": "Prerequisites 2"
+      },
+      {
+        "text": "07-minio.md",
+        "title": "S3 Object Storage"
+      }
+    ],
+    "finish": {
+      "text": "99-finish.md",
+      "title": "Finish"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

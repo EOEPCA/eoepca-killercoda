@@ -4,7 +4,7 @@ Once the processing request is submitted, Zoo will invoke Calrissian, which will
 
 The jobs will gather the input, execute the processing and in the push the output inside the platform object storage.
 
-From the [OGC Process API](https://ogcapi.ogc.org/processes/) interface we will be able to monitor the status of the job and, at the end of its successful completition, retreive its output.
+From the [OGC Process API](https://ogcapi.ogc.org/processes/) interface we will be able to monitor the status of the job and, at the end of its successful completition, retrieve its output.
 
 So, let's start to submit a processing request to the convert-url application.
 

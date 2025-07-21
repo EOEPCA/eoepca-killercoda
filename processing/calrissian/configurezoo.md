@@ -6,16 +6,16 @@ bash configure-oapip.sh
 
 The script will start with the general EOEPCA configuration.
 
+For the demo deployment we are not generating certificates, so we will restrict ourself to the http scheme
+
+```
+http
+```{{exec}}
+
 As said in the previous chapter, we will use the nginx ingress in this demo deployment
 
 ```
 nginx
-```{{exec}}
-
-for the demo deployment we are not generating certificates, so we will restrict ourself to the http scheme
-
-```
-http
 ```{{exec}}
 
 as a domain, we use eoepca.local, which is mapped to the local machine in this demo
@@ -52,6 +52,12 @@ no
 no
 no
 no
+```{{exec}}
+
+For this test, we will not use the EOEPCA Workspace, but store results into a generic object storage. Thus we reply false to the next question
+
+```
+false
 ```{{exec}}
 
 we will also use the same S3 storage for stagein and stageout, so we reply again to no to the next question

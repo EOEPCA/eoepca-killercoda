@@ -1,14 +1,15 @@
-As ususal in this tutorial, we will use the EOEPCA deployment-guide scripts to help us configuring and deploying our application. Let's clone it in our environment
+As usual in this tutorial, we will use the [EOEPCA deployment-guide scripts](https://github.com/EOEPCA/deployment-guide) to help us configuring and deploying our application.
+
+First, we download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-git clone https://github.com/EOEPCA/deployment-guide
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 the OGC API Process interface deployment scripts are available in the `processing/oapip` directory, let's open it
 
 ```
 cd ~/deployment-guide/scripts/processing/oapip
-git checkout killercoda-demo
 ```{{exec}}
 
 As specified in the deployment guide, the OGC API Process interface, Calrissian Kubernetes engine, requires the following pre-requisites:

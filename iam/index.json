@@ -1,9 +1,8 @@
 {
-  "title": "IAM Building Block Deployment",
-  "description": "Deploy EOEPCA IAM Building Block with Keycloak, OPA and APISIX",
+  "title": "EOEPCA IAM BB",
+  "description": "Identity and Access Management (IAM) to secure your services",
   "details": {
     "intro": {
-      "title": "Intro to IAM",
       "text": "1-introduction.md",
       "foreground": "intro_foreground.sh",
       "background": "intro_background.sh"
@@ -14,8 +13,8 @@
         "text": "2-prerequisites.md"
       },
       {
-        "title": "Environment Configuration",
-        "text": "3-environment.md"
+        "title": "IAM Configuration",
+        "text": "3-iam-configuration.md"
       },
       {
         "title": "Applying Secrets",
@@ -30,13 +29,21 @@
         "text": "6-client-user.md"
       },
       {
+        "title": "Keycloak Admin UI",
+        "text": "7-keycloak-ui.md"
+      },
+      {
         "title": "Validation of Deployment",
-        "text": "7-validation.md"
+        "text": "8-validation.md"
+      },
+      {
+        "title": "Policy Enforcement",
+        "text": "9-policy-enforcement.md"
       }
     ],
     "finish": {
       "title": "IAM Setup Complete",
-      "text": "8-finish.md"
+      "text": "10-finish.md"
     },
     "assets": {
       "host01": [

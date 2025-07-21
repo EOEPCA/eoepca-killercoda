@@ -1,6 +1,6 @@
 a Read-Write-Many Storage Class is a pre-requisite.
 
-This is not normally provided by all the Kubernetes CSI storage drivers, nor by most Kubernetes cloud services. It can be anyway installed as per the [EOEPCA pre-requisites tutorial](../pre-requisites).
+This is not normally provided by all the Kubernetes CSI storage drivers, nor by most Kubernetes cloud services. It can be anyway installed as per the [EOEPCA pre-requisites tutorial](../../prerequisites).
 
 Here we have installed a `standard`{{}} StorageClass supporting Read-Write-Many. To check it is available and working properly, you can try to instantiate a Read-Write-Many persistent volume:
 
