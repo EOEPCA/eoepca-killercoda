@@ -18,7 +18,7 @@ then we deploy the software via helm, using the configuration values generated i
 
 ```
 helm upgrade -i zoo-project-dru charts/zoo-project-dru \
-  --version 0.4.14 \
+  --version 0.4.18 \
   --values generated-values.yaml \
   --namespace processing
 ```{{exec}}

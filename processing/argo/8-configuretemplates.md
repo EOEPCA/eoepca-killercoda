@@ -8,47 +8,8 @@ Before we configure ZOO, we need to set up Argo with two crucial components requ
 The runner doesn't execute jobs directly; it uses a pre-defined `WorkflowTemplate` as a blueprint. We must create it in the `argo` namespace.
 
 ```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: argoproj.io/v1alpha1
-kind: WorkflowTemplate
-metadata:
-  name: argo-cwl-runner
-  namespace: processing
-spec:
-  entrypoint: calrissian-runner
-  templates:
-  - name: calrissian-runner
-    inputs:
-      parameters:
-        - name: cwl
-        - name: entry_point
-        - name: max_ram
-          default: "4G"
-        - name: max_cores
-          default: "2"
-        - name: parameters
-    outputs:
-      parameters:
-      - name: results
-        valueFrom:
-          path: /calrissian/outputs/output.json
-      - name: log
-        valueFrom:
-          path: /calrissian/outputs/stderr.txt
-    container:
-      image: terradue/calrissian:0.11.0
-      command: ["/bin/bash", "-c"]
-      args:
-        - |
-          mkdir -p /calrissian/outputs && \
-          echo "{{inputs.parameters.parameters}}" > /params.json && \
-          echo "{{inputs.parameters.cwl}}" > /workflow.cwl && \
-          calrissian --stdout /calrissian/outputs/output.json \
-                     --stderr /calrissian/outputs/stderr.txt \
-                     --max-ram={{inputs.parameters.max_ram}} \
-                     --max-cores={{inputs.parameters.max_cores}} \
-                     /workflow.cwl /params.json
-EOF
+k create namespace test
+kubectl apply -f examples/workflow-template.yaml -n test
 ```{{exec}}
 
 **2. Create the Authentication Token**
@@ -71,7 +32,7 @@ metadata:
   name: argo-workflow-creator-clusterrole
 rules:
   - apiGroups: ["argoproj.io"]
-    resources: ["workflows"]
+    resources: ["workflows", "workflowtemplates", "clusterworkflowtemplates"]
     verbs: ["create", "get", "list", "watch"]
   - apiGroups: [""]
     resources: ["workflows"]

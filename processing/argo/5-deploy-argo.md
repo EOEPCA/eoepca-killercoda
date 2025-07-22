@@ -14,6 +14,19 @@ Next, we apply the official installation manifest from the Argo Project. This wi
 kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.15/install.yaml
 ```{{exec}}
 
+Now we need to make some ammendments to get it to work with HTTP.
+
+```
+kubectl patch deployment argo-server -n argo --type='json' \
+-p='[{"op": "replace", "path": "/spec/template/spec/containers/0/readinessProbe/httpGet/scheme", "value":"HTTP"}]'
+
+
+kubectl patch deployment \
+  -n argo argo-server \
+  --type='json' \
+  -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--secure=false"}]'
+```{{exec}}
+
 Now, we need to wait for the Argo services to start. This may take a minute or two.
 
 ```
