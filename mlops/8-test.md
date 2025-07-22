@@ -1,6 +1,6 @@
 Now you have completed the deployment of the EOEPCA MLOps component and you can test your installation.
 
-First, we can go to the Gitlab and [Create an access token]({{TRAFFIC_HOST1_8080}}/-/user_settings/personal_access_tokens), click on "Add new token" and, name it `myuser` and select the `api`{{}}, `read_api`{{}}, `read_user`{{}}, `read_repository`{{}}, `write_repository`{{}} rights and click the "Save" button. Copy the generated access token and then run the command below (pasting the token for saving in your environment)
+First, we can go to the Gitlab and [Create an access token]({{TRAFFIC_HOST1_8080}}/-/user_settings/personal_access_tokens), click on "Add new token" and, name it `mytoken`, and select all rights (the `api`{{}} right) and click the "Save" button. Copy the generated access token and then run the command below (pasting the token for saving in your environment)
 
 ```
 read -p "You personal access token: " MLFLOW_TRACKING_TOKEN; echo "$MLFLOW_TRACKING_TOKEN" > ~/gitlab-access-token
