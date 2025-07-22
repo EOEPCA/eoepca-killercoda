@@ -13,7 +13,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
   name: argo-cwl-runner
-  namespace: argo
+  namespace: processing
 spec:
   entrypoint: calrissian-runner
   templates:
@@ -57,43 +57,46 @@ Modern Kubernetes doesn't automatically create token secrets. We must create one
 
 ```bash
 cat <<EOF | kubectl apply -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: workflow-creator-role
-  namespace: argo
-rules:
-- apiGroups: ["argoproj.io"]
-  resources: ["workflows"]
-  verbs: ["create", "get", "list", "watch"]
-EOF
-
-cat <<EOF | kubectl apply -f -
+  name: argo
+  namespace: processing
+---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRole
+metadata:
+  name: argo-workflow-creator-clusterrole
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflows"]
+    verbs: ["create", "get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["workflows"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
 metadata:
   name: argo-workflow-creator-binding
-  namespace: argo
 subjects:
-- kind: ServiceAccount
-  name: argo
-  namespace: argo
+  - kind: ServiceAccount
+    name: argo
+    namespace: processing
 roleRef:
-  kind: Role
-  name: workflow-creator-role
+  kind: ClusterRole
+  name: argo-workflow-creator-clusterrole
   apiGroup: rbac.authorization.k8s.io
-EOF
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: argo-server-token
-  namespace: argo
-  annotations:
-    kubernetes.io/service-account.name: argo
-type: kubernetes.io/service-account-token
 EOF
 ```{{exec}}
 
 Now that Argo is fully prepared, we can proceed with configuring ZOO.
+
+
+---
+
+```
+kubectl get secret argo-server-token -n processing -o jsonpath='{.data.token}' | base64 --decode
+```{{exec}}
+
+Then add it to the `wfToken` field in the `generated-values.yaml` file.

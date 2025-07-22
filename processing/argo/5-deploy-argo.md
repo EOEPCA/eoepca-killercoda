@@ -5,31 +5,23 @@ Before we can configure Zoo to use Argo as its execution engine, we must first i
 First, we create the namespace where Argo and its workflows will live:
 
 ```
-
 kubectl create namespace argo
-
 ```{{exec}}
 
 Next, we apply the official installation manifest from the Argo Project. This will deploy all the required components.
 
 ```
-
 kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.15/install.yaml
-
 ```{{exec}}
 
 Now, we need to wait for the Argo services to start. This may take a minute or two.
 
 ```
-
 kubectl -n argo wait pod --all --timeout=10m --for=condition=Ready
-
 ```{{exec}}
 
 Once all the pods are in a `Ready` state, our Argo Workflows engine is installed and ready to receive jobs from the OGC API Process interface. You can see the running components with:
 
 ```
-
 kubectl get pods -n argo
-
 ```{{exec}}
