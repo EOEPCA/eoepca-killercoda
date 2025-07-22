@@ -38,6 +38,10 @@
         "text": "7-deployzoo.md"
       },
       {
+        "title": "Configure Argo for ZOO Integration",
+        "text": "8-configuretemplates.md"
+      },
+      {
         "title": "Deploy an application (1/2)",
         "text": "8-deployapp.md"
       },

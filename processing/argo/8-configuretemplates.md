@@ -88,7 +88,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
-  name: argo-sa-token
+  name: argo-server-token
   namespace: argo
   annotations:
     kubernetes.io/service-account.name: argo
