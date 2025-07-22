@@ -251,6 +251,12 @@ fi
 if [[ -e /tmp/assets/gitlab ]]; then
   echo "installing gitlab (this can take a few minutes)..." >> /tmp/killercoda_setup.log
 cat <<EOF > gitlab.rb
+external_url '`sed 's|PORT|8080|' /etc/killercoda/host`'
+nginx['listen_port'] = 80
+nginx['listen_https'] = false
+gitlab_rails['gitlab_ssh_host'] = '172.30.1.2'
+gitlab_rails['gitlab_shell_ssh_port'] = 2221
+
 puma['worker_processes'] = 1
 puma['min_threads'] = 1
 puma['max_threads'] = 1
@@ -305,7 +311,7 @@ gitlab_rails['sentry_enabled'] = false
 gitlab_rails['gitlab_shell_enabled'] = false
 gitlab_rails['microsoft_graph_mailer_enabled'] = false
 EOF
-  docker run -p 8080:80 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:`cat /tmp/assets/gitlab`
+  docker run -p 8080:80 -p 2221:22 --name gitlab -d -v $PWD/gitlab.rb:/etc/gitlab/gitlab.rb gitlab/gitlab-ce:`cat /tmp/assets/gitlab`
   echo "gitlab is installed, but it can take up to 10 minutes to start. You can start the tutorial in the mean time..." >> /tmp/killercoda_setup.log
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
