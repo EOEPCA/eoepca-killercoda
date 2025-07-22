@@ -11,9 +11,34 @@ kubectl create namespace argo
 Next, we apply the official installation manifest from the Argo Project. This will deploy all the required components.
 
 ```
-kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.5.15/install.yaml
+curl -L -o argo-install.yaml https://github.com/argoproj/argo-workflows/releases/download/v3.5.15/install.yaml
 ```{{exec}}
 
+3. Edit the File to Disable TLS 📝
+Now, open the argo-install.yaml file you just downloaded in a text editor (like nano, vim).
+
+Search for the text name: argo-server.
+
+In that section, find the spec.template.spec.containers block.
+
+Add the line - --secure=false to the args: list, as shown below.
+
+It should look like this when you're done:
+
+```
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - server
+        - --secure=false ## <-- ADD THIS LINE
+        image: quay.io/argoproj/argocli:v3.5.15
+```
+
+```
+kubectl apply -n argo -f ./argo-install.yaml
+```{{exec}}
 Now, we need to wait for the Argo services to start. This may take a minute or two.
 
 ```
