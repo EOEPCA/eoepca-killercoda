@@ -1,4 +1,10 @@
-It is now time to deploy the SharingHub and the MLFlow application, to do so, we need first to download locally their helm charts, via
+As our sandbox environment is limited on resources, at this point we need to shutdown our Gitlab instance via
+
+```
+docker stop gitlab
+```{{exec}}
+
+we will re-enable it later on, after we have deployed the SharingHub and MLFlow components in Kubernetes. To do so, we need first to download locally their helm charts, via
 
 ```bash
 curl -L https://github.com/csgroup-oss/sharinghub/archive/refs/tags/0.4.0.tar.gz | tar xvz 

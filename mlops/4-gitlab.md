@@ -65,8 +65,3 @@ sharinghub-oidc              Opaque   2      5m38s
 sharinghub-s3                Opaque   2      5m33s
 ```{{}}
 
-At this point, we do not need the Gitlab instance on anymore, and we can park it till we have deployed the SharingHub and MLFlow components
-
-```
-docker stop gitlab
-```{{exec}}
