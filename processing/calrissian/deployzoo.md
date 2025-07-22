@@ -7,18 +7,20 @@ Zoo will then deploy, on-demand when a new processing request is received, Calri
 To deploy Zoo, we first add the Zoo software helm repository
 
 ```
-helm repo add zoo-project https://zoo-project.github.io/charts/
-helm repo update zoo-project
-```{{exec}}
+git clone https://github.com/ZOO-Project/charts.git
+
+nano charts/zoo-project-dru/templates/dp-zoofpm.yaml
+
+helm dependency build charts/zoo-project-dru/
+```
 
 then we deploy the software via helm, using the configuration values generated in the step before.
 
 ```
-helm upgrade -i zoo-project-dru zoo-project/zoo-project-dru \
+helm upgrade -i zoo-project-dru charts/zoo-project-dru \
   --version 0.4.14 \
   --values generated-values.yaml \
-  --namespace processing \
-  --create-namespace
+  --namespace processing
 ```{{exec}}
 
 now, we need to wait the Zoo services to start.

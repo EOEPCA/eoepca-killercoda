@@ -56,6 +56,8 @@ EOF
 Modern Kubernetes doesn't automatically create token secrets. We must create one manually so the ZOO service can authenticate with the Argo API. We'll also create the necessary RBAC `Role` and `RoleBinding` to allow this.
 
 ```bash
+k create namespace processing
+
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ServiceAccount
@@ -87,6 +89,17 @@ roleRef:
   kind: ClusterRole
   name: argo-workflow-creator-clusterrole
   apiGroup: rbac.authorization.k8s.io
+EOF
+---
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argo-server-token
+  namespace: processing
+  annotations:
+    kubernetes.io/service-account.name: argo
+type: kubernetes.io/service-account-token
 EOF
 ```{{exec}}
 
