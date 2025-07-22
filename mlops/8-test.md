@@ -9,25 +9,25 @@ read -p "You personal access token: " MLFLOW_TRACKING_TOKEN; echo "$MLFLOW_TRACK
 Setup your name via
 
 ```
-git config --local user.name "Administrator"
-git config --local user.email "gitlab_admin_test@example.com"
+git config --global user.name "Administrator"
+git config --global user.email "gitlab_admin_test@example.com"
 ```{{exec}}
 
 and we are all ready to test our EOEPCA MLOps.
 
-First thing first, the EOEPCA MLOps component uses the Gitlab as main repository
+First thing first, the EOEPCA MLOps component uses the Gitlab as main repository for both the training datasets and the AI models. These can be then added as new git project, with appropriate "Project Topics" for SharingHub to discriminate what is a dataset and what is a AI model.
 
-Now you can go to the Gitlab and [Create a new project]({{TRAFFIC_HOST1_8080}}/projects/new#blank_project) named `wine-dataset`. Note that creation of a new project in our basic sandbox environment may take a few minute, do not stop the request.
+What we can do is to create a new dataset for AI traning, which can be done via the Gitlab by [creating a new project]({{TRAFFIC_HOST1_8080}}/projects/new#blank_project). We give to it the `wine-dataset` name. After the creation is complete (note that that creation of a new project in our basic sandbox environment may take a few minute, do not stop the request), you can go to the [project Settings/General]({{TRAFFIC_HOST1_8080}}/root/wine-dataset/edit), add `sharinghub:dataset` to the "Project Topics" and save the changes.
 
-Go to the [project Settings/General]({{TRAFFIC_HOST1_8080}}/root/mlops-test-project/edit), add `sharinghub:dataset` to the "Project Topics" and save the changes.
+We can now clone this repository locally (using the access token we saved before),
 
 ```
 cd ~
 git clone https://root:`cat ~/gitlab-access-token`@`sed 's|.*://\(.*\)PORT\(.*\)|\18080\2|' /etc/killercoda/host`/root/wine-dataset.git
 cd wine-dataset
-git config --local user.name "Administrator"
-git config --local user.email "gitlab_admin_test@example.com"
 ```{{exec}}
+
+and fill it with our sample Wines dataset
 
 ```
 git switch --create main
@@ -36,6 +36,47 @@ git add .
 git commit -m "wine dataset"
 git push
 ```{{exec}}
+
+If we go to the [SharingHub]({{TRAFFIC_HOST1_80}/) we will find the new dataset in the [datasets tab]({{TRAFFIC_HOST1_80}/#/dataset).
+
+We can now create an AI model trained on this dataset, from doing so we again [create a new project]({{TRAFFIC_HOST1_8080}}/projects/new#blank_project). We give to it the `wine-model` name. After the creation is complete (note that that creation of a new project in our basic sandbox environment may take a few minute, do not stop the request), you can go to the [project Settings/General]({{TRAFFIC_HOST1_8080}}/root/wine-model/edit), add `sharinghub:aimodel` to the "Project Topics" and save the changes.
+
+
+We can now clone this repository locally (using the access token we saved before),
+
+```
+cd ~
+git clone https://root:`cat ~/gitlab-access-token`@`sed 's|.*://\(.*\)PORT\(.*\)|\18080\2|' /etc/killercoda/host`/root/wine-model.git
+cd wine-model
+```{{exec}}
+
+and fill it with our sample wines model
+
+```
+git switch --create main
+cp -r ~/deployment-guide/scripts/mlops/data/wine-model/* ./
+git add .
+git commit -m "wine model"
+git push
+```{{exec}}
+
+If we go to the [SharingHub]({{TRAFFIC_HOST1_80}/) we will find the new model in the [AI model tab]({{TRAFFIC_HOST1_80}/#/ai-model).
+
+From the AI model tab, you can then enter from the links the MlFlow. MlFlow is used to track the training and execution of our AI models. If you follow the link
+
+We can now try to run this model using MlFlow.
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install mlflow==2.14.2
+pip install -r requirements.txt
+
+export MLFLOW_TRACKING_TOKEN="`cat ~/gitlab-access-token`"
+./inference.py wine-quality-model.joblib "[[14.23, 1.71, 2.43, 15.6, 127.0, 2.8, 3.06, 0.28, 2.29, 5.64, 1.04]]"
+```{{exec}}
+
+
 
 
 Now you can go to the Gitlab and [Create a new project]({{TRAFFIC_HOST1_8080}}/projects/new#blank_project) named `mlops-test-project`. Note that creation of a new project in our basic sandbox environment may take a few minute, do not stop the request.
