@@ -23,7 +23,7 @@ We can now clone this repository locally (using the access token we saved before
 
 ```
 cd ~
-git clone https://root:`cat ~/gitlab-access-token`@`sed 's|.*://\(.*\)PORT\(.*\)|\18080\2|' /etc/killercoda/host`/root/wine-dataset.git
+git clone https://root:$(cat ~/gitlab-access-token)@$(sed 's|.*://\(.*\)PORT\(.*\)|\18080\2|' /etc/killercoda/host)/root/wine-dataset.git
 cd wine-dataset
 ```{{exec}}
 
@@ -37,7 +37,7 @@ git commit -m "wine dataset"
 git push
 ```{{exec}}
 
-If we go to the [SharingHub]({{TRAFFIC_HOST1_80}/) we will find the new dataset in the [datasets tab]({{TRAFFIC_HOST1_80}/#/dataset).
+If we go to the [SharingHub]({{TRAFFIC_HOST1_80}}) we will find the new dataset in the [datasets tab]({{TRAFFIC_HOST1_80}}/#/dataset).
 
 We can now create an AI model trained on this dataset, from doing so we again [create a new project]({{TRAFFIC_HOST1_8080}}/projects/new#blank_project). We give to it the `wine-model` name. After the creation is complete (note that that creation of a new project in our basic sandbox environment may take a few minute, do not stop the request), you can go to the [project Settings/General]({{TRAFFIC_HOST1_8080}}/root/wine-model/edit), add `sharinghub:aimodel` to the "Project Topics" and save the changes.
 
@@ -46,7 +46,7 @@ We can now clone this repository locally (using the access token we saved before
 
 ```
 cd ~
-git clone https://root:`cat ~/gitlab-access-token`@`sed 's|.*://\(.*\)PORT\(.*\)|\18080\2|' /etc/killercoda/host`/root/wine-model.git
+git clone https://root:$(cat ~/gitlab-access-token)@$(sed 's|.*://\(.*\)PORT\(.*\)|\18080\2|' /etc/killercoda/host)/root/wine-model.git
 cd wine-model
 ```{{exec}}
 
@@ -60,7 +60,7 @@ git commit -m "wine model"
 git push
 ```{{exec}}
 
-If we go to the [SharingHub]({{TRAFFIC_HOST1_80}/) we will find the new model in the [AI model tab]({{TRAFFIC_HOST1_80}/#/ai-model).
+If we go to the [SharingHub]({{TRAFFIC_HOST1_80}}) we will find the new model in the [AI model tab]({{TRAFFIC_HOST1_80}}/#/ai-model).
 
 From the AI model tab, you can then enter from the links the MlFlow. MlFlow is used to track the training and execution of our AI models. If you follow the link
 
