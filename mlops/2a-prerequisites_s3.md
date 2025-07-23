@@ -1,3 +1,5 @@
+NOTE TODO: This needs to be removed, the buckets are not used... maybe they are used for DVC...
+
 an S3 object storage is required for storing outputs of the processing we will use two S3 buckets:
  - `mlopbb-sharinghub`{{}} for storing the datasets of the SharingHub
  - `mlopbb-mlflow-sharinghub`{{}} for storing the experiments results of MLFlow

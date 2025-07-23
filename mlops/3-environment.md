@@ -3,7 +3,7 @@ It is now time to configure our EOEPCA Building Block environment. We will use t
 First, we download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-jh-changes | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-mlops-endtoend | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 The MLops deployment scripts are available in the `mlops` directory:
