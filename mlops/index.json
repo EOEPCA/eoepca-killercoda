@@ -30,17 +30,17 @@
         "text": "7-deploy-sharinghub-mlflow.md"
       },
       {
-        "title": "Test the MLOps Building Block",
-        "text": "8-test.md"
+        "title": "Add training datasets and AI models",
+        "text": "8-add.md"
       },
       {
-        "title": "Validation of Deployment",
-        "text": "8-validation.md"
+        "title": "Train a model",
+        "text": "9-train.md"
       }
     ],
     "finish": {
-      "title": "MLOps Setup Complete",
-      "text": "9-finish.md"
+      "title": "MLOps tutorial completed",
+      "text": "10-finish.md"
     },
     "assets": {
       "host01": [
