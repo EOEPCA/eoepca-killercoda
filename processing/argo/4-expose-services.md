@@ -18,6 +18,9 @@ Finally, we need to create the S3 buckets that our workflow template expects. Th
 
 ```bash
 mc mb local-minio/workflows
+```{{exec}}
+
+```bash
 mc mb local-minio/results
 ```{{exec}}
 

@@ -29,6 +29,3 @@ You should see `argo-cwl-runner-stage-in-out` in the list.
 * **Handles Results**: After your job finishes, it automatically collects the outputs, logs, and usage reports and pushes them back to S3.
 
 By using this template, you can focus on writing your science logic in a standard CWL file and let the template handle all the complex data orchestration with Argo.
-
-
-TODO: expand on the template's features and how it works.
