@@ -1,1 +1,0 @@
-../calrissian/prerequisite_s3.md

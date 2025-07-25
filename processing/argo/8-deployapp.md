@@ -1,1 +1,0 @@
-../calrissian/deployapp.md

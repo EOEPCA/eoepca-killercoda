@@ -1,1 +1,0 @@
-../calrissian/prerequisite_k8s.md

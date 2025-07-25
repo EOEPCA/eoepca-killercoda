@@ -1,28 +1,22 @@
-As usual in this tutorial, we will use the [EOEPCA deployment-guide scripts](https://github.com/EOEPCA/deployment-guide) to help us configuring and deploying our application.
+we need to install a couple of essential tools: **Skaffold** for automating our deployments and the **MinIO Client (`mc`)** for interacting with our S3 object storage.
 
-First, we download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, let's install Skaffold. This command downloads the binary and moves it into path.
 
-```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+````bash
+curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+install skaffold /usr/local/bin/
 ```{{exec}}
 
----
+Next, we'll install the MinIO client.
 
-__DEV ONLY__
-
-```
-git clone https://github.com/EOEPCA/deployment-guide.git -b killercoda-jh-changes
+```bash
+curl -sL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && \
+chmod +x /usr/local/bin/mc
 ```{{exec}}
 
-the OGC API Process interface deployment scripts are available in the `processing/oapip` directory, let's open it
+Finally, let's create a dedicated Kubernetes namespac.
 
-```
-cd ~/deployment-guide/scripts/processing/oapip
+```bash
+kubectl create namespace ns1
 ```{{exec}}
 
-As specified in the deployment guide, the OGC API Process interface, Argo Workflows engine, requires the following pre-requisites:
- - a kubernetes cluster
- - a Read-Write-Many Storage Class (a pre-requisite for Zoo)
- - an S3 object storage
-
-we will check in the next steps the avaliability of these pre-requisites
