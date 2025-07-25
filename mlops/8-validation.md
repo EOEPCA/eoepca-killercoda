@@ -4,7 +4,7 @@ Check the status of the key services:
 
 ```bash
 kubectl get pods -n sharinghub
-````
+```
 
 All pods should be in `Running` or `Completed` status.
 

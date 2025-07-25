@@ -2,7 +2,7 @@ we need to install a couple of essential tools: **Skaffold** for automating our 
 
 First, let's install Skaffold. This command downloads the binary and moves it into path.
 
-````bash
+```bash
 curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
 install skaffold /usr/local/bin/
 ```{{exec}}
