@@ -1,12 +1,20 @@
 To interact with our newly deployed platform, we need to access the **Argo Server** and **MinIO** services from our terminal. The easiest way to do this is using `kubectl port-forward`.
 
-Let's forward the MinIO service running on port 9000 inside the cluster to port 9000 on our local machine. We'll run this in the background using `&`.
+We must run these in separate tabs, as the port-forwarding is an active process that is most stable in a dedicated terminal session.
 
+In one tab run:
 
 ```bash
-nohup kubectl port-forward svc/minio -n ns1 9000:9000 9001:9001 > minio-port-forward.log 2>&1 &
-nohup kubectl port-forward svc/argo-server -n ns1 2746:2746 > argo-port-forward.log 2>&1 &
+kubectl port-forward svc/minio -n ns1 9000:9000 9001:9001
 ```{{exec}}
+
+In another tab run:
+
+```bash
+kubectl port-forward svc/argo-server -n ns1 2746:2746
+```{{exec}}
+
+Now open the third tab. Where we will continue with our setup, leave the first two tabs running in the background.
 
 Now that we can access MinIO, let's configure our `mc` client to connect to it.
 
