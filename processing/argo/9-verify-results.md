@@ -22,4 +22,4 @@ You can even view the contents of the file:
 mc cat local-minio/results/abc-1234/catalog.json | jq
 ```{{exec}}
 
-Due to the resource constraints of this environment, we used a simple showcase application that downloads a static STAC catalog. In a real-world scenario, you would replace this with your actual scientific processing logic.
+Due to the resource constraints of this environment, we used a simple showcase application that downloads a static STAC catalog. In a real-world scenario, you would replace this with your actual logic.

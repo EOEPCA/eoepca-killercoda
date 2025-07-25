@@ -14,7 +14,7 @@ curl -sL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
 chmod +x /usr/local/bin/mc
 ```{{exec}}
 
-Finally, let's create a dedicated Kubernetes namespac.
+Finally, let's create a dedicated Kubernetes namespac. If this command fails, wait a minute whilst gatekeeper is deployed and try again.
 
 ```bash
 kubectl create namespace ns1

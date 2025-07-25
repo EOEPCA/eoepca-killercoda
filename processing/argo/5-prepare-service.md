@@ -12,6 +12,11 @@ To run our service, we need a Python environment with a few dependencies. We'll 
 
 ```bash
 apt-get update > /dev/null && apt-get install -y python3-venv > /dev/null
+```{{exec}}
+
+And now, let's create and activate our virtual environment.
+
+```bash
 python3 -m venv env_zoo
 source env_zoo/bin/activate
 ```{{exec}}
