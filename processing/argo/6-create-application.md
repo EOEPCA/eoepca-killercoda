@@ -1,4 +1,4 @@
-An application in this context is defined by a **Common Workflow Language (CWL)** file. This file describes the inputs, outputs, and steps of our scientific workflow.
+An application in this context is defined by a **Common Workflow Language (CWL)** file. This file describes the inputs, outputs and steps of our scientific workflow.
 
 We're going to create a very simple "showcase" application. First, let's clean up the template's default test files and create a new directory for our app.
 

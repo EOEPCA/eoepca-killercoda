@@ -24,8 +24,21 @@ kubectl get wftmpl -n ns1
 
 You should see `argo-cwl-runner-stage-in-out` in the list. 
 
-* **Automates Data Staging**: It automatically adds steps to fetch input data from S3 before your job starts.
-* **Executes the CWL**: It uses a tool called **Calrissian** to run your CWL application on Kubernetes.
-* **Handles Results**: After your job finishes, it automatically collects the outputs, logs, and usage reports and pushes them back to S3.
+We can inspect the template to see how it works.
 
-By using this template, you can focus on writing your science logic in a standard CWL file and let the template handle all the complex data orchestration with Argo.
+```bash
+kubectl get wftmpl argo-cwl-runner-stage-in-out -n ns1 -o yaml
+```{{exec}}
+
+This `WorkflowTemplate` is a blueprint designed to automate running a CWL-based analysis. 
+
+It is designed to handle three distinct operational stages:
+
+**Data Staging**
+It manages the transfer of data to and from S3 object storage. Inputs are fetched before the job begins, and all resulting outputs, logs and usage reports are archived back to S3 upon completion.
+
+**CWL Execution**
+It uses a tool called Calrissian to interpret the CWL definition and run the analysis as a series of jobs on the Kubernetes cluster.
+
+**Results**
+The template is configured to capture logs and outputs from both successful and failed runs.
