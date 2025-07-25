@@ -4,7 +4,9 @@
   "details": {
     "intro": {
       "title": "Introduction",
-      "text": "0-intro.md"
+      "text": "0-intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
     },
     "steps": [
       {
@@ -47,6 +49,11 @@
     "finish": {
       "title": "Finish",
       "text": "10-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
     }
   },
   "backend": {
