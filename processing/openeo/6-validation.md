@@ -1,37 +1,14 @@
 ## Validating the Deployment
 
-Let's verify that the service has been deployed correctly.
+### Check Pods Status
 
-### Check the Pod
-
-Check that the `openeo-geopyspark-driver` pod is running.
+Verify all pods are running correctly:
 
 ```bash
-kubectl get pods -n openeo
+kubectl get pods -n openeo-geotrellis
 ```{{exec}}
 
-### Manual Validation
-
-You can manually check the API endpoints. First, source the state file to get the `INGRESS_HOST`.
-
-```bash
-source ~/.eoepca/state
-```{{exec}}
-
-Check the main capabilities endpoint (note the URL change and basic auth):
-
-```bash
-curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/ | jq .
-```{{exec}}
-
-List the available collections:
-
-```bash
-curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/collections | jq .
-```{{exec}}
-
-List the supported processes:
-
-```bash
-curl -u openeo:openeo -L https://${INGRESS_HOST}/openeo/1.2/processes | jq .
-```{{exec}}
+Expected pods:
+- Spark Operator controller and webhook
+- ZooKeeper
+- OpenEO driver and executor

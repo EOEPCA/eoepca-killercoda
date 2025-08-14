@@ -1,8 +1,6 @@
 ## Deploying the Spark Operator
 
-The OpenEO Geotrellis engine relies on Apache Spark for processing. The Kubeflow Spark Operator is used to manage Spark jobs within our Kubernetes cluster.
-
-Let's deploy the Spark Operator using Helm:
+The OpenEO GeoTrellis engine requires Apache Spark for processing. Deploy the Spark Operator using Helm:
 
 ```bash
 helm upgrade -i openeo-geotrellis-sparkoperator spark-operator \
@@ -10,11 +8,6 @@ helm upgrade -i openeo-geotrellis-sparkoperator spark-operator \
     --version 2.0.2 \
     --namespace openeo-geotrellis \
     --create-namespace \
-    --values sparkoperator/generated-values.yaml
+    --values sparkoperator/generated-values.yaml \
+    --wait --timeout 5m
 ```{{exec}}
-
-```bash
-crictl rmi --prune
-```{{exec}}
-
-This command will install the Spark Operator into the `openeo-geotrellis` namespace.

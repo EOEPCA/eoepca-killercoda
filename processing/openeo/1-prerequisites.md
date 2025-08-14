@@ -1,24 +1,25 @@
 ## Prerequisites and Initial Setup
 
-First, let's clone the `deployment-guide` repository which contains the necessary scripts.
+First, let's clone the deployment-guide repository which contains the necessary scripts.
 
 ```bash
-git clone https://github.com/EOEPCA/deployment-guide -b killercoda-jh-changes
+git clone https://github.com/EOEPCA/deployment-guide
 cd deployment-guide/scripts/processing/openeo
+git checkout killercoda-jh-dask-openeo
 ```{{exec}}
 
-```bash
-export INGRESS_HOST=$(echo "{{TRAFFIC_HOST1_30080}}" | sed -E 's~^https?://~~;s~/.*~~')
-```{{exec}}
+Set up the environment variables for both Killercoda and local development:
 
-Now, run the prerequisite validation script to ensure your environment is set up correctly.
+Now run the prerequisite validation script:
 
 ```bash
 bash check-prerequisites.sh <<EOF
 http
 nginx
-no
+eoepca.local
 local-path
 no
+keycloak.eoepca.local
+eoepca
 EOF
 ```{{exec}}

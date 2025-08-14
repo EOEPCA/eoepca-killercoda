@@ -1,6 +1,6 @@
-## Deploying OpenEO Geotrellis
+## Deploying OpenEO GeoTrellis
 
-With the dependencies in place, we can now deploy OpenEO Geotrellis. This component provides the API that connects users to the Earth observation cloud back-ends.
+With dependencies in place, deploy OpenEO GeoTrellis:
 
 ```bash
 helm upgrade -i openeo-geotrellis-openeo sparkapplication \
@@ -8,17 +8,21 @@ helm upgrade -i openeo-geotrellis-openeo sparkapplication \
     --version 0.16.3 \
     --namespace openeo-geotrellis \
     --create-namespace \
-    --values openeo-geotrellis/generated-values.yaml
+    --values openeo-geotrellis/generated-values.yaml \
+    --wait --timeout 10m
 ```{{exec}}
 
-```bash
-crictl rmi --prune
-```{{exec}}
-
-Next, deploy the ingress to expose the OpenEO service:
-
+For Killercoda, deploy the ingress:
 ```bash
 kubectl apply -f openeo-geotrellis/generated-ingress.yaml
+source ~/.eoepca/state
+export OPENEO_URL="${HTTP_SCHEME}://openeo.${INGRESS_HOST}"
+echo "OpenEO API will be accessible at: ${OPENEO_URL}"
 ```{{exec}}
 
-This makes the OpenEO API accessible through your configured ingress host.
+Wait for the OpenEO GeoTrellis application to be ready:
+```bash
+kubectl wait --for=condition=Ready --timeout=600s \
+    pod -l spark-app-name=openeo-geotrellis-openeo \
+    -n openeo-geotrellis
+```{{exec}}

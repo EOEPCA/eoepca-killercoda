@@ -1,15 +1,14 @@
 ## Configuration
 
-Next, we'll run the configuration script.
-
-This will configure the OpenEO building block with the following:
+Configure the OpenEO building block. We'll use the GeoTrellis backend as it's more suitable for demonstration purposes.
 
 ```bash
 bash configure-openeo.sh <<EOF
+geotrellis
 no
-local-path
+no
 no
 EOF
 ```{{exec}}
 
-The script uses your input to generate the necessary configuration files for the deployment.
+The script generates the necessary configuration files for the deployment.
