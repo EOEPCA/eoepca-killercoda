@@ -10,7 +10,7 @@ echo "Auth token: ${BASIC_AUTH}"
 
 ## Quick Tests
 
-Check the API is running:
+Check the API is running (if this fails just wait a minute for the service to fully boot up):
 ```bash
 curl -s "${OPENEO_URL}/openeo/1.2/" | jq '{title, backend_version, api_version}'
 ```{{exec}}
