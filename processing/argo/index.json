@@ -18,32 +18,20 @@
         "text": "2-deploy-platform.md"
       },
       {
-        "title": "Step 3: Deploy the CWL Workflow Template",
-        "text": "3-deploy-workflow-template.md"
-      },
-      {
-        "title": "Step 4: Expose Services & Configure Storage",
+        "title": "Step 4: Expose Services",
         "text": "4-expose-services.md"
       },
       {
-        "title": "Step 5: Prepare the Processing Service",
-        "text": "5-prepare-service.md"
+        "title": "Step 5: Execute the Workflow",
+        "text": "5-execute-process.md"
       },
       {
-        "title": "Step 6: Create the Application Package",
-        "text": "6-create-application.md"
+        "title": "Step 6: Deploy Custom Process",
+        "text": "6-deploy-custom-app.md"
       },
       {
-        "title": "Step 7: Create the Test Runner",
-        "text": "7-create-test-runner.md"
-      },
-      {
-        "title": "Step 8: Execute the Workflow",
-        "text": "8-execute-workflow.md"
-      },
-      {
-        "title": "Step 9: Verify the Results",
-        "text": "9-verify-results.md"
+        "title": "Step 8: Verify Results",
+        "text": "8-verify-results.md"
       }
     ],
     "finish": {
