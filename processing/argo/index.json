@@ -1,0 +1,50 @@
+{
+  "title": "Argo OGC Process",
+  "description": "guide to running an OGC process with Argo Workflows using a lightweight Skaffold setup.",
+  "details": {
+    "intro": {
+      "title": "Introduction",
+      "text": "0-intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Step 1: Install Tools & Prepare Environment",
+        "text": "1-prerequisites.md"
+      },
+      {
+        "title": "Step 2: Deploy Core Platform (Argo & MinIO)",
+        "text": "2-deploy-platform.md"
+      },
+      {
+        "title": "Step 4: Expose Services",
+        "text": "4-expose-services.md"
+      },
+      {
+        "title": "Step 5: Execute the Workflow",
+        "text": "5-execute-process.md"
+      },
+      {
+        "title": "Step 6: Deploy Custom Process",
+        "text": "6-deploy-custom-app.md"
+      },
+      {
+        "title": "Step 8: Verify Results",
+        "text": "8-verify-results.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "10-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

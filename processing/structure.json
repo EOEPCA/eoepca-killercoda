@@ -3,6 +3,8 @@
   "description": "Data processing with different engines",
   "items": [
     { "path": "calrissian" },
-    { "path": "toil" }
+    { "path": "toil" },
+    { "path": "argo" },
+    { "path": "openeo" }
   ]
 }
