@@ -5,7 +5,7 @@
 Verify all pods are running correctly:
 
 ```bash
-kubectl get pods -n openeo-geotrellis
+bash validation.sh
 ```{{exec}}
 
 Expected pods:

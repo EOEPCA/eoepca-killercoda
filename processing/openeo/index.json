@@ -36,6 +36,10 @@
       {
         "title": "Usage",
         "text": "7-usage.md"
+      },
+      {
+        "title": "OpenEO Python",
+        "text": "8-python-client.md"
       }
     ],
     "finish": {
