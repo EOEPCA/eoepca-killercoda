@@ -16,7 +16,7 @@ helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
   --namespace resource-discovery \
   --create-namespace \
   --set db.volume_access_modes=ReadWriteOnce
-```{{exec}} 
+```{{exec}}
 
 And we create the ingress for our newly created Resource Discovery service to make it available, using the configuration file generated automatically in the previous step.
 

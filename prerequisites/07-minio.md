@@ -14,9 +14,13 @@ First, we check the prerequisites. At this point all of them should be met:
 bash check-prerequisites.sh
 ```{{exec}}
 
-Now we configure MinIO, answering `no`{{}} to all questions since these values are already set correctly:
+Now we configure MinIO,
 ```
 bash configure-minio.sh
+```{{exec}}
+
+we answer `no`{{}} to all questions since these values are already set correctly
+```
 no
 no
 no

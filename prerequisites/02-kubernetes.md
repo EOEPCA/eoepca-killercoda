@@ -44,7 +44,7 @@ Next, considering the Wildcard DNS, we have not way to set this up in our sandbo
 WEBSITES="test.eoepca.local minio.eoepca.local console-minio.eoepca.local harbor.eoepca.local"
 echo "172.30.1.2 $WEBSITES" >> /etc/hosts
 kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
-sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
+sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
 kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
 ```{{exec}}
 

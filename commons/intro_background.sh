@@ -32,7 +32,7 @@ if [[ -e /tmp/assets/localdns ]]; then
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
-  kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
+  kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
 fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
   echo "installing gomplate..." >> /tmp/killercoda_setup.log
