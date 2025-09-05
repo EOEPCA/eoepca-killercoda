@@ -1,11 +1,5 @@
 Open EO users will not use the API directly, but mostly use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/) or the [OpenEO Web Editor](https://github.com/Open-EO/openeo-web-editor).
 
-If we want to use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/), we can open its demo instance and connect to our localcoda service via
-
-```
-{{TRAFFIC_HOST1_81}}
-```{{copy}}
-
 If we want to use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/), we can configure a python virtual environment and install it via
 
 ```
