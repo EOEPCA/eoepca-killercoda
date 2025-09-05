@@ -1,97 +1,154 @@
-## Using the OpenEO API
+Open EO users will not use the API directly, but mostly use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/) or the [OpenEO Web Editor](https://github.com/Open-EO/openeo-web-editor).
 
-### Set Up Authentication
+If we want to use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/), we can open its demo instance and connect to our localcoda service via
 
-```bash
-# Basic auth: password = username + "123"
-export BASIC_AUTH=$(echo -n "testuser:testuser123" | base64)
-echo "Auth token: ${BASIC_AUTH}"
+```
+{{TRAFFIC_HOST1_81}}
+```{{copy}}
+
+If we want to use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/), we can configure a python virtual environment and install it via
+
+```
+cd ~
+python3 -m venv openeo-test
+source openeo-test/bin/activate
+pip install --upgrade openeo xarray netCDF4 h5netcdf
 ```{{exec}}
 
-## Quick Tests
+We can then run a basic processing from python. First we run python
 
-Check the API is running (if this fails just wait a minute for the service to fully boot up):
-```bash
-curl -s "${OPENEO_URL}/openeo/1.2/" | jq '{title, backend_version, api_version}'
+```
+python3
 ```{{exec}}
 
-Test authentication:
-```bash
-curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  "${OPENEO_URL}/openeo/1.2/me" | jq .
+then we import Open client library abn all the other required libraries via
+
+```
+import openeo
+import json
+import os
+import xarray
 ```{{exec}}
 
-## Run Some Calculations
+we connect to the OpenEO backend via
 
-Simple sum:
-```bash
-curl -s -X POST "${OPENEO_URL}/openeo/1.2/result" \
-  -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "process": {
-      "process_graph": {
-        "sum": {
-          "process_id": "sum",
-          "arguments": {"data": [15, 27.5]},
-          "result": true
-        }
-      }
+```python
+connection = openeo.connect("http://openeo.eoepca.local")
+connection.authenticate_basic("testuser","testuser123")
+```{{exec}}
+
+and define a test dataset via
+
+```python
+collection_id = "TestCollection-LonLat16x16"
+temporal_extent = "2024-09"
+spatial_extent = {"west": 3, "south": 51, "east": 5, "north": 53}
+```{{exec}}
+
+and we can run the basic operations below
+
+### Quick Collections and Processes Discovery
+
+```python
+print(f"Collections: {connection.list_collection_ids()}")
+print(f"Process count: {len(connection.list_processes())}")
+```{{exec}}
+
+### Execute Simple Process
+
+```python
+result = connection.execute({
+    "add": {
+        "process_id": "add",
+        "arguments": {"x": 3, "y": 5},
+        "result": True,
     }
-  }'
-echo ""
+})
+print(f"3 + 5 = {result}")
 ```{{exec}}
 
-Find index in array
-```bash
-curl -s -X POST "${OPENEO_URL}/openeo/1.2/result" \
-  -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "process": {
-      "process_graph": {
-        "array1": {
-          "process_id": "array_element",
-          "arguments": {
-            "data": [10, 20, 30, 40],
-            "index": 2
-          },
-          "result": true
-        }
-      }
-    }
-  }'
-echo ""
+### Load and Download Data
+
+```python
+cube_original = connection.load_collection(
+    collection_id=collection_id,
+    temporal_extent=temporal_extent,
+    spatial_extent=spatial_extent,
+    bands=["Longitude", "Latitude", "Day"],
+)
+cube_original.download("original.nc")
+ds = xarray.load_dataset("original.nc")
+print(ds)
 ```{{exec}}
 
-### Check What's Available
+### Build Complex Processing Chain
 
-Collections:
-```bash
-curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  "${OPENEO_URL}/openeo/1.2/collections" | jq '.collections[].id'
+```python
+cube_processed = connection.load_collection(
+    collection_id=collection_id,
+    temporal_extent=["2024-09-01", "2024-09-30"],
+    spatial_extent=spatial_extent
+)
+
+cube_processed = cube_processed.filter_temporal(["2024-09-10", "2024-09-20"])
+cube_processed = cube_processed.reduce_dimension(dimension="t", reducer="max")
+cube_processed = cube_processed.apply(lambda x: x * 100)
+
+graph = json.loads(cube_processed.to_json())
+print(f"Processing chain: {' → '.join(graph['process_graph'].keys())}")
 ```{{exec}}
 
-View Collection (TestCollection-LonLat16x16)
-```bash
-curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  "${OPENEO_URL}/openeo/1.2/collections/TestCollection-LonLat16x16" | jq .
+### Save and Validate Process Graph
+
+```python
+with open("workflow.json", "w") as f:
+    json.dump(graph, f, indent=2)
+
+connection.validate_process_graph(graph)
+print("✓ Graph validated and saved")
 ```{{exec}}
 
-Process count (142 available):
-```bash
-curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  "${OPENEO_URL}/openeo/1.2/processes" | jq '.processes | length'
+### Band Mathematics
+
+```python
+cube_bands = connection.load_collection(
+    collection_id=collection_id,
+    temporal_extent="2024-09",
+    spatial_extent=spatial_extent,
+    bands=["Longitude", "Latitude"]
+)
+
+# Calculate: (Longitude + Latitude) / 2
+lon = cube_bands.band("Longitude")
+lat = cube_bands.band("Latitude")
+average = (lon + lat) / 2
+
+cube_bands.download("bands.nc")
+average.download("average.nc")
 ```{{exec}}
 
-Process names:
-```bash
-curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  "${OPENEO_URL}/openeo/1.2/processes" | jq '.processes[].id'
+### Verify Band Calculation
+
+```python
+ds_bands = xarray.load_dataset("bands.nc")
+ds_avg = xarray.load_dataset("average.nc")
+
+# Sample first pixel
+lon_val = ds_bands.Longitude.values[0, 0, 0]
+lat_val = ds_bands.Latitude.values[0, 0, 0]
+expected = (lon_val + lat_val) / 2
+actual = ds_avg['var'].values[0, 0, 0]
+
+print(f"Longitude: {lon_val:.2f}, Latitude: {lat_val:.2f}")
+print(f"Expected average: {expected:.2f}, Actual: {actual:.2f}")
+print(f"✓ Calculation correct" if abs(expected - actual) < 0.001 else "✗ Mismatch")
 ```{{exec}}
 
-File formats:
-```bash
-curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
-  "${OPENEO_URL}/openeo/1.2/file_formats" | jq '{input: .input | keys, output: .output | keys}'
+# One done, you can exit the python virtual environment
+
+```python
+exit()
+ls -lh *.nc *.json
+deactivate
 ```{{exec}}
+

@@ -1,6 +1,4 @@
-## Deploying OpenEO GeoTrellis
-
-With dependencies in place, deploy OpenEO GeoTrellis:
+With dependencies in place, we can now deploy OpenEO GeoTrellis:
 
 ```bash
 helm upgrade -i openeo-geotrellis-openeo sparkapplication \
@@ -12,12 +10,10 @@ helm upgrade -i openeo-geotrellis-openeo sparkapplication \
     --wait --timeout 10m
 ```{{exec}}
 
-For Killercoda, deploy the ingress:
+An then, to make it accessible, deploy the ingress:
+
 ```bash
 kubectl apply -f openeo-geotrellis/generated-ingress.yaml
-source ~/.eoepca/state
-export OPENEO_URL="${HTTP_SCHEME}://openeo.${INGRESS_HOST}"
-echo "OpenEO API will be accessible at: ${OPENEO_URL}"
 ```{{exec}}
 
 Wait for the OpenEO GeoTrellis application to be ready:
@@ -26,3 +22,17 @@ kubectl wait --for=condition=Ready --timeout=600s \
     pod -l spark-app-name=openeo-geotrellis-openeo \
     -n openeo-geotrellis
 ```{{exec}}
+
+we can now see that all the pods are running correctly via
+
+```
+kubectl get pods -n openeo-geotrellis
+```{{exec}}
+
+We will see the pods for:
+- Spark Operator controller and webhook
+- ZooKeeper
+- OpenEO driver and executor
+
+
+Our local OpenEO APIs will be now accessible in the sandbox environment at `http://openeo.eoepca.local/`{{}}
