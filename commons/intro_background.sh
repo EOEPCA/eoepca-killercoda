@@ -19,7 +19,7 @@ if [[ -e /tmp/assets/killeditor ]]; then
 fi
 if [[ -e /tmp/assets/k3s ]]; then
   echo "installing kubernetes via k3s..." >> /tmp/killercoda_setup.log
-  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --disable=servicelb --disable=metrics-server" sh -
+  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --disable=servicelb --disable=metrics-server --kubelet-arg=eviction-hard= --kubelet-arg=eviction-soft= --kubelet-arg=eviction-soft-grace-period= --kubelet-arg=eviction-max-pod-grace-period=0" sh -
   echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc
   export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
   echo "waiting for kubernetes to start..." >> /tmp/killercoda_setup.log
