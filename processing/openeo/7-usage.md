@@ -47,14 +47,14 @@ spatial_extent = {"west": 3, "south": 51, "east": 5, "north": 53}
 
 and we can run the basic operations below
 
-### Quick Collections and Processes Discovery
+Quick Collections and Processes Discovery:
 
 ```python
 print(f"Collections: {connection.list_collection_ids()}")
 print(f"Process count: {len(connection.list_processes())}")
 ```{{exec}}
 
-### Execute Simple Process
+Execute Simple Process:
 
 ```python
 result = connection.execute({
@@ -67,7 +67,7 @@ result = connection.execute({
 print(f"3 + 5 = {result}")
 ```{{exec}}
 
-### Load and Download Data
+Load and Download Data:
 
 ```python
 cube_original = connection.load_collection(
@@ -81,7 +81,7 @@ ds = xarray.load_dataset("original.nc")
 print(ds)
 ```{{exec}}
 
-### Build Complex Processing Chain
+Build Complex Processing Chain:
 
 ```python
 cube_processed = connection.load_collection(
@@ -98,7 +98,7 @@ graph = json.loads(cube_processed.to_json())
 print(f"Processing chain: {' → '.join(graph['process_graph'].keys())}")
 ```{{exec}}
 
-### Save and Validate Process Graph
+Save and Validate Process Graph:
 
 ```python
 with open("workflow.json", "w") as f:
@@ -108,7 +108,7 @@ connection.validate_process_graph(graph)
 print("✓ Graph validated and saved")
 ```{{exec}}
 
-### Band Mathematics
+Band Mathematics:
 
 ```python
 cube_bands = connection.load_collection(
@@ -127,7 +127,7 @@ cube_bands.download("bands.nc")
 average.download("average.nc")
 ```{{exec}}
 
-### Verify Band Calculation
+Verify Band Calculation:
 
 ```python
 ds_bands = xarray.load_dataset("bands.nc")
@@ -144,11 +144,14 @@ print(f"Expected average: {expected:.2f}, Actual: {actual:.2f}")
 print(f"✓ Calculation correct" if abs(expected - actual) < 0.001 else "✗ Mismatch")
 ```{{exec}}
 
-# One done, you can exit the python virtual environment
+Once done, you can exit the python virtual environment:
 
 ```python
 exit()
 ls -lh *.nc *.json
 deactivate
 ```{{exec}}
+
+If you want to use the visual OpenEO Web Editor, you can connect to your instance via the [OpenEO Web Editor public Demo instance](https://editor.openeo.org/?server={{TRAFFIC_HOST1_81}}), and then authenticate with the user `testuser`{{copy}} and password `testuser123`{{copy}}. In the Web Editor, you can replicate what was done above by dragging boxes.
+
 
