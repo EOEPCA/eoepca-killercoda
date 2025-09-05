@@ -38,8 +38,9 @@ The available assets you can select are described in the following table. Please
 
 | Asset file to mount | Pre-requisite installed |
 | --- | --- |
+| `k3s` | install a light version of kubernetes, for more computing resources available to the application. Use only with ubuntu basic images |
 | `gomplate.7z` | gomplate software. Required by most EOEPCA deployment-guide script |
-| `ignoreresrequests` | install gatekeeper with mutation hook to override all resource requests, setting them to 0 (disabled). This allows to avoid honoring resource requests which may not be available in the killercoda environment |
+| `ignoreresrequests` | install gatekeeper with mutation hook to override all resource requests, setting them to 0 (disabled). This allows to avoid honoring resource requests which may not be available in the killercoda environment. |
 | `localdns` | /etc/hosts configuration with eoepca.local dns entries pointing to the local ingress. Fill the localdns file in the asset folder with a space-separated list of hosts to be mapped |
 | `minio.7z` | minio s3 storage service installed locally (NOTE: no buckets are created. To create a bucket use `miniobuckets` below) |
 | `miniobuckets` | minio buckets. Requires minio.7z to be enabled. Contains a space-separated list of buckets to be created |
@@ -47,4 +48,5 @@ The available assets you can select are described in the following table. Please
 | `apisix` | apisix ingress installed in the K8S cluster |
 | `readwritemany` | local storage class supporting ReadWriteMany K8S persistent volumes provisioning |
 | `htcondor` | HPC batch system (HTCondor) |
+| `postgrespostgis` | Install a postgres+postgis database. Contents shall be a set of lines containing dbname, dbuser, dbpass, postgisenabled variables defining the details of the database to be created |
 | `killercodaproxy` | Install a local proxy and cofigure it to proxy the internal ingress on an external host name with domain substitution. To configure it, set in the file a port , a destination and a content type. For example, with `81 resource-catalogue.eoepca.local 'application/json text/html'` it will allow you to access the `resource-catalogue.eoepca.local` service via `{{TRAFFIC_HOST1_81}}` and replace in all the `application/json` and `text/html` pages the `resource-catalogue.eoepca.local` address with `{{TRAFFIC_HOST1_81}}`. NOTE: If your application is well written, it should not require the replacement of the addresses. In that case, you can use NONE as third parameter of the external host name list |

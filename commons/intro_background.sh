@@ -1,29 +1,61 @@
 #!/bin/bash
 #Script to set pre-requisites for EOEPCA components
 echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
+if [[ -e /tmp/assets/killeditor ]]; then
+  echo "disabling editor to recover RAM (editor tab on the left will not work anymore)..." >> /tmp/killercoda_setup.log
+  killall /opt/theia/node
+  #Stop services 
+  echo "stopping optional services to recover RAM..." >> /tmp/killercoda_setup.log
+  #Unattended upgrades
+  killall /usr/bin/python3
+  #Disks management
+  service udisks2 stop
+  #Bluethooth management
+  service ModemManager stop
+  #Disk RAID services
+  service multipathd stop
+  #Local ssh
+  service ssh stop
+fi
+if [[ -e /tmp/assets/k3s ]]; then
+  echo "installing kubernetes via k3s..." >> /tmp/killercoda_setup.log
+  #Installing k3s with most features disabled, including zero thresholds for nodes and memory pressure
+  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik --disable=servicelb --disable=metrics-server --kubelet-arg=eviction-hard= --kubelet-arg=eviction-soft= --kubelet-arg=eviction-soft-grace-period= --kubelet-arg=eviction-max-pod-grace-period=0" INSTALL_K3S_SKIP_ENABLE=true sh -
+  #Starting the service
+  systemctl start k3s
+  echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc
+  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+  echo "waiting for kubernetes to start..." >> /tmp/killercoda_setup.log
+  while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=1m &>/dev/null; do sleep 1; done
+fi
 if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
   WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
   echo "172.30.1.2 $WEBSITES" >> /etc/hosts
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
-  sed -i "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
-  kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns
+  sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
+  kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
 fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
   echo "installing gomplate..." >> /tmp/killercoda_setup.log
   #Gomplate is a dependency of the deployment tool
   #Installing it from local instead then remote for speed
   #curl -s -S -L -o /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/v4.3.0/gomplate_linux-amd64 && chmod +x /usr/local/bin/gomplate
+  which 7z &>/dev/null || { [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }; apt-get install -y 7zip; }
+  which helm &>/dev/null || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/gomplate.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate
 fi
 if [[ -e /tmp/assets/nginxingress ]]; then
   #Installing Ingress (basic)
   echo installing nginx ingress... >> /tmp/killercoda_setup.log
+  which helm &>/dev/null || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace \
-    --set controller.hostNetwork=true
+    --set controller.hostNetwork=true \
+    --set controller.allowSnippetAnnotations=true \
+    --set controller.config.annotations-risk-level=Critical
 fi
 if [[ -e /tmp/assets/apisix ]]; then
   # Install apisix
@@ -81,7 +113,7 @@ cat <<EOF>>/etc/nginx/nginx.conf
 
         location / {
          proxy_pass  http://$dest;
-         proxy_set_header   Host             $dest:80;
+         proxy_set_header   Host             $dest;
          proxy_set_header Accept-Encoding "";
 EOF
     cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
@@ -131,8 +163,13 @@ fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo setting resource limits...  >> /tmp/killercoda_setup.log
-  kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/v3.18.2/deploy/gatekeeper.yaml
+  echo configuring gatekeeper to ignore resource limits...  >> /tmp/killercoda_setup.log
+  helm install gatekeeper --name-template=gatekeeper --namespace gatekeeper-system --create-namespace \
+    --repo https://open-policy-agent.github.io/gatekeeper/charts \
+    --set postInstall.labelNamespace.enabled=false --set postInstall.probeWebhook.enabled=false \
+    --set replicas=1 --set resources={} \
+    --set audit.resources.limits.cpu=0,audit.resources.limits.memory=0,controllerManager.resources.limits.cpu=0,controllerManager.resources.limits.memory=0 \
+    --set audit.resources.requests.cpu=0,audit.resources.requests.memory=0,controllerManager.resources.requests.cpu=0,controllerManager.resources.requests.memory=0
   cat <<EOF | kubectl apply -f -
 apiVersion: mutations.gatekeeper.sh/v1
 kind: Assign
@@ -196,6 +233,23 @@ n[0]="/usr/bin/docker"
 if "run" in n: n.insert(n.index("run")+1,"-v=/etc/hosts:/etc/hosts:ro")
 os.execv(n[0],n)' > /usr/local/bin/docker
   chmod +x /usr/local/bin/docker
+fi
+if [[ -e /tmp/assets/postgrespostgis ]]; then
+  echo "installing PostgreSQL+PostGIS..."  >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  #Install latest postgresql release
+  apt-get install -y postgresql-common </dev/null
+  /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+  apt-get install -y postgresql postgresql-postgis < /dev/null
+  #Locate installed version
+  PG_VERSION=`ls /etc/postgresql/`
+  su - postgres -c "echo \"listen_addresses = '*'\" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf"
+  su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf"
+  service postgresql restart
+  while read dbname dbuser dbpass; do
+    su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'\"; createdb -O $dbuser $dbname"
+    su - postgres -c "psql -c \"CREATE EXTENSION postgis;\" $dbname"
+  done < /tmp/assets/postgrespostgis
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done

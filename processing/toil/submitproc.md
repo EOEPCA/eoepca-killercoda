@@ -1,6 +1,6 @@
 We have now our `convert-url`{{}} application deployed in our platform, we can submit a processing request.
 
-Once the processing request is submitted, Zoo will invoke Toil, which will then create a new Kubernetes namespace in the same Kubernetes cluster where Zoo and the [OGC Process API](https://ogcapi.ogc.org/processes/) interface is installed and start there the application jobs.
+Once the processing request is submitted, Zoo will invoke Calrissian, which will then create a new Kubernetes namespace in the same Kubernetes cluster where Zoo and the [OGC Process API](https://ogcapi.ogc.org/processes/) interface is installed and start there the application jobs.
 
 The jobs will gather the input, execute the processing and in the push the output inside the platform object storage.
 
@@ -8,7 +8,7 @@ From the [OGC Process API](https://ogcapi.ogc.org/processes/) interface we will 
 
 So, let's start to submit a processing request to the convert-url application.
 
-We can check the inputs we need for submitting a processing request for this application from the API via
+We can check the inputs we need for submittign a processing request for this application from the API via
 
 ```
 curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/convert-url | jq .inputs

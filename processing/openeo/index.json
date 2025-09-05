@@ -1,0 +1,57 @@
+{
+  "title": "OpenEO Engine Deployment",
+  "description": "Deploy the EOEPCA Processing Building Block with OpenEO Engine using the official deployment guide",
+  "details": {
+    "intro": {
+      "title": "Introduction to OpenEO",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Prerequisites",
+        "text": "1-prerequisites.md"
+      },
+      {
+        "title": "Configuration",
+        "text": "2-configure.md"
+      },
+      {
+        "title": "Deploy Spark Operator",
+        "text": "3-deploy-spark-operator.md"
+      },
+      {
+        "title": "Deploy ZooKeeper",
+        "text": "4-deploy-zookeeper.md"
+      },
+      {
+        "title": "Deploy OpenEO",
+        "text": "5-deploy-openeo.md"
+      },
+      {
+        "title": "Validation",
+        "text": "6-validation.md"
+      },
+      {
+        "title": "Usage",
+        "text": "7-usage.md"
+      }
+    ],
+    "finish": {
+      "title": "OpenEO Setup Complete",
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu-4GB"
+  }
+}

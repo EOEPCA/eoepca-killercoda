@@ -20,7 +20,7 @@ bash ../utils/create-user.sh
 Use the following provided values:<br>
 _Select the provided values to inject them into the terminal prompts_
 
-> NOTE that some of the previously answered questions are repeated - in which case the existing value can be accepted.
+> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
 
 * `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
 * `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}
@@ -52,7 +52,7 @@ bash ../utils/create-client.sh
 Use the following provided values:<br>
 _Select the provided values to inject them into the terminal prompts_
 
-> NOTE that some of the previously answered questions are repeated - in which case the existing value can be accepted.
+> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
 
 * `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
 * `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}
@@ -97,7 +97,7 @@ bash ../utils/create-client.sh
 Use the following provided values:<br>
 _Select the provided values to inject them into the terminal prompts_
 
-> NOTE that some of the previously answered questions are repeated - in which case the existing value can be accepted.
+> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
 
 * `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
 * `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}

@@ -8,7 +8,7 @@ To check it is properly installed, you can run
 mc ls minio-local
 ```{{exec}}
 
-The `mc ls` command, part of the MinIO client, lists the content of and checks that you have an `eoepca`{{}} bucket created.
+and check that you have an `eoepca`{{}} bucket bucket created.
 
 Note that the configuration of the S3 object storage to be configured in the data processing engine is included in the `~/.eoepca/state`{{}} file.
 
