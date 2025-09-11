@@ -88,24 +88,24 @@ Let's also do some manual checks using the `mc`{{}} client.
 ```
 mc ls minio-local
 ```{{exec}}
-1. Create a test bucket in MinIO:
+2. Create a test bucket in MinIO:
 ```
 mc mb minio-local/test-bucket
 ```{{exec}}
-1. Create a local file and copy it to the test bucket:
+3. Create a local file and copy it to the test bucket:
 ```
 echo "test" > test-file
 mc cp test-file minio-local/test-bucket
 ```{{exec}}
-1. List the content of the test bucket:
+4. List the content of the test bucket:
 ```
 mc ls minio-local/test-bucket
 ```{{exec}}
-1. Output the content of the test file in the bucket:
+5. Output the content of the test file in the bucket:
 ```
 mc cat minio-local/test-bucket/test-file
 ```{{exec}}
-1. Remove the test file, test bucket and check that they are gone:
+6. Remove the test file, test bucket and check that they are gone:
 ```
 mc rm minio-local/test-bucket/test-file
 ```{{exec}}
