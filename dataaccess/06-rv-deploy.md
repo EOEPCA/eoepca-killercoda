@@ -1,6 +1,4 @@
-Via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac/collections/sentinel-2-iceland) you will be able to directly see a visualizat
-ion of the image, this is because the data samples we are using have data on COG (optimized GeoTIFF) and thus can be simply queried and visualized by the STAC Browser, but if this i
-s not the case, or if you do not want to just visualize the data but do some basic analytics on top of it, we need an engine to provide the EOEPCA
+Via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac/collections/sentinel-2-iceland) you will be able to directly see a visualization of the image, this is because the data samples we are using have data on COG (optimized GeoTIFF) and thus can be simply queried and visualized by the STAC Browser, but if this is not the case, or if you do not want to just visualize the data but do some basic analytics on top of it, we need an engine to provide the EOEPCA
 
 Explain that the rasrter and vector
 

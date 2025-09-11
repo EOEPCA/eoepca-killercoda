@@ -92,7 +92,7 @@ include /etc/nginx/modules-enabled/*.conf;
 
 events {
   worker_connections 768;
-  # multi_accept on;
+  # multi_accept on;  
 }
 
 http {

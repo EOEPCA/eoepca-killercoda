@@ -23,7 +23,7 @@
       },
       {
         "title": "Deploy Data Access STAC Catalogue", 
-        "text": "03-stac-deploy.md"
+        "text": "03-eoapi-deploy.md"
       },
       { 
         "title": "Insert product and query Catalogue", 
