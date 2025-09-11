@@ -16,8 +16,9 @@ We download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deploym
 curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
-# curl -s -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-dataaccess | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
-
+<!--
+[comment]: # curl -s -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-dataaccess | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+-->
 
 The Data Access deployment scripts are available in the `data-access` directory:
 ```
