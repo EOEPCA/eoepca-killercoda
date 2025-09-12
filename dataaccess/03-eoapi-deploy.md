@@ -29,7 +29,7 @@ helm upgrade -i pgo oci://registry.developers.crunchydata.com/crunchydata/pgo \
 ```{{exec}}
 
 ```
-helm upgrade -i eoapi eoapi/eoapi
+helm upgrade -i eoapi eoapi/eoapi \
   --version 0.7.5 \
   --namespace data-access \
   --create-namespace \

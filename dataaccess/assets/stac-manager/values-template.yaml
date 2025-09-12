@@ -1,0 +1,30 @@
+{{- if eq (getenv "INGRESS_CLASS") "nginx" }}
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  hosts:
+  - host: "eoapi.{{ getenv "INGRESS_HOST" }}"
+    paths:
+    - path: /manager(/|$)(.*)
+      pathType: ImplementationSpecific
+  {{- if eq ( getenv "HTTP_SCHEME" ) "https" }}
+  tls:
+    enabled: true
+    certManager: false
+    secretName: "eoapi-tls"
+  {{- end }}
+{{- else }}
+ingress:
+  enabled: false
+{{- end }}
+resources:
+  requests:
+    memory: "512Mi"
+  limits:
+    memory: "4Gi"
+stacApi: {{getenv "HTTP_SCHEME"}}://eoapi.{{ getenv "INGRESS_HOST" }}/stac
+publicUrl: {{getenv "HTTP_SCHEME"}}://eoapi.{{ getenv "INGRESS_HOST" }}/manager
