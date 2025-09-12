@@ -21,6 +21,14 @@ The first component we will deploy is the STAC Catalogue. This is an alternative
 To deploy only the STAC catalogue component from eoapi, we need to disable all the other sub-components while enabling the `stac`{{}} sub-component, via
 
 ```
+helm upgrade -i pgo oci://registry.developers.crunchydata.com/crunchydata/pgo \
+  --version 5.6.0 \
+  --namespace data-access \
+  --create-namespace \
+  --values postgres/generated-values.yaml
+```{{exec}}
+
+```
 helm upgrade -i eoapi eoapi/eoapi
   --version 0.7.5 \
   --namespace data-access \
