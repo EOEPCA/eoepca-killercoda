@@ -13,7 +13,7 @@ As ususal in this tutorial, we will use the EOEPCA Deployment Guide scripts to h
 We download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers. This contains the deployment scripts we will use for our EOEPCA deployment
 ```
 #TODO: Pull request for killercoda-dataaccess to eoepca-2.0-rc1b and then update the tarball here with an official release (e.g. eoepca-2.0-rc1c)
-#url -s -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-dataaccess | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+curl -s -L https://github.com/EOEPCA/deployment-guide/tarball/killercoda-dataaccess | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 <!--
