@@ -39,7 +39,7 @@ helm upgrade -i eoapi eoapi/eoapi \
   --set stac.enabled=true \
   --set raster.enabled=true \
   --set vector.enabled=true \
-  --set multidim.enabled=true
+  --set multidim.enabled=false
 ```{{exec}}
 
 We need now to wait for all the components to get started. To do so we can run:
