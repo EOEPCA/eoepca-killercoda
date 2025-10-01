@@ -8,7 +8,3 @@ By the end of this tutorial, you will have:
 - Validated the deployment and learned how to interact with the OpenEO API.
 
 This tutorial assumes a basic understanding of EOEPCA.
-
-Check this works:
-
-{{TRAFFIC_HOST1_4040}}
