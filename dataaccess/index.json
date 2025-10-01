@@ -14,6 +14,10 @@
         "text": "01-prerequisites.md"
       },
       {
+        "title": "Configure external PostgreSQL database",
+        "text": "01b-prerequisites_postgres.md"
+      },
+      {
         "title": "Configure Data Access",
         "text": "02-configure.md"
       },
