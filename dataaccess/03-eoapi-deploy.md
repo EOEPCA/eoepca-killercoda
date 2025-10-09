@@ -13,21 +13,9 @@ The Building block is composed by several sub-components, which can be deployed 
 - *[beta]* [TiTiler-Multidim](https://github.com/developmentseed/titiler-multidim), which provides visualization support extensions for XArray
 - *[beta]* [TiTiler-Maps-Plugin](https://github.com/EOEPCA/eoapi-maps-plugin), which provides [OGC Maps](https://ogcapi.ogc.org/maps/) support
 
-In this tutorial we will deploy and explain them one-by-one.
+In this tutorial we will deploy the whole stack of Data Access components at once, as described in the EOEPCA Deplyoment Guide, and then explain them one-by-one providing usage examples.
 
-The first component we will deploy is the STAC Catalogue. This is an alternative implementation respect to the STAC Catalogue provided by the [Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/) Building Block, following the same STAC interfaces. Respect to the [Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/), the STAC Catalogue included in the data access is tailored to only data (raster and vector), not generic metadata (e.g. documents, code, projects, etc...), and supports only the STAC interface, without any other catalogue interface (e.g. [OGC Records](https://ogcapi.ogc.org/records/) and [OGC CSW](https://www.ogc.org/standards/cat/)) implemented.
-
-
-To deploy only the STAC catalogue component from eoapi, we need to disable all the other sub-components while enabling the `stac`{{}} sub-component, via
-
-```
-helm upgrade -i pgo oci://registry.developers.crunchydata.com/crunchydata/pgo \
-  --version 5.6.0 \
-  --namespace data-access \
-  --create-namespace \
-  --values postgres/generated-values.yaml
-```{{exec}}
-
+Here we are explicitly choosing which components to deploy by setting the property `<compoment>.enabled`. In our case it is set to `true` for all the components which means all of them will be deployed. This is not really necessary since this is the default value in `eoapi/generated-values.yaml`; however, it shows how the Data Access BB deployment can be tailored by choosing only components we want.
 ```
 helm upgrade -i eoapi eoapi/eoapi \
   --version 0.7.5 \
@@ -39,10 +27,28 @@ helm upgrade -i eoapi eoapi/eoapi \
   --set stac.enabled=true \
   --set raster.enabled=true \
   --set vector.enabled=true \
-  --set multidim.enabled=false
+  --set multidim.enabled=true
 ```{{exec}}
 
 We need now to wait for all the components to get started. To do so we can run:
 ```
 kubectl --namespace data-access wait pod --all --timeout=10m --for=condition=Ready
 ```{{exec}}
+
+
+<!--
+
+In this tutorial we will deploy and explain them one-by-one.
+
+The first component we will deploy is the STAC Catalogue. This is an alternative implementation respect to the STAC Catalogue provided by the [Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/) Building Block, following the same STAC interfaces. Respect to the [Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/), the STAC Catalogue included in the data access is tailored to only data (raster and vector), not generic metadata (e.g. documents, code, projects, etc...), and supports only the STAC interface, without any other catalogue interface (e.g. [OGC Records](https://ogcapi.ogc.org/records/) and [OGC CSW](https://www.ogc.org/standards/cat/)) implemented.
+
+
+To deploy only the STAC catalogue component from eoapi, we need to disable all the other sub-components while enabling the `stac`{{}} sub-component, via
+```
+helm upgrade -i pgo oci://registry.developers.crunchydata.com/crunchydata/pgo \
+  --version 5.6.0 \
+  --namespace data-access \
+  --create-namespace \
+  --values postgres/generated-values.yaml
+```{{exec}}
+-->

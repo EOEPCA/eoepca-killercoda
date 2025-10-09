@@ -22,7 +22,7 @@
         "text": "02-configure.md"
       },
       {
-        "title": "Deploy Data Access STAC Catalogue", 
+        "title": "Deploy Data Access components", 
         "text": "03-eoapi-deploy.md"
       },
       { 
@@ -30,16 +30,16 @@
         "text": "04-stac-test.md" 
       },
       { 
-        "title": "Deploy Data Access STAC Manager", 
+        "title": "Deploy and test Data Access STAC Manager", 
         "text": "05-manager-deploy.md" 
       },
       {
-        "title": "Deploy Data Access Raster and Vector capabilities",
-        "text": "06-rv-deploy.md"
+        "title": "Test Raster capabilities",
+        "text": "06-raster-test.md"
       },
       {
-        "title": "Test Raster and Vector capabilities",
-        "text": "07-rv-test.md"
+        "title": "Test Vector capabilities",
+        "text": "07-vector-test.md"
       },
       {
         "title": "Deploy Data Access Synchronous OpenEO API capabilities",

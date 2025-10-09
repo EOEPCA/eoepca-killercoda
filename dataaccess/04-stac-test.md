@@ -1,11 +1,13 @@
-We now have a STAC catalogue, which we can access at
+The first component is the STAC Catalogue. This is an alternative implementation respect to the STAC Catalogue provided by the [Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/) Building Block, following the same STAC interfaces. Respect to the [Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/), the STAC Catalogue included in the data access is tailored to only data (raster and vector), not generic metadata (e.g. documents, code, projects, etc...), and supports only the STAC interface, without any other catalogue interface (e.g. [OGC Records](https://ogcapi.ogc.org/records/) and [OGC CSW](https://www.ogc.org/standards/cat/)) implemented.
 
+We can access our STAC catalogue:
 ```
 curl -sS http://eoapi.eoepca.local/stac | jq
 ```{{exec}}
 
-We can fill it with a sample STAC collection
+## Ingestion
 
+We ingest to our STAC catalogue a sample STAC collection which comes in the EOEPCA Deployment Guide:
 ```
 curl -s -X POST http://eoapi.eoepca.local/stac/collections \
   -H "Content-Type: application/json" \
@@ -13,8 +15,7 @@ curl -s -X POST http://eoapi.eoepca.local/stac/collections \
   | jq
 ```{{exec}}
 
-And some sample items (we restrict ourself to the first 20 demo items)
-
+Then we add some sample items to that collection (we restrict ourself to the first 20 demo items):
 ```
 i=0
 jq -c '.[]' collections/sentinel-2-iceland/items.json 2>/dev/null | while read -r item; do
@@ -27,13 +28,14 @@ jq -c '.[]' collections/sentinel-2-iceland/items.json 2>/dev/null | while read -
 done
 ```{{exec}}
 
-Now, we should be able to see our collection and items via a STAC query
-
+Now, we should be able to see our collection and items via a STAC query:
 ```
-curl -sS http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items | jq -r .features[].id
+curl -sS http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=20 | jq -r .features[].id
 ```{{exec}}
 
 or directly via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac/collections/sentinel-2-iceland) (by connecting to the catalogue external interface)
+
+## Search
 
 We can do some search on the catalogue.
 

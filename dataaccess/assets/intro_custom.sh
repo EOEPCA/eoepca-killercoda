@@ -11,6 +11,7 @@ cat <<EOF > /etc/nginx/conf.d/default.conf
         }
     }
 EOF
+service nginx restart
 
 echo "installing extra tools..." >> /tmp/killercoda_setup.log
 [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
