@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>STAC Raster Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>html, body, #map { height: 100%; margin: 0; }</style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+  <script>
+    const map = L.map('map', {
+      center: [${CENTER_LAT}, ${CENTER_LON}],
+      zoom: ${MIN_ZOOM},
+      minZoom: 0,
+      maxZoom: 20
+    });
+
+    // Base for reference (optional)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // STAC Raster layer (from TileJSON 'tiles[0]')
+    L.tileLayer('${TILES_URL}', {
+      attribution: 'Contains modified Copernicus Sentinel-2 data',
+      minZoom: ${MIN_ZOOM},
+      maxZoom: ${MAX_ZOOM}
+    }).addTo(map);
+  </script>
+</body>
+</html>

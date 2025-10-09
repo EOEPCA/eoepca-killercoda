@@ -96,6 +96,7 @@ events {
 }
 
 http {
+  include /etc/nginx/conf.d/*.conf;
   access_log /dev/null;
   gzip on;
 EOF
@@ -319,4 +320,9 @@ EOF
   echo "gitlab is installed, but it can take up to 10 minutes to start. You can start the tutorial in the mean time..." >> /tmp/killercoda_setup.log
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
+
+for script in /tmp/assets/*.sh; do
+  /bin/bash ${script}
+done
+
 while ! killall tail; do sleep 1; done
