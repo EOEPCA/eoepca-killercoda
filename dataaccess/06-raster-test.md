@@ -4,10 +4,10 @@ In this step we will use the [TiTiler-PgSTAC](https://github.com/stac-utils/titi
 
 ## OGC API Features
 
-We will now render raster tiles from a single STAC item in the STAC collection that we found through our search the STAC catalogue in the previous step.
+We will now render raster tiles from a single STAC item that we found through our search the STAC catalogue in the previous step.
 
-FIrst, we extract the ID of the STAC item and fetch the TileJSON for it (a parametrized URL that will be used for generating raster tiles). 
-- We choose the `WebMercatorQuad` tileset, which is not a URL parameter, but a part of the URL path. Full list of available tilesets is available via [the API](https://{{TRAFFIC_HOST1_81}}/raster/tileMatrixSets).
+First, we extract the ID of the STAC item and fetch the TileJSON for it (a parametrized URL that will be used for generating raster tiles). 
+- We choose the `WebMercatorQuad` tileset, which is not a URL parameter, but a part of the URL path. Full list of available tilesets is available via [the API]({{TRAFFIC_HOST1_81}}/raster/tileMatrixSets).
 - The `assets` parameter is mandatory, at least one asset must be specified.
 - We also use the `color_formula` parameters with the [rio-color syntax](https://github.com/mapbox/rio-color) to perform some basic color-oriented image operations on the rendered tiles.
 ```

@@ -25,4 +25,10 @@ eoapi
 eoapi
 ```{{exec}}
 
-We will have now our `generated-values.yaml`{{}} file with the configuration of the Data Access building block
+We will have now our `generated-values.yaml`{{}} file with the configuration of the Data Access building block.
+
+We also need to generate some secrets in our kubernetes cluster in order for the components to run:
+```
+bash apply-secrets.sh
+```{{exec}}
+
