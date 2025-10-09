@@ -42,6 +42,10 @@
         "text": "07-vector-test.md"
       },
       {
+        "title": "Deploy and test Data Access Maps plugin",
+        "text": "08-maps-plugin-deploy-test.md"
+      },
+      {
         "title": "Deploy Data Access Synchronous OpenEO API capabilities",
         "text": "08-openeo-deploy.md"
       },
