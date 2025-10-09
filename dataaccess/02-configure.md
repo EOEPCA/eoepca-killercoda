@@ -1,9 +1,10 @@
 ```
-sed -i -e "s|https://eoapi|{{getenv "HTTP_SCHEME"}}://eoapi|"  eoapi-maps-plugin/values-template.yaml
-sed -i -e "s|https://maps|{{getenv "HTTP_SCHEME"}}://maps|"  eoapi-maps-plugin/values-template.yaml
-sed -z -i -e "s|\(tls:.*    secretName: data-access-maps-tls\)|{{- if eq ( getenv "HTTP_SCHEME" ) "https" }}\n  \1\n  {{- end }}|"  eoapi-maps-plugin/values-template.yaml
+sed -i -e "s|https://eoapi|{{getenv \"HTTP_SCHEME\"}}://eoapi|" eoapi-maps-plugin/values-template.yaml
+sed -i -e "s|https://maps|{{getenv \"HTTP_SCHEME\"}}://maps|" eoapi-maps-plugin/values-template.yaml
+sed -z -i -e "s|\(tls:.*    secretName: data-access-maps-tls\)|{{- if eq ( getenv \"HTTP_SCHEME\" ) \"https\" }}\n  \1\n  {{- end }}|" eoapi-maps-plugin/values-template.yaml
+sed -i -e "s|sentinel-2-l2a|sentinel-2-iceland|" eoapi-maps-plugin/values-template.yaml
+sed -i -e "s|Sentinel 2 L2A|Sentinel-2 Level-2A Iceland|" eoapi-maps-plugin/values-template.yaml
 ```{{exec}}
-
 
 Before proceeding with the Data Acces Building Block deployment, we need first to configure it. We can do it with the configuration script `configure-data-access.sh` provided in the EOEPCA deployment guide.
 
