@@ -245,7 +245,7 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
   #apt-get install -y postgis postgresql-${PG_VERSION} postgresql-${PG_VERSION}-postgis < /dev/null
   apt-get install -y postgis postgresql postgresql-postgis < /dev/null
   #Locate installed version
-  #PG_VERSION=`ls /etc/postgresql/`
+  PG_VERSION=`ls /etc/postgresql/`
   su - postgres -c "echo \"listen_addresses = '*'\" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf"
   su - postgres -c "echo \"host all all 0.0.0.0/0 scram-sha-256\" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf"
   service postgresql restart
