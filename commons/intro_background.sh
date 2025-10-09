@@ -241,8 +241,9 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
   #Install latest postgresql release
   apt-get install -y postgresql-common </dev/null
   /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
-  PG_VERSION=17
-  apt-get install -y postgis postgresql-${PG_VERSION} postgresql-${PG_VERSION}-postgis < /dev/null
+  #PG_VERSION=17
+  #apt-get install -y postgis postgresql-${PG_VERSION} postgresql-${PG_VERSION}-postgis < /dev/null
+  apt-get install -y postgis postgresql postgresql-postgis < /dev/null
   #Locate installed version
   #PG_VERSION=`ls /etc/postgresql/`
   su - postgres -c "echo \"listen_addresses = '*'\" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf"
