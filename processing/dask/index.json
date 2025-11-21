@@ -1,0 +1,74 @@
+{
+  "title": "OpenEO - Dask Backend",
+  "description": "Deploy the EOEPCA Processing Building Block with an OpenEO API interface and Dask distributed computing backend",
+  "details": {
+    "intro": {
+      "title": "Intro",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Pre-requisites (1/4)",
+        "text": "prerequisites.md"
+      },
+      {
+        "title": "Pre-requisites (2/4)",
+        "text": "prerequisite_k8s.md"
+      },
+      {
+        "title": "Pre-requisites (3/4)",
+        "text": "prerequisite_dask.md"
+      },
+      {
+        "title": "Pre-requisites (4/4)",
+        "text": "prerequisite_s3.md"
+      },
+      {
+        "title": "Configure OpenEO Backend (1/2)",
+        "text": "configure_openeo.md"
+      },
+      {
+        "title": "Configure OpenEO Backend (2/2)",
+        "text": "configure_openeo2.md"
+      },
+      {
+        "title": "Deploy OpenEO Services",
+        "text": "deploy_openeo.md"
+      },
+      {
+        "title": "Connect to OpenEO",
+        "text": "connect_openeo.md"
+      },
+      {
+        "title": "Load Collections",
+        "text": "load_collections.md"
+      },
+      {
+        "title": "Create Process Graph",
+        "text": "create_process.md"
+      },
+      {
+        "title": "Execute Processing",
+        "text": "execute_process.md"
+      },
+      {
+        "title": "Monitor Jobs",
+        "text": "monitor_jobs.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

@@ -115,6 +115,11 @@ average = (lon + lat) / 2
 
 cube_bands.download("bands.nc")
 average.download("average.nc")
+
+# download average graph
+average_graph = json.loads(average.to_json())
+with open("average_workflow.json", "w") as f:
+    json.dump(average_graph, f, indent=2)
 ```{{exec}}
 
 ### Verify Band Calculation
