@@ -1,134 +1,41 @@
-## Deploy Ingress and Auth Proxy
 
-Apply the ingress configuration:
+## Deploy Ingress and Authentication
+
+### Apply Ingress
 
 ```bash
 kubectl apply -f generated-ingress.yaml
 ```{{exec}}
 
-Deploy the authentication proxy (for basic auth mode):
+### Deploy Authentication Proxy
+
 ```bash
 kubectl apply -f generated-proxy-auth.yaml
 ```{{exec}}
 
-Set up demo authentication:
-```bash
-bash /tmp/assets/setup-demo-auth
-```{{exec}}
+### Set Up Mock OIDC Provider
 
 ```bash
 bash /tmp/assets/mock-oidc-setup
 ```{{exec}}
 
-Verify all components:
+### Configure Demo Authentication
+
+```bash
+bash /tmp/assets/setup-demo-auth
+```{{exec}}
+
+### Verify Components
+
 ```bash
 kubectl get pods -n openeo
 kubectl get ingress -n openeo
-kubectl get endpoints openeo-openeo-argo -n openeo
 ```{{exec}}
 
-Test the API:
+### Test API Access
+
 ```bash
 curl -u eoepcauser:eoepcapass http://openeo.eoepca.local/
 ```{{exec}}
 
-
----
-
-# Create demo user
-```bash
-kubectl exec -n openeo openeo-postgresql-0 -- env PGPASSWORD=changeme psql -U postgres -d openeo -c \
-  "INSERT INTO users (user_id, oidc_sub, created_at) VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'eoepcauser', NOW()) ON CONFLICT DO NOTHING;"
-
-# Generate JWT token
-PRIVATE_KEY_B64=$(cat /root/.eoepca/openeo-private-key.b64)
-
-TOKEN=$(kubectl exec -n openeo deploy/openeo-openeo-argo -c openeo-argo -- python3 -c "
-import base64
-from jose import jwt
-import datetime
-
-private_key = base64.b64decode('${PRIVATE_KEY_B64}').decode('utf-8')
-payload = {
-    'sub': 'eoepcauser',
-    'iat': datetime.datetime.utcnow(),
-    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30),
-    'iss': 'http://dummy-oidc-local.openeo.svc.cluster.local/realms/eoepca'
-}
-print(jwt.encode(payload, private_key, algorithm='RS256', headers={'kid': 'demo-key-1'}))
-")
-
-echo "Token generated: ${TOKEN:0:50}..."
-```
-
-# Update proxy with token
-
-```bash
-kubectl delete configmap openeo-proxy-config -n openeo 2>/dev/null || true
-kubectl delete deployment openeo-auth-proxy -n openeo 2>/dev/null || true
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: openeo-proxy-config
-  namespace: openeo
-data:
-  .htpasswd: |
-    eoepcauser:\$apr1\$G6apHBqY\$Q1yGWKhh8CTOjlITqggaK/
-  nginx.conf: |
-    events { worker_connections 1024; }
-    http {
-      server {
-        listen 8080;
-        location / {
-          auth_basic "OpenEO";
-          auth_basic_user_file /etc/nginx/.htpasswd;
-          rewrite ^/(.*)\$ /openeo/1.1.0/\$1 break;
-          proxy_pass http://openeo-openeo-argo:8000;
-          proxy_set_header Host \$host;
-          proxy_set_header Authorization "Bearer oidc/eoepca/$TOKEN";
-          proxy_read_timeout 600s;
-        }
-      }
-    }
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: openeo-auth-proxy
-  namespace: openeo
-spec:
-  replicas: 1
-  selector:
-    matchLabels: {app: openeo-auth-proxy}
-  template:
-    metadata:
-      labels: {app: openeo-auth-proxy}
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:alpine
-        ports: [{containerPort: 8080}]
-        volumeMounts:
-        - {name: config, mountPath: /etc/nginx/nginx.conf, subPath: nginx.conf}
-        - {name: config, mountPath: /etc/nginx/.htpasswd, subPath: .htpasswd}
-      volumes:
-      - name: config
-        configMap: {name: openeo-proxy-config}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: openeo-proxy
-  namespace: openeo
-spec:
-  selector: {app: openeo-auth-proxy}
-  ports: [{port: 8080, targetPort: 8080}]
-EOF
-
-kubectl rollout status deployment openeo-auth-proxy -n openeo --timeout=60s
-
-# Test
-curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/jobs | jq .
-```
+You should see a JSON response with API version and endpoint information.

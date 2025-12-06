@@ -45,35 +45,18 @@ curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/credentials/oidc | j
 
 OpenEO uses process graphs to define workflows. Here's an example structure for calculating NDVI:
 ```bash
-cat << 'EOF'
-{
-  "process_graph": {
-    "load": {
-      "process_id": "load_collection",
-      "arguments": {
-        "id": "sentinel-2-l2a",
-        "spatial_extent": {"west": 11.2, "south": 46.4, "east": 11.5, "north": 46.6},
-        "temporal_extent": ["2023-06-01", "2023-06-30"],
-        "bands": ["B04", "B08"]
+curl -s -u eoepcauser:eoepcapass -X POST \
+  -H "Content-Type: application/json" \
+  http://openeo.eoepca.local/result \
+  -d '{
+    "process": {
+      "process_graph": {
+        "add1": {
+          "process_id": "add",
+          "arguments": {"x": 3, "y": 5},
+          "result": true
+        }
       }
-    },
-    "ndvi": {
-      "process_id": "ndvi",
-      "arguments": {
-        "data": {"from_node": "load"},
-        "nir": "B08",
-        "red": "B04"
-      }
-    },
-    "save": {
-      "process_id": "save_result",
-      "arguments": {
-        "data": {"from_node": "ndvi"},
-        "format": "GTiff"
-      },
-      "result": true
     }
-  }
-}
-EOF
+  }'
 ```{{exec}}

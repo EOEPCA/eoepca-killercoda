@@ -1,3 +1,4 @@
+
 ## Prerequisites and Initial Setup
 
 Clone the deployment-guide repository containing the necessary scripts and configurations.
@@ -6,8 +7,6 @@ Clone the deployment-guide repository containing the necessary scripts and confi
 git clone https://github.com/EOEPCA/deployment-guide -b release-2-jh
 cd deployment-guide/scripts/processing/openeo-argo
 ```{{exec}}
-
-Set up environment variables for the Killercoda environment:
 
 Validate prerequisites:
 
@@ -20,3 +19,5 @@ local-path
 no
 EOF
 ```{{exec}}
+
+This checks that the Kubernetes cluster, Helm, and ingress controller are properly configured.
