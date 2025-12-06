@@ -1,162 +1,79 @@
 ## Using the OpenEO ArgoWorkflows API
 
-### Basic Authentication Setup
-
-For demo purposes, we're using basic auth:
-
-```bash
-# Demo credentials
-export AUTH_USER="demo"
-export AUTH_PASS="demo123"
-export BASIC_AUTH=$(echo -n "${AUTH_USER}:${AUTH_PASS}" | base64)
-echo "Auth configured for user: ${AUTH_USER}"
-```{{exec}}
+This section demonstrates interacting with the OpenEO API. Note that this demo deployment uses basic authentication which allows API discovery, but full job submission requires OIDC authentication in production.
 
 ### API Discovery
 
-Check available endpoints:
+Check the API root endpoint:
 ```bash
-curl -s "http://localhost:8080/" | jq '.endpoints | keys'
-```{{exec}}
-
-Get backend capabilities:
-```bash
-curl -s "http://localhost:8080/" | jq '{
+curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/ | jq '{
   api_version: .api_version,
   backend_version: .backend_version,
-  processing: .processing,
-  output_formats: .output_formats
+  title: .title,
+  endpoints: [.endpoints[].path]
 }'
 ```{{exec}}
 
-### Collections and Processes
+### Available Processes
 
-List available collections:
+OpenEO provides a rich set of processing functions. List all available processes:
 ```bash
-curl -s -H "Authorization: Basic ${BASIC_AUTH}" \
-  "http://localhost:8080/collections" | jq '.collections[].id' 2>/dev/null || echo "No collections available in demo mode"
+curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/processes | jq '[.processes[].id] | sort'
 ```{{exec}}
 
-List available processes (processing functions):
+Get details about a specific process (e.g., NDVI calculation):
 ```bash
-curl -s "http://localhost:8080/processes" | jq '.processes[:5] | .[].id'
+curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/processes | jq '.processes[] | select(.id=="ndvi")'
 ```{{exec}}
 
-Get details of a specific process:
+
+### Check Conformance
+
+See which standards the API conforms to:
 ```bash
-curl -s "http://localhost:8080/processes" | jq '.processes[] | select(.id=="ndvi") | {id, summary, parameters}'
+curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/conformance | jq '.'
 ```{{exec}}
 
-### Submit a Simple Calculation
+### Authentication Information
 
-```
-curl  -L -u eoepcauser:eoepcapass https://openeo.${INGRESS_HOST}/result \
-  -H "Content-Type: application/json" \
-  -d '{
-    "process": {
-      "process_graph": {
-        "multiply": {
-          "process_id": "multiply",
-          "arguments": {"x": 7, "y": 6},
-          "result": true
-        }
-      }
-    }
-  }'
+View the OIDC provider configuration:
+```bash
+curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/credentials/oidc | jq '.'
 ```{{exec}}
 
-Test with basic arithmetic:
-```bash
-curl -s -X POST "http://localhost:8080/result" \
-  -H "Authorization: Basic ${BASIC_AUTH}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "process": {
-      "process_graph": {
-        "multiply": {
-          "process_id": "multiply",
-          "arguments": {"x": 7, "y": 6},
-          "result": true
-        }
-      }
-    }
-  }'
-echo ""
-```{{exec}}
+### Understanding Process Graphs
 
-### Create a Process Graph
-
-Build a more complex processing chain:
+OpenEO uses process graphs to define workflows. Here's an example structure for calculating NDVI:
 ```bash
-cat > process_graph.json <<EOF
+cat << 'EOF'
 {
-  "process": {
-    "process_graph": {
-      "array1": {
-        "process_id": "create_array",
-        "arguments": {
-          "data": [10, 20, 30, 40, 50]
-        }
-      },
-      "mean1": {
-        "process_id": "mean",
-        "arguments": {
-          "data": {"from_node": "array1"}
-        }
-      },
-      "multiply1": {
-        "process_id": "multiply",
-        "arguments": {
-          "x": {"from_node": "mean1"},
-          "y": 2
-        },
-        "result": true
+  "process_graph": {
+    "load": {
+      "process_id": "load_collection",
+      "arguments": {
+        "id": "sentinel-2-l2a",
+        "spatial_extent": {"west": 11.2, "south": 46.4, "east": 11.5, "north": 46.6},
+        "temporal_extent": ["2023-06-01", "2023-06-30"],
+        "bands": ["B04", "B08"]
       }
+    },
+    "ndvi": {
+      "process_id": "ndvi",
+      "arguments": {
+        "data": {"from_node": "load"},
+        "nir": "B08",
+        "red": "B04"
+      }
+    },
+    "save": {
+      "process_id": "save_result",
+      "arguments": {
+        "data": {"from_node": "ndvi"},
+        "format": "GTiff"
+      },
+      "result": true
     }
   }
 }
 EOF
-
-curl -s -X POST "http://localhost:8080/result" \
-  -H "Authorization: Basic ${BASIC_AUTH}" \
-  -H "Content-Type: application/json" \
-  -d @process_graph.json
-echo ""
-```{{exec}}
-
-### Submit a Batch Job
-
-Create a batch job (runs asynchronously):
-```bash
-cat > batch_job.json <<EOF
-{
-  "title": "Demo Batch Job",
-  "description": "Calculate statistics on array data",
-  "process": {
-    "process_graph": {
-      "data1": {
-        "process_id": "create_array",
-        "arguments": {
-          "data": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        }
-      },
-      "stats": {
-        "process_id": "aggregate_statistics",
-        "arguments": {
-          "data": {"from_node": "data1"}
-        },
-        "result": true
-      }
-    }
-  }
-}
-EOF
-
-# Note: In full deployment, this would trigger Dask workers
-JOB_ID=$(curl -s -X POST "http://localhost:8080/jobs" \
-  -H "Authorization: Basic ${BASIC_AUTH}" \
-  -H "Content-Type: application/json" \
-  -d @batch_job.json | jq -r '.id' 2>/dev/null || echo "job-demo-001")
-
-echo "Job created with ID: ${JOB_ID}"
 ```{{exec}}

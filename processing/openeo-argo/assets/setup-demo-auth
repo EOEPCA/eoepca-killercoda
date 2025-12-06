@@ -1,46 +1,18 @@
-## Deploy Ingress and Auth Proxy
+#!/bin/bash
+# Setup demo authentication after OpenEO is deployed
+set -e
 
-Apply the ingress configuration:
+echo "Setting up demo authentication..."
 
-```bash
-kubectl apply -f generated-ingress.yaml
-```{{exec}}
-
-Deploy the authentication proxy (for basic auth mode):
-```bash
-kubectl apply -f generated-proxy-auth.yaml
-```{{exec}}
-
-Set up demo authentication:
-```bash
-bash /tmp/assets/setup-demo-auth
-```{{exec}}
-
-```bash
-bash /tmp/assets/mock-oidc-setup
-```{{exec}}
-
-Verify all components:
-```bash
-kubectl get pods -n openeo
-kubectl get ingress -n openeo
-kubectl get endpoints openeo-openeo-argo -n openeo
-```{{exec}}
-
-Test the API:
-```bash
-curl -u eoepcauser:eoepcapass http://openeo.eoepca.local/
-```{{exec}}
-
-
----
+# Wait for pods
+kubectl wait --for=condition=ready pod/openeo-postgresql-0 -n openeo --timeout=120s
+kubectl rollout status deployment openeo-openeo-argo -n openeo --timeout=300s
 
 # Create demo user
-```bash
 kubectl exec -n openeo openeo-postgresql-0 -- env PGPASSWORD=changeme psql -U postgres -d openeo -c \
   "INSERT INTO users (user_id, oidc_sub, created_at) VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'eoepcauser', NOW()) ON CONFLICT DO NOTHING;"
 
-# Generate JWT token
+# Generate token
 PRIVATE_KEY_B64=$(cat /root/.eoepca/openeo-private-key.b64)
 
 TOKEN=$(kubectl exec -n openeo deploy/openeo-openeo-argo -c openeo-argo -- python3 -c "
@@ -58,15 +30,9 @@ payload = {
 print(jwt.encode(payload, private_key, algorithm='RS256', headers={'kid': 'demo-key-1'}))
 ")
 
-echo "Token generated: ${TOKEN:0:50}..."
-```
+echo "$TOKEN" > /root/.eoepca/openeo-token
 
-# Update proxy with token
-
-```bash
-kubectl delete configmap openeo-proxy-config -n openeo 2>/dev/null || true
-kubectl delete deployment openeo-auth-proxy -n openeo 2>/dev/null || true
-
+# Deploy auth proxy with token
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ConfigMap
@@ -127,8 +93,5 @@ spec:
   ports: [{port: 8080, targetPort: 8080}]
 EOF
 
-kubectl rollout status deployment openeo-auth-proxy -n openeo --timeout=60s
-
-# Test
-curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/jobs | jq .
-```
+kubectl rollout status deployment openeo-auth-proxy -n openeo --timeout=120s
+echo "✅ Demo auth configured (user: eoepcauser / pass: eoepcapass)"

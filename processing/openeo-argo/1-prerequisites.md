@@ -9,14 +9,6 @@ cd deployment-guide/scripts/processing/openeo-argo
 
 Set up environment variables for the Killercoda environment:
 
-```bash
-http
-nginx
-eoepca.local
-local-path
-no
-```
-
 Validate prerequisites:
 
 ```bash

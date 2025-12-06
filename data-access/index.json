@@ -1,0 +1,47 @@
+
+{
+  "title": "EOEPCA Data Access BB",
+  "description": "Deploy and use STAC and OGC APIs for Earth Observation data access.",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Check Prerequisites",
+        "text": "01-prerequisites.md"
+      },
+      {
+        "title": "Configure Data Access",
+        "text": "02-configure.md"
+      },
+      {
+        "title": "Deploy Data Access",
+        "text": "03-deploy.md"
+      },
+      {
+        "title": "Load Sample Data",
+        "text": "04-load-data.md"
+      },
+      {
+        "title": "Explore the APIs",
+        "text": "05-explore-apis.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

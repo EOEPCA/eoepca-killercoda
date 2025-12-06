@@ -6,11 +6,13 @@ Configure OpenEO ArgoWorkflows for deployment. This setup uses simplified authen
 bash configure-openeo-argo.sh <<EOF
 eoepca.local
 local-path
-none
+no
 http://stac.eoepca.local/stac
-mock
-demo
 EOF
+```{{exec}}
+
+```bash
+sed -i 's|dummy-oidc.local|dummy-oidc-local.openeo.svc.cluster.local|g' generated-values.yaml
 ```{{exec}}
 
 
