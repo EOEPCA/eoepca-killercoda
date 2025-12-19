@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# --- directory setup ----------------------------------------------------------
+
 ORIG_DIR="$(pwd)"
 cd "$(dirname "$0")"
 BIN_DIR="$(pwd)"
@@ -9,12 +11,16 @@ function onExit() {
 }
 trap "onExit" EXIT
 
+# --- environment setup --------------------------------------------------------
+
 if [ -f .envrc ] ; then source .envrc; fi
 
 if [ -z "$LOCALCODA_ROOT" ]; then
   echo "ERROR: LOCALCODA_ROOT is not set"
   exit 1
 fi
+
+# --- list running tutorials ---------------------------------------------------
 
 "${LOCALCODA_ROOT}"/backend/bin/backend_ls.sh | jq -r --arg cwd "$(pwd)/" '
   .[] |
