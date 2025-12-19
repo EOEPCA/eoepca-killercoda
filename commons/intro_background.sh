@@ -64,15 +64,18 @@ if [[ -e /tmp/assets/apisix ]]; then
   helm repo update apisix
 
   helm upgrade -i apisix apisix/apisix \
-    --version 2.9.0 \
+    --version 2.10.0 \
     --namespace ingress-apisix --create-namespace \
     --set securityContext.runAsUser=0 \
     --set hostNetwork=true \
     --set service.http.containerPort=80 \
     --set apisix.ssl.containerPort=443 \
+    --set etcd.image.repository=bitnamilegacy/etcd \
     --set etcd.replicaCount=1 \
+    --set etcd.persistence.storageClass="local-path" \
     --set apisix.enableIPv6=false \
     --set apisix.enableServerTokens=false \
+    --set apisix.ssl.enabled=true \
     --set ingress-controller.enabled=true
 fi
 if [[ -e /tmp/assets/killercodaproxy ]]; then
