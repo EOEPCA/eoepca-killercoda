@@ -25,7 +25,6 @@ We can now register it via
 
 ```
 curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/metadata:main/items' \
-  --silent \
   -H "Content-Type: application/json" \
   -d @CAT_DEMO.json | jq
 ```{{exec}}
@@ -33,12 +32,10 @@ curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/metadata:m
 You should be now able to see the CAT_DEMO collection via the STAC API
 
 ```
-curl --silent http://resource-catalogue.eoepca.local/stac/collections | jq .collections[].id
+curl http://resource-catalogue.eoepca.local/stac/collections | jq .collections[].id
 ```{{exec}}
 
 or via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/metadata:main/items)
-
-> NOTE that the STAC Browser will not work in the case that (insecure) `http` has been used to expose the Resource Catalogue service.
 
 ### Add an Item
 
@@ -74,7 +71,6 @@ And then we can ingest it, in the CAT_DEMO collection we just created
 
 ```
 curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/items' \
-  --silent \
   -H "Content-Type: application/json" \
   -d @example-item.json | jq
 ```{{exec}}
@@ -82,9 +78,8 @@ curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/i
 we can now see the sample product we have ingested via the STAC API
 
 ```
-curl --silent http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/items | jq .features[].id
+curl http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/items | jq .features[].id
 ```{{exec}}
 
 And in the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/CAT_DEMO/items)
 
-> NOTE that the STAC Browser will not work in the case that (insecure) `http` has been used to expose the Resource Catalogue service.

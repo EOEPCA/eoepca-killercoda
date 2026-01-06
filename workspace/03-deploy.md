@@ -12,7 +12,7 @@ Then we deploy the software via helm, using the configuration values generated i
 ```
 helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.0.0-rc4 \
+  --version 2.0.0-rc2 \
   --namespace resource-discovery \
   --create-namespace
 ```{{exec}}

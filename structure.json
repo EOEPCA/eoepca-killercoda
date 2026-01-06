@@ -4,5 +4,6 @@
     { "path": "discovery" },
     { "path": "processing" },
     { "path": "iam" }
+    { "path": "workspace" }
   ]
 }
