@@ -189,13 +189,13 @@ EOF
   }
   # Add server blocks
   while read port dest types; do
-    add_server_block $port $dest $types
+    add_server_block "$port" "$dest" "$types"
   done < /tmp/assets/killercodaproxy
   # Add minio servers if enabled
   # These need to set the Host header as the 'external' URL - minio is fussy
   if [[ -e /tmp/assets/minio.7z ]]; then
-    add_server_block 900 "minio.eoepca.local:9000" 'NONE' "$(sed "s#http://PORT#900#" /etc/killercoda/host)"  # S3 API
-    add_server_block 901 "minio-console.eoepca.local:9001" 'NONE' "$(sed "s#http://PORT#901#" /etc/killercoda/host)"  # Web Console
+    add_server_block 900 "minio.eoepca.local:9000" "NONE" "$(sed "s#http://PORT#900#" /etc/killercoda/host)"  # S3 API
+    add_server_block 901 "minio-console.eoepca.local:9001" "NONE" "$(sed "s#http://PORT#901#" /etc/killercoda/host)"  # Web Console
   fi
   # close the http block
   echo "}" >> /etc/nginx/nginx.conf
