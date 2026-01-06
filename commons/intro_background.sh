@@ -36,6 +36,10 @@ if [[ -e /tmp/assets/localdns ]]; then
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
   kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
+  mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
+export HTTP_SCHEME="http"
+export INGRESS_HOST="eoepca.local"
+EOF
 fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
   echo "installing gomplate..." >> /tmp/killercoda_setup.log
@@ -60,9 +64,9 @@ fi
 if [[ -e /tmp/assets/apisix ]]; then
   # Install apisix
   echo "installing apisix ingress..." >> /tmp/killercoda_setup.log
+  mkdir -p ~/.eoepca && echo 'export INGRESS_CLASS="apisix"' >> ~/.eoepca/state
   helm repo add apisix https://charts.apiseven.com
   helm repo update apisix
-
   helm upgrade -i apisix apisix/apisix \
     --version 2.10.0 \
     --namespace ingress-apisix --create-namespace \
@@ -78,6 +82,42 @@ if [[ -e /tmp/assets/apisix ]]; then
     --set apisix.ssl.enabled=true \
     --set ingress-controller.enabled=true
 fi
+if [[ -e /tmp/assets/iam ]]; then
+  echo "installing IAM..." >> /tmp/killercoda_setup.log
+  keycloak_host() {
+    port="$(grep auth /tmp/assets/killercodaproxy | awk '{print $1}')"
+    sed "s#http://PORT#$port#" /etc/killercoda/host
+  }
+  mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
+export REALM="eoepca"
+export KEYCLOAK_HOST="$(keycloak_host)"
+export KEYCLOAK_ADMIN_USER="admin"
+export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
+export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
+export OPA_CLIENT_SECRET="eoepcatest"
+EOF
+  source ~/.eoepca/state
+  source /tmp/assets/iam
+  kubectl create namespace iam
+  # Secrets
+  iam_create_secrets
+  # Helm chart
+  helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+  helm repo update eoepca-dev
+  iam_helm_values | helm upgrade -i iam eoepca-dev/iam-bb \
+    --version 2.0.0-rc2 \
+    --namespace iam \
+    --values - \
+    --create-namespace
+  # IAM post-setup - do this in the background
+  (
+    # Wait for IAM to be ready
+    while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
+    # Create eoepca realm
+    iam_create_realm
+  ) &
+fi
+
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
   #to work with killercoda proxy
@@ -85,6 +125,8 @@ if [[ -e /tmp/assets/killercodaproxy ]]; then
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
   #Install nginx with substitution mode
   apt-get install -y nginx libnginx-mod-http-subs-filter
+  #source eoepca state - e.g. for HTTP_SCHEME
+  source ~/.eoepca/state
   #write nginx configuration
   cat <<EOF >/etc/nginx/nginx.conf
 user www-data;
@@ -101,36 +143,62 @@ events {
 http {
   access_log /dev/null;
   gzip on;
+  map \$http_upgrade \$connection_upgrade {
+    default upgrade;
+    ''      close;
+  }
 EOF
   #All the proxy redirects must be placed into all the proxied sites, otherwise cross-site
   #redirections like the ones done by OPA will not work...
   echo -n "" > /tmp/assets/killercodaproxy_redirects
   while read port dest types; do
-    echo "         proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
+    echo "      proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
   done < /tmp/assets/killercodaproxy
-  while read port dest types; do
-cat <<EOF>>/etc/nginx/nginx.conf
-    server {
-
-        listen       $port;
-
-        location / {
-         proxy_pass  http://$dest;
-         proxy_set_header   Host             $dest;
-         proxy_set_header Accept-Encoding "";
+  # helper function to add an nginx server block
+  add_server_block() {
+    local port="$1" dest="$2" types="$3"
+    local host="${4:-$dest}"
+    cat <<EOF>>/etc/nginx/nginx.conf
+  server {
+    listen       $port;
+    location / {
+      proxy_pass  http://$dest;
+      proxy_set_header Host $host;
+      proxy_set_header Accept-Encoding "";
+      proxy_set_header X-Forwarded-Host \$http_x_forwarded_host;
+      proxy_set_header X-Forwarded-Proto \$http_x_forwarded_proto;
+      proxy_set_header X-Forwarded-For \$http_x_forwarded_for;
+      # websockets
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade \$http_upgrade;
+      proxy_set_header Connection \$connection_upgrade;
+      # streaming - e.g. for S3 API
+      client_max_body_size 0;
+      proxy_request_buffering off;
 EOF
     cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
     [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
-         subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
-         subs_filter $dest  `sed -e "s/PORT/$port/g" -e "s|^https://||" /etc/killercoda/host`;
-         subs_filter_types ${types//\'/};
+      subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
+      subs_filter $dest  `sed -e "s|^https\?://PORT|$port|" /etc/killercoda/host`;
+      subs_filter_types ${types//\'/};
 EOF
-cat <<EOF>>/etc/nginx/nginx.conf
-        }
+    cat <<EOF>>/etc/nginx/nginx.conf
     }
+  }
 EOF
+  }
+  # Add server blocks
+  while read port dest types; do
+    add_server_block $port $dest $types
   done < /tmp/assets/killercodaproxy
-echo "}" >> /etc/nginx/nginx.conf
+  # Add minio servers if enabled
+  # These need to set the Host header as the 'external' URL - minio is fussy
+  if [[ -e /tmp/assets/minio.7z ]]; then
+    add_server_block 900 "minio.eoepca.local:9000" 'NONE' "$(sed "s#http://PORT#900#" /etc/killercoda/host)"  # S3 API
+    add_server_block 901 "minio-console.eoepca.local:9001" 'NONE' "$(sed "s#http://PORT#901#" /etc/killercoda/host)"  # Web Console
+  fi
+  # close the http block
+  echo "}" >> /etc/nginx/nginx.conf
   #restart nginx
   service nginx restart
 fi
@@ -142,7 +210,10 @@ if [[ -e /tmp/assets/minio.7z ]]; then
   #wget -q https://dl.min.io/server/minio/release/linux-amd64/minio -O /usr/local/bin/minio && chmod +x /usr/local/bin/minio
   #wget -q https://dl.min.io/client/mc/release/linux-amd64/mc -O  /usr/local/bin/mc && chmod +x /usr/local/bin/mc
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/minio.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/mc /usr/local/bin/minio
-  mkdir -p ~/minio && MINIO_ROOT_USER=eoepca MINIO_ROOT_PASSWORD=eoepcatest nohup minio server --quiet ~/minio &>/dev/null &
+  minio_console_url="$(sed "s#PORT#9001#" /etc/killercoda/host)"
+  mkdir -p ~/minio && \
+    MINIO_ROOT_USER=eoepca MINIO_ROOT_PASSWORD=eoepcatest MINIO_BROWSER_REDIRECT_URL="${minio_console_url}" MINIO_PROXY=on MINIO_API_CORS_ALLOW_ORIGIN="${minio_console_url}" \
+    nohup minio server --quiet --console-address ":9001" ~/minio &>/dev/null &
   sleep 1
   while ! mc config host add minio-local http://minio.eoepca.local:9000/ eoepca eoepcatest; do sleep 1; done
   mkdir -p ~/.eoepca && echo 'export S3_ENDPOINT="http://minio.eoepca.local:9000/"
@@ -161,7 +232,30 @@ if [[ -e /tmp/assets/readwritemany ]]; then
   ### Prerequisites: readwritemany StorageClass
   echo enabling ReadWriteMany StorageClass..  >> /tmp/killercoda_setup.log
   kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/docs/prerequisites/hostpath-provisioner.yaml
-  echo 'export STORAGE_CLASS="standard"'>>~/.eoepca/state
+  mkdir -p ~/.eoepca && echo 'export SHARED_STORAGECLASS="standard"'>>~/.eoepca/state
+fi
+if [[ -e /tmp/assets/crossplane ]]; then
+  # Deploy Crossplane
+  echo installing crossplane...  >> /tmp/killercoda_setup.log
+  # Deploy Crossplane via helm chart
+  helm upgrade --install crossplane crossplane \
+    --repo https://charts.crossplane.io/stable \
+    --version 2.0.2 \
+    --namespace crossplane-system \
+    --create-namespace \
+    --set provider.defaultActivations={}
+  # Secret with Minio credentials for Crossplane S3 provider
+  source ~/.eoepca/state
+  kubectl create secret generic minio-secret \
+    --from-literal=AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" \
+    --from-literal=AWS_SECRET_ACCESS_KEY="$S3_SECRET_KEY" \
+    --from-literal=AWS_ENDPOINT_URL="$S3_ENDPOINT" \
+    --from-literal=AWS_REGION="$S3_REGION" \
+    --namespace crossplane-system
+  # Deploy providers and associated setup
+  until kubectl apply -f /tmp/assets/crossplane &>/dev/null; do
+    sleep 2
+  done &
 fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
