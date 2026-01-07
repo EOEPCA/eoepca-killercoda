@@ -94,7 +94,11 @@ export KEYCLOAK_HOST="$(keycloak_host)"
 export KEYCLOAK_ADMIN_USER="admin"
 export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
 export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
-export OPA_CLIENT_SECRET="eoepcatest"
+export OPA_CLIENT_ID="opa"
+export OPA_CLIENT_SECRET="$(openssl rand -hex 16)"
+export KEYCLOAK_TEST_USER="eoepcauser"
+export KEYCLOAK_TEST_ADMIN="eoepcaadmin"
+export KEYCLOAK_TEST_PASSWORD="eoepcapassword"
 EOF
   source ~/.eoepca/state
   source /tmp/assets/iam
@@ -115,7 +119,16 @@ EOF
     while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
     # Create eoepca realm
     iam_create_realm
-  ) &
+    # Create IAM management client
+    iam_create_management_client
+    iam_configure_management_client
+    # Crossplane provider setup
+    iam_setup_crossplane_provider
+    # Test users
+    iam_create_test_users
+    # OPA client
+    iam_create_opa_client
+  ) >/tmp/iam-post-setup.log &
 fi
 
 if [[ -e /tmp/assets/killercodaproxy ]]; then
