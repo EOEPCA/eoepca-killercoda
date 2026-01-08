@@ -1,0 +1,30 @@
+{
+  "title": "EOEPCA Resource Registration BB",
+  "description": "Register new resources with the catalogue and other building blocks",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Check Prerequisites",
+        "text": "01-prerequisites.md"
+      }
+    ],
+    "finish": {
+     "title": "Finish",
+     "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
