@@ -14,11 +14,11 @@
         "text": "01-prerequisites.md"
       },
       {
-        "title": "Configure Resource Discovery",
+        "title": "Configure Workspace",
         "text": "02-configure.md"
       },
       {
-        "title": "Deploy Resource Catalogue", 
+        "title": "Deploy Workspace", 
         "text": "03-deploy.md"
       },
       { 
