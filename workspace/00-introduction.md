@@ -71,3 +71,7 @@ At this point we can check access to the web UIs of some of the prerequisite ser
 * [Keycloak]({{TRAFFIC_HOST1_82}})
   * Username: `admin`
   * Password: `eoepcatest`
+
+The MinIO service is provisioned with an `eoepca` bucket.
+
+The Keycloak service is provisioned with an `eoepca` realm in which there is an `iam-management` client that supports the Crossplane Keycloak Provider, and two test users `eoepcaadmin` and `eoepcauser`.

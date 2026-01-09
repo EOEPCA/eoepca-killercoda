@@ -17,6 +17,9 @@ no
 * Enable authentication via IAM **->** `true`{{exec}}
 * Client ID for Workspace API **->** `workspace-api`{{exec}}
 * Client ID for Workspace Pipeline **->** `workspace-pipeline`{{exec}}
-* Username for the example user **->** `eoepcauser`{{exec}}
-* Username for the example ADMIN user **->** `eoepcaadmin`{{exec}}
-* Password for the example users **->** `eoepcapassword`{{exec}}
+* The test users are already well configured **->**
+```
+no
+no
+no
+```{{exec}}
