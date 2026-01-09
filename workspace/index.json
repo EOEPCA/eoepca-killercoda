@@ -22,8 +22,16 @@
         "text": "03-deploy.md"
       },
       { 
-        "title": "Add STAC Collections and Items", 
-        "text": "04-add-stac.md" 
+        "title": "Validate Deployment", 
+        "text": "04-validation.md" 
+      },
+      { 
+        "title": "Object Storage", 
+        "text": "05-object-storage.md" 
+      },
+      { 
+        "title": "Workspace UI", 
+        "text": "06-workspace-ui.md" 
       }
     ],
     "finish": {
