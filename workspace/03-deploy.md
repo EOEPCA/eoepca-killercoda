@@ -348,10 +348,38 @@ spec:
 EOF
 ```{{exec}}
 
-## Validation
+## User Workspace Ingress Patch
 
-A quick sanity check of the deployment is made via some automated checks...
+The Workspace BB creates user workspaces with their own ingress resources. However, these ingresses need to be patched to include the correct annotations for the Apisix ingress controller.
+
+A Kyverno `ClusterPolicy` is used to automatically patch any newly created user workspace ingresses.
+
+> Note that the Kyverno service was already installed as a prerequisite of this tutorial.
 
 ```bash
-bash validation.sh
+source ~/.eoepca/state
+cat - <<EOF | kubectl apply -f -
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: workspace-ingress
+spec:
+  rules:
+    - name: workspace-ingress-annotations
+      match:
+        resources:
+          kinds:
+            - Ingress
+          name: "ws-*"
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              +(apisix.ingress.kubernetes.io/use-regex): "true"
+              +(k8s.apisix.apache.org/enable-cors): "true"
+              +(k8s.apisix.apache.org/enable-websocket): "true"
+              +(k8s.apisix.apache.org/upstream-read-timeout): "3600s"
+EOF
 ```{{exec}}
+
+This completes the deployment of the Workspace building block.
