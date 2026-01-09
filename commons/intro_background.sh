@@ -160,6 +160,11 @@ http {
     default upgrade;
     ''      close;
   }
+  # Large buffer sizes for handling large headers (e.g., auth tokens, OIDC flows etc.)
+  proxy_buffer_size          32k;
+  proxy_buffers              8 32k;
+  proxy_busy_buffers_size    64k;
+  large_client_header_buffers 4 32k;
 EOF
   #All the proxy redirects must be placed into all the proxied sites, otherwise cross-site
   #redirections like the ones done by OPA will not work...
