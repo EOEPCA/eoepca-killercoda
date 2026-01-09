@@ -23,41 +23,11 @@ helm dependency update
 helm dependency build
 ```{{exec}}
 
-### Fix the Executor Image
-
-The upstream executor image is missing a required library (`libexpat`). We'll build a patched version:
-
-```bash
-apt-get update && apt-get install -y buildah
-```{{exec}}
-
-```bash
-buildah bud -t ghcr.io/eodcgmbh/openeo-argoworkflows:executor-2025.5.1-fixed -f /tmp/assets/Dockerfile.executor-fix /tmp
-```{{exec}}
-
-Export and import into the k3s containerd runtime:
-
-```bash
-buildah push ghcr.io/eodcgmbh/openeo-argoworkflows:executor-2025.5.1-fixed docker-archive:/tmp/executor-fixed.tar
-ctr -n k8s.io images import /tmp/executor-fixed.tar
-```{{exec}}
-
-Verify the image is available:
-
-```bash
-crictl images | grep executor
-```{{exec}}
-
-Update the configuration to use the fixed image:
-
-```bash
-cd /root/deployment-guide/scripts/processing/openeo-argo
-sed -i 's|executor-2025.5.1|executor-2025.5.1-fixed|g' generated-values.yaml
-```{{exec}}
-
 ### Deploy
 
 ```bash
+cd ~/deployment-guide/scripts/processing/openeo-argo
+
 helm upgrade -i openeo /tmp/charts/eodc/openeo-argo \
     --namespace openeo \
     --create-namespace \

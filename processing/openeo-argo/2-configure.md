@@ -8,7 +8,7 @@ bash configure-openeo-argo.sh <<EOF
 eoepca.local
 local-path
 no
-http://stac.eoepca.local/stac
+http://resource-catalogue.eoepca.local/stac
 EOF
 ```{{exec}}
 

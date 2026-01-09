@@ -1,113 +1,138 @@
 
-## Deploy Mock STAC Catalogue
+First, we need to deploy the Resource Discovery BB which will serve as our STAC catalog. For detailed information about Resource Discovery, see the [dedicated tutorial](https://killercoda.com/eoepca/scenario/resource-discovery).
 
-The OpenEO executor requires a STAC catalogue to query for data. We'll deploy a minimal mock STAC service for testing.
+### Configure Resource Discovery
 
-```bash
-cat <<'EOF' | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mock-stac-config
-  namespace: openeo
-data:
-  stac.json: |
-    {
-      "type": "Catalog",
-      "id": "mock-stac",
-      "stac_version": "1.0.0",
-      "description": "Mock STAC for testing",
-      "links": [
-        {"rel": "self", "href": "/stac", "type": "application/json"},
-        {"rel": "root", "href": "/stac", "type": "application/json"},
-        {"rel": "child", "href": "/stac/collections/test", "type": "application/json"}
-      ]
-    }
-  collection.json: |
-    {
-      "type": "Collection",
-      "id": "test",
-      "stac_version": "1.0.0",
-      "description": "Test collection",
-      "license": "public-domain",
-      "extent": {
-        "spatial": {"bbox": [[11.4, 46.5, 11.5, 46.6]]},
-        "temporal": {"interval": [["2024-01-01T00:00:00Z", "2024-12-31T23:59:59Z"]]}
-      },
-      "links": [
-        {"rel": "self", "href": "/stac/collections/test"},
-        {"rel": "root", "href": "/stac"},
-        {"rel": "items", "href": "/stac/collections/test/items"}
-      ]
-    }
-  items.json: |
-    {
-      "type": "FeatureCollection",
-      "features": []
-    }
-  nginx.conf: |
-    events { worker_connections 128; }
-    http {
-      server {
-        listen 80;
-        location /stac { default_type application/json; alias /data/stac.json; }
-        location /stac/ { default_type application/json; alias /data/stac.json; }
-        location /stac/collections/test { default_type application/json; alias /data/collection.json; }
-        location /stac/collections/test/items { default_type application/json; alias /data/items.json; }
-        location /stac/collections { 
-          default_type application/json; 
-          return 200 '{"collections":[{"id":"test","title":"Test","description":"Test collection","extent":{"spatial":{"bbox":[[11.4,46.5,11.5,46.6]]},"temporal":{"interval":[["2024-01-01T00:00:00Z","2024-12-31T23:59:59Z"]]}}}]}';
-        }
-      }
-    }
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mock-stac
-  namespace: openeo
-spec:
-  replicas: 1
-  selector:
-    matchLabels: {app: mock-stac}
-  template:
-    metadata:
-      labels: {app: mock-stac}
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:alpine
-        ports: [{containerPort: 80}]
-        volumeMounts:
-        - {name: config, mountPath: /etc/nginx/nginx.conf, subPath: nginx.conf}
-        - {name: config, mountPath: /data/stac.json, subPath: stac.json}
-        - {name: config, mountPath: /data/collection.json, subPath: collection.json}
-        - {name: config, mountPath: /data/items.json, subPath: items.json}
-      volumes:
-      - name: config
-        configMap: {name: mock-stac-config}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: stac
-  namespace: openeo
-spec:
-  selector: {app: mock-stac}
-  ports: [{port: 80, targetPort: 80}]
-EOF
+```
+cd ~/deployment-guide/scripts/resource-discovery
+bash configure-resource-discovery.sh
 ```{{exec}}
 
-Add DNS entry for the STAC service:
-
-```bash
-echo "$(kubectl get svc stac -n openeo -o jsonpath='{.spec.clusterIP}') stac.eoepca.local" >> /etc/hosts
+Accept the defaults:
+```
+no
+no
 ```{{exec}}
 
-Wait for deployment and test:
+### Deploy with Helm
 
-```bash
-kubectl rollout status deployment mock-stac -n openeo
-curl -s http://stac.eoepca.local/stac | jq .
-curl -s http://stac.eoepca.local/stac/collections | jq .
+Add the helm repository and deploy:
+
+```
+helm repo add eoepca https://eoepca.github.io/helm-charts-dev
+helm repo update
 ```{{exec}}
+
+```
+helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
+  --values generated-values.yaml \
+  --version 2.0.0-rc2 \
+  --namespace resource-discovery \
+  --create-namespace \
+  --set db.volume_access_modes=ReadWriteOnce
+```{{exec}}
+
+Create the ingress:
+
+```
+kubectl apply -f generated-ingress.yaml
+```{{exec}}
+
+### Wait for Deployment
+
+Wait for the Resource Discovery service to be ready:
+
+```
+while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
+echo "Resource Discovery is ready!"
+```{{exec}}
+
+### Verify Deployment
+
+```
+curl -s "http://resource-catalogue.eoepca.local/stac" | jq '{title: .title, description: .description}'
+```{{exec}}
+
+The Resource Discovery BB is now running and ready for data ingestion.
+
+# Ingest Data
+
+
+Now let's ingest a datacube-ready STAC collection. This collection includes the STAC Datacube Extension which defines dimensions and variables.
+
+### Understanding Datacube-Ready Collections
+
+A datacube-ready collection includes:
+- **`cube:dimensions`**: Defines x, y, time, and band dimensions with their extents
+- **`cube:variables`**: Describes data variables and their relationship to dimensions
+
+This metadata tells processing tools how to interpret the data as a multi-dimensional array.
+
+### Navigate to Datacube Access Scripts
+
+The datacube-ready collection and items are already provided in the deployment guide:
+
+```
+cd ~/deployment-guide/scripts/datacube-access
+```{{exec}}
+
+### Examine the Datacube Collection
+
+Let's look at the sample datacube-ready collection:
+
+```
+cat collections/datacube-ready-collection/collections.json | jq '{id, title, "cube:dimensions": .["cube:dimensions"] | keys, "cube:variables": .["cube:variables"] | keys}'
+```{{exec}}
+
+Notice the `cube:dimensions` section defines:
+- **x, y**: Spatial dimensions with extent and EPSG code
+- **time**: Temporal dimension with ISO 8601 extent
+- **bands**: The spectral bands available (B04, B08, SCL)
+
+### Examine the Items
+
+```
+cat collections/datacube-ready-collection/items.json | jq '.[0] | {id, datetime: .properties.datetime, cloud_cover: .properties["eo:cloud_cover"], assets: .assets | keys}'
+```{{exec}}
+
+Each item contains geometry, temporal properties, and assets pointing to Cloud-Optimised GeoTIFFs.
+
+### Ingest the Collection
+
+First, register the collection with the Resource Discovery STAC API:
+
+```
+curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/metadata:main/items' \
+  -H "Content-Type: application/json" \
+  -d @collections/datacube-ready-collection/collections.json | jq '.id'
+```{{exec}}
+
+### Ingest the Items
+
+Add the items to the collection:
+
+```
+cat collections/datacube-ready-collection/items.json | jq -c '.[]' | while read item; do
+  curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/sentinel-2-datacube/items' \
+    -H "Content-Type: application/json" \
+    -d "$item" | jq '.id'
+done
+```{{exec}}
+
+### Verify Ingestion
+
+Check the collection is available:
+
+```
+curl -s "http://resource-catalogue.eoepca.local/stac/collections" | jq '.collections[].id'
+```{{exec}}
+
+List items in the collection:
+
+```
+curl -s "http://resource-catalogue.eoepca.local/stac/collections/sentinel-2-datacube/items" | jq '.features[].id'
+```{{exec}}
+
+The datacube-ready collection is now ingested and ready for use with Datacube Access.
+
+

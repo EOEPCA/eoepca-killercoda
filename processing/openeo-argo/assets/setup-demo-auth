@@ -94,4 +94,4 @@ spec:
 EOF
 
 kubectl rollout status deployment openeo-auth-proxy -n openeo --timeout=120s
-echo "✅ Demo auth configured (user: eoepcauser / pass: eoepcapass)"
+echo "Demo auth configured (user: eoepcauser / pass: eoepcapass)"

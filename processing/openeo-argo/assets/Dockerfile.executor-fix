@@ -1,3 +1,10 @@
 FROM ghcr.io/eodcgmbh/openeo-argoworkflows:executor-2025.5.1
 USER root
 RUN apt-get update && apt-get install -y libexpat1 && rm -rf /var/lib/apt/lists/*
+
+# Fix bug 1: crs is already a CRS object, don't call from_wkt on it (line 83)
+# Fix bug 2: use data.rio.crs instead of data.crs (line 145)
+RUN sed -i 's/crs_measurement = pyproj.CRS.from_wkt(crs).axis_info/crs_measurement = crs.axis_info/' \
+    /opt/openeo_argoworkflows_executor/extra_processes/process_implementations/io.py && \
+    sed -i 's/crs = data.crs/crs = data.rio.crs if hasattr(data, "rio") and data.rio.crs else None/' \
+    /opt/openeo_argoworkflows_executor/extra_processes/process_implementations/io.py
