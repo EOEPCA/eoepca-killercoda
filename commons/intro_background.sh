@@ -278,55 +278,54 @@ fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo configuring gatekeeper to ignore resource limits...  >> /tmp/killercoda_setup.log
-  helm install gatekeeper --name-template=gatekeeper --namespace gatekeeper-system --create-namespace \
-    --repo https://open-policy-agent.github.io/gatekeeper/charts \
-    --set postInstall.labelNamespace.enabled=false --set postInstall.probeWebhook.enabled=false \
-    --set replicas=1 --set resources={} \
-    --set audit.resources.limits.cpu=0,audit.resources.limits.memory=0,controllerManager.resources.limits.cpu=0,controllerManager.resources.limits.memory=0 \
-    --set audit.resources.requests.cpu=0,audit.resources.requests.memory=0,controllerManager.resources.requests.cpu=0,controllerManager.resources.requests.memory=0
-  cat <<EOF | kubectl apply -f -
-apiVersion: mutations.gatekeeper.sh/v1
-kind: Assign
+  echo configuring kyverno to ignore resource limits...  >> /tmp/killercoda_setup.log
+  helm repo add kyverno https://kyverno.github.io/kyverno/
+  helm repo update kyverno
+  helm upgrade -i kyverno kyverno/kyverno \
+    --version 3.4.1 \
+    --namespace kyverno \
+    --create-namespace
+  # Create the cluster policy to remove resource limits/requests
+  # Note that, rather than zero, we actually set minimal cpu/memory requests to avoid potential issues
+  # with certain workloads that may not handle zero resource requests gracefully.
+  cat - <<'EOF' | kubectl apply -f -
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
-  name: relieve-resource-pods
+  name: remove-resource-requests
 spec:
-  applyTo:
-  - groups: [""]
-    kinds: ["Pod"]
-    versions: ["v1"]
-  match:
-    scope: Namespaced
-    kinds:
-      - apiGroups: [ "*" ]
-        kinds: [ "Pod" ]
-  location: "spec.containers[name:*].resources.requests"
-  parameters:
-    assign:
-      value:
-        cpu: "0"
-        memory: "0"
----
-apiVersion: mutations.gatekeeper.sh/v1
-kind: Assign
-metadata:
-  name: relieve-resource-inits
-spec:
-  applyTo:
-  - groups: [""]
-    kinds: ["Pod"]
-    versions: ["v1"]
-  match:
-    scope: Namespaced
-    kinds:
-      - apiGroups: [ "*" ]
-        kinds: [ "Pod" ]
-  location: "spec.initContainers[name:*].resources.requests"
-  parameters:
-    assign:
-      value:
-        cpu: "0"
-        memory: "0"
+  rules:
+    - name: remove-resource-requests
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        foreach:
+          - list: "request.object.spec.containers"
+            patchStrategicMerge:
+              spec:
+                containers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "1m"
+                        memory: "1M"
+          - list: "request.object.spec.initContainers || []"
+            preconditions:
+              all:
+                - key: "{{ length(request.object.spec.initContainers) }}"
+                  operator: GreaterThan
+                  value: 0
+            patchStrategicMerge:
+              spec:
+                initContainers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "1m"
+                        memory: "1M"
 EOF
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
