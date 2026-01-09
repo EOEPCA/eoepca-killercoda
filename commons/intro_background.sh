@@ -361,5 +361,12 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
     su - postgres -c "psql -c \"CREATE EXTENSION postgis;\" $dbname"
   done < /tmp/assets/postgrespostgis
 fi
+if [[ -e /tmp/assets/k9s ]]; then
+  echo installing k9s kubernetes CLI... >> /tmp/killercoda_setup.log
+  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_linux_amd64.deb
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  sudo apt install -y ./k9s_linux_amd64.deb
+  rm k9s_linux_amd64.deb
+fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
