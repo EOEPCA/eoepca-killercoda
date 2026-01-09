@@ -282,7 +282,7 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   helm repo add kyverno https://kyverno.github.io/kyverno/
   helm repo update kyverno
   helm upgrade -i kyverno kyverno/kyverno \
-    --version 3.4.1 \
+    --version 3.6.2 \
     --namespace kyverno \
     --create-namespace
   # Create the cluster policy to remove resource limits/requests
@@ -303,7 +303,8 @@ spec:
                 - Pod
       mutate:
         foreach:
-          - list: "request.object.spec.containers"
+          # --- Containers ---
+          - list: "to_array(request.object.spec.containers)"
             patchStrategicMerge:
               spec:
                 containers:
@@ -312,10 +313,12 @@ spec:
                       requests:
                         cpu: "1m"
                         memory: "1M"
-          - list: "request.object.spec.initContainers || []"
+
+          # --- Init containers ---
+          - list: "to_array(request.object.spec.initContainers)"
             preconditions:
               all:
-                - key: "{{ length(request.object.spec.initContainers) }}"
+                - key: "{{ length(to_array(request.object.spec.initContainers)) }}"
                   operator: GreaterThan
                   value: 0
             patchStrategicMerge:
