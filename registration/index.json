@@ -12,6 +12,26 @@
       {
         "title": "Check Prerequisites",
         "text": "01-prerequisites.md"
+      },
+      {
+        "title": "Configure Resource Registration",
+        "text": "02-configure.md"
+      },
+      {
+        "title": "Deploy Resource Registration API",
+        "text": "03-deploy.md"
+      },
+      {
+        "title": "Deploy Harvester",
+        "text": "04-deploy-harvester.md"
+      },
+      {
+        "title": "Registering Resources",
+        "text": "05-registering-resources.md"
+      },
+      {
+        "title": "Harvesting Landsat",
+        "text": "06-harvesting-landsat.md"
       }
     ],
     "finish": {

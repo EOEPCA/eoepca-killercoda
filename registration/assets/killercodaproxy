@@ -1,4 +1,4 @@
 81 resource-catalogue.eoepca.local 'application/json text/html "application/vnd.oai.openapi+json;version=3.0"'
 82 registration-api.eoepca.local 'NONE'
 83 registration-harvester-api.eoepca.local 'NONE'
-
+84 eodata.eoepca.local 'NONE'
