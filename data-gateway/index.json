@@ -1,0 +1,46 @@
+{
+  "title": "EOEPCA Data Gateway BB",
+  "description": "Access Earth Observation data from multiple providers using EODAG.",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Install EODAG",
+        "text": "01-install.md"
+      },
+      {
+        "title": "Explore Providers and Collections",
+        "text": "02-explore.md"
+      },
+      {
+        "title": "Search for EO Products",
+        "text": "03-search.md"
+      },
+      {
+        "title": "Run EODAG as a STAC Server",
+        "text": "04-stac-server.md"
+      },
+      {
+        "title": "Use EODAG with Python",
+        "text": "05-python.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

@@ -52,6 +52,6 @@
     }
   },
   "backend": {
-    "imageid": "ubuntu-4GB"
+    "imageid": "kubernetes-kubeadm-1node-4GB"
   }
 }

@@ -3,11 +3,10 @@ With dependencies in place, we can now deploy OpenEO GeoTrellis:
 ```bash
 helm upgrade -i openeo-geotrellis-openeo sparkapplication \
     --repo https://artifactory.vgt.vito.be/artifactory/helm-charts \
-    --version 0.16.3 \
+    --version 1.0.2 \
     --namespace openeo-geotrellis \
     --create-namespace \
-    --values openeo-geotrellis/generated-values.yaml \
-    --wait --timeout 10m
+    --values openeo-geotrellis/generated-values.yaml
 ```{{exec}}
 
 An then, to make it accessible, deploy the ingress:
