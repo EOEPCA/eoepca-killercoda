@@ -4,7 +4,7 @@ We deploy the software via helm, using the configuration values generated in the
 
 ```
 helm upgrade -i registration-api eoepca/registration-api \
-  --version 2.0.0-dev12 \
+  --version 2.0.0-rc4 \
   --namespace resource-registration \
   --create-namespace \
   --values registration-api/generated-values.yaml
@@ -17,7 +17,7 @@ And we create the ingress for our newly created Resource Registration API servic
 kubectl apply -f registration-api/generated-ingress.yaml
 ```{{exec}}
 
-Now we wait for the Resource Registration pods to start. This may take some time, especially in this demo environment. To automatically wait till all service to are ready you and the catalogue responds correctly you can run:
+Now we wait for the Resource Registration pods to start. This may take some time, especially in this demo environment. To automatically wait until all service to are ready and the catalogue responds correctly you can run:
 
 ```
 while [[ `curl -s -o /dev/null -w "%{http_code}" "http://registration-api.eoepca.local/"` != 200 ]]; do sleep 1; done
