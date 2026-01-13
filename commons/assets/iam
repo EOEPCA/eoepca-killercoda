@@ -38,6 +38,7 @@ function iam_admin_access_token() {
 function iam_create_realm() {
   # Authneticate as admin user
   iam_admin_access_token
+  
   # Create EOEPCA realm
   curl -X POST "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms" \
     --silent --show-error \
@@ -47,9 +48,19 @@ function iam_create_realm() {
 {
   "realm": "${REALM}",
   "enabled": true,
-  "displayName": "EOEPCA"
+  "displayName": "EOEPCA",
+  "sslRequired": "none"
 }
 EOF
+
+curl -X PUT "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/master" \
+  --silent --show-error \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -d '{
+    "sslRequired": "none"
+  }'
+
   if [ $? -eq 0 ]; then
     echo "[IAM setup] Created EOEPCA realm" >> /tmp/killercoda_setup.log
   else
@@ -412,6 +423,10 @@ keycloak:
     # URL of Keycloak (usually the same as iam.keycloak.url)
     - name: KC_HOSTNAME
       value: *kcurl
+    - name: KC_HOSTNAME_STRICT
+      value: "false"
+    - name: KC_HOSTNAME_STRICT_HTTPS
+      value: "false"
   ##
   ## Service configuration
   ##

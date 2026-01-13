@@ -1,0 +1,61 @@
+{
+  "title": "Application Hub Deployment",
+  "description": "Deploy the EOEPCA Application Hub Building Block using the official deployment guide",
+  "details": {
+    "intro": {
+      "title": "Introduction to the Application Hub",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Prerequisites",
+        "text": "1-prerequisites.md"
+      },
+      {
+        "title": "Configuration",
+        "text": "2-configure.md"
+      },
+      {
+        "title": "Create Keycloak Client",
+        "text": "3-create-keycloak-client.md"
+      },
+      {
+        "title": "Deploy Application Hub",
+        "text": "4-deploy-app-hub.md"
+      },
+      {
+        "title": "Create Admin User",
+        "text": "5-create-admin-user.md"
+      },
+      {
+        "title": "Configure Groups",
+        "text": "6-configure-groups.md"
+      },
+      {
+        "title": "Spawn a Profile",
+        "text": "7-spawn-profile.md"
+      },
+      {
+        "title": "Validation",
+        "text": "8-validation.md"
+      }
+    ],
+    "finish": {
+      "title": "Application Hub Setup Complete",
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
