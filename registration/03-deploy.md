@@ -4,7 +4,7 @@ We deploy the software via helm, using the configuration values generated in the
 
 ```
 helm upgrade -i registration-api eoepca/registration-api \
-  --version 2.0.0-rc4 \
+  --version 2.0.0-rc5 \
   --namespace resource-registration \
   --create-namespace \
   --values registration-api/generated-values.yaml

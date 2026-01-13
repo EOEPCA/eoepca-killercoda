@@ -21,8 +21,6 @@ kubectl apply -f registration-harvester/generated-ingress.yaml
 ```{{exec}}
 
 
-Once it is running, you can access the Flowable UI at [this link]({{TRAFFIC_HOST1_83}}).
-
 ## Landsat Harvester
 
 To harvest Landsat data a special Landsat Harvester Worker needs to be running. It can be installed using Helm
