@@ -32,7 +32,13 @@ if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
   WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
-  echo "172.30.1.2 $WEBSITES" >> /etc/hosts
+
+  if ! echo "172.30.1.2 $WEBSITES" >> /etc/hosts 2>/dev/null; then
+    cp /etc/hosts /tmp/hosts.tmp
+    echo "172.30.1.2 $WEBSITES" >> /tmp/hosts.tmp
+    mount --bind /tmp/hosts.tmp /etc/hosts
+  fi
+  
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
   kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
