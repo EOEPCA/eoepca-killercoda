@@ -61,25 +61,6 @@ This deploys a CronJob that automatically cleans up inactive DataLab sessions - 
 kubectl apply -f workspace-cleanup/datalab-cleaner.yaml
 ```{{exec}}
 
-## Workspace Admin Dashboard
-
-The Workspace BB solution is fully Kubernetes-native, making full use of custom CRDs via Crossplane. Thus the _Kubernetes Dashboard_ is relied upon for administration.
-
-```bash
-helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-helm repo update kubernetes-dashboard
-helm upgrade -i workspace-admin kubernetes-dashboard/kubernetes-dashboard \
-  --version 7.10.1 \
-  --namespace workspace \
-  --values workspace-admin/generated-values.yaml
-```{{exec}}
-
-The deployment does not establish any ingress for the Dashboard - but it can be accessed via port forwarding at http://localhost:8000.
-
-```bash
-kubectl -n workspace port-forward svc/workspace-admin-web 8000
-```{{exec}}
-
 ## Crossplane Provider Configurations
 
 The Workspace BB uses several Crossplane providers to manage resources - each of which requires a corresponding ProviderConfig to be deployed in the workspace namespace. The exception is the MinIO provider, which requires a cluster-wide ProviderConfig that was already deployed as part of the Crossplane prerequisite.
