@@ -130,7 +130,7 @@ We create two Keycloak clients for use by the Workspace BB:
 
 > We use CRDs to create and configure these clients - via the Crossplane Keycloak Provider that has already been established in the `iam-management` namespace.
 
-### Client `workspace-pipeline`
+## Client `workspace-pipeline`
 
 **_Create the client_**
 
@@ -237,12 +237,22 @@ EOF
 done
 ```{{exec}}
 
-### Client `workspace-api`
+## Client `workspace-api`
+
+For the `workspace-api` client, we use the 'external tutorial' hostname for the Workspace API client - as this is what will be used via the tutorial UI to access the service.
+
+```bash
+source ~/.eoepca/state
+WORKSPACE_EXT_API_HOST="$(
+  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("workspace-api." host) {print $1}' /tmp/assets/killercodaproxy)#" \
+    /etc/killercoda/host
+)"
+echo "Workspace API external host: ${WORKSPACE_EXT_API_HOST}"
+```{{exec}}
 
 **_Create the client_**
 
 ```bash
-source ~/.eoepca/state
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
@@ -265,9 +275,9 @@ spec:
     description: Workspace API OIDC
     enabled: true
     accessType: CONFIDENTIAL
-    rootUrl: ${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}
-    baseUrl: ${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}
-    adminUrl: ${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}
+    rootUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
+    baseUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
+    adminUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
     serviceAccountsEnabled: true
     directAccessGrantsEnabled: true
     standardFlowEnabled: true
@@ -280,6 +290,7 @@ spec:
         policyEnforcementMode: ENFORCING
     validRedirectUris:
       - "/*"
+      - "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/*"
     webOrigins:
       - "/*"
     clientSecretSecretRef:
