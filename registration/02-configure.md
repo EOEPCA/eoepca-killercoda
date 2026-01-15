@@ -33,4 +33,4 @@ If you wish to set up harvesting of a small sample of Landsat data you'll need c
 
 If you do not wish to set up Landsat harvesting say `n`. You can rerun the tutorial from here to set it up later.
 
-Next, you will be asked if you wish to set up harvesting for a small sample of Sentinel 2 data. You will need credentials from the Copernicus Data Space Ecosystem. Say `n` if you do not wish to set this up.
+Next, you will be asked if you wish to set up harvesting for a small sample of Sentinel 2 data. You will need credentials (username and password) from the Copernicus Data Space Ecosystem. Say `n` if you do not wish to set this up.

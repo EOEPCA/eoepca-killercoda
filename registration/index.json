@@ -30,8 +30,12 @@
         "text": "05-registering-resources.md"
       },
       {
-        "title": "Harvesting Landsat",
+        "title": "Harvesting Landsat (Optional)",
         "text": "06-harvesting-landsat.md"
+      },
+      {
+        "title": "Harvesting Sentinel (Optional)",
+        "text": "07-harvesting-sentinel.md"
       }
     ],
     "finish": {
