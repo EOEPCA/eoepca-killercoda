@@ -52,4 +52,8 @@ echo "Resource Discovery is ready!"
 curl -s "http://resource-catalogue.eoepca.local/stac" | jq '{title: .title, description: .description}'
 ```{{exec}}
 
+## Visit the Resource Discovery UI
+[Click this link to view the Resource Discovery UI]({{TRAFFIC_HOST1_81}})
+
+
 The Resource Discovery BB is now running and ready for data ingestion.

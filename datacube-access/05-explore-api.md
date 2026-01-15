@@ -67,4 +67,3 @@ View the OGC conformance classes supported:
 ```
 curl -s "http://datacube-access.eoepca.local/conformance" | jq '.conformsTo'
 ```{{exec}}
-
