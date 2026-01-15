@@ -19,11 +19,6 @@ bash setup-internal-tls.sh
 
 This will ask a few questions about the Kubernetes cluster configuration and check if all the necessary pre-requirements are installed.
 
-EOEPCA components can work with or without certificates. We choose the `http` scheme since we are not using certificates and encryption for our tutorial:
-```
-http
-```{{exec}}
-
 EOEPCA components can work with different Ingress services installed in your Kubernetes cluster. The default configuration uses [apisix](https://apisix.apache.org/) to provide advanced authentication and authorization. For this demo environment, we will use the simpler nginx ingress without authorization:
 
 ```
@@ -53,8 +48,6 @@ The Resource Health deployment scripts are available in the `resource-health` di
 cd ../resource-health
 ```{{exec}}
 
-
-Now we need to understand our pre-requisites. In general EOEPCA Building Blocks will require as a minimum pre-requisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. In this tutorial, for simplicity, nginx is already installed and the `*.eoepca.local` domain is mapped to the nginx address.
 
 Next we need to check the specific Resource Health BB prerequisites for installing the Resource Health building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```

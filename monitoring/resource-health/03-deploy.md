@@ -45,9 +45,9 @@ kubectl get all -n resource-health
 ```{{exec}}
 
 Once deployed, the Resource Health services should be accessible:
-- Web Dashboard: `http://resource-health.eoepca.local`{{}}
-- Health Checks API: `http://resource-health.eoepca.local/api/healthchecks/`{{}}
-- Telemetry API: `http://resource-health.eoepca.local/api/telemetry/`{{}}
+- Web Dashboard: [Access Here]({{TRAFFIC_HOST1_81}})
+- Health Checks API: [Access Here]({{TRAFFIC_HOST1_81}}/api/healthchecks/)
+- Telemetry API: [Access Here]({{TRAFFIC_HOST1_81}}/api/telemetry/)
 
 We can validate the deployment using the provided validation script:
 
