@@ -3,7 +3,7 @@ Now let's search for EO products using the EODAG CLI.
 
 ### Basic Search
 
-Search for Sentinel-2 Level-1C products over a specific area and time range:
+Search for SENTINEL2 Level-1C products over a specific area and time range:
 
 ```
 eodag search \
