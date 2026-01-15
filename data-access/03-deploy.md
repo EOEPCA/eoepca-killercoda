@@ -34,6 +34,8 @@ helm upgrade -i eoapi eoapi/eoapi \
   --timeout 10m
 ```{{exec}}
 
+> While it is deploying you can [read about what eoAPI is](https://eoapi.dev/)
+
 ### Deploy STAC Manager
 
 The STAC Manager provides a web UI for catalogue administration:
@@ -90,9 +92,7 @@ bash validation.sh
 ```{{exec}}
 
 Once deployed, the Data Access services should be accessible:
-- STAC API: `http://eoapi.eoepca.local/stac/`
-- Raster API: `http://eoapi.eoepca.local/raster/`
-- Vector API: `http://eoapi.eoepca.local/vector/`
-- STAC Manager: `http://eoapi.eoepca.local/manager/`
-
-You can access the STAC API from [this link]({{TRAFFIC_HOST1_80}}/stac/) (come back here afterwards, the tutorial is not over).
+- STAC API: [Access here]({{TRAFFIC_HOST1_82}}/stac/)
+- Raster API: [Access here]({{TRAFFIC_HOST1_82}}/raster/)
+- Vector API: [Access here]({{TRAFFIC_HOST1_82}}/vector/)
+- STAC Manager: [Access here]({{TRAFFIC_HOST1_82}}/manager/)
