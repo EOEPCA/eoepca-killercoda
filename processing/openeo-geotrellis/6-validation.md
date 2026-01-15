@@ -84,7 +84,7 @@ curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/collections/TestCollection-LonLat16x16" | jq .
 ```{{exec}}
 
-Process count (142 available):
+Process count (156 available):
 ```bash
 curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/processes" | jq '.processes | length'
