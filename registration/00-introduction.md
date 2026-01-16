@@ -12,6 +12,8 @@ In this scenario, you will learn how to deploy and interact with the EOEPCA Reso
 - Trigger ingest of an externally-hosted STAC Collection
 - Harvest a small subset of Landsat and Sentinel data
 
+*Note*: In the Killercoda environment you should skip all of the Landsat-related steps due to resource constraints.
+
 ---
 
 ### Use Case
