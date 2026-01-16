@@ -41,7 +41,7 @@ curl -s -X POST "http://registration-harvester-api.eoepca.local/flowable-rest/se
     {
       "name": "filter",
       "type": "string",
-      "value": "startswith(Name,'S2') and contains(Name,'L2A') and contains(Name,'_N05') and PublicationDate ge 2025-11-13T10:00:00Z and PublicationDate lt 2025-11-13T10:00:30Z and Online eq true"
+      "value": "startswith(Name,'S2') and contains(Name,'L2A') and contains(Name,'_N05') and PublicationDate ge 2025-11-13T10:00:00Z and PublicationDate lt 2025-11-13T10:00:18Z and Online eq true"
     }
   ]
 }
