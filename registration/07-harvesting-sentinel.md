@@ -1,4 +1,4 @@
-To use the Landsat harvester worker deployed earlier, a workflow consisting of two BPMN processes must be added to Flowable. The main process (Sentinel Registration) searches for new data at CDSE. For each new scene found, the workflow executes another process (Sentinel Scene Ingestion) which performs the individual steps for harvesting and registering the data.
+To use the Sentinel harvester worker deployed earlier, a workflow consisting of two BPMN processes must be added to Flowable. The main process (Sentinel Registration) searches for new data at CDSE. For each new scene found, the workflow executes another process (Sentinel Scene Ingestion) which performs the individual steps for harvesting and registering the data.
 
 To add the main workflow, `sentinel.bpmn` use
 
@@ -19,7 +19,7 @@ curl -s -X POST "http://registration-harvester-api.eoepca.local/flowable-rest/se
   -F "sentinel-scene-ingestion.bpmn=@-;filename=sentinel-scene-ingestion.bpmn;type=text/xml" | jq
 ```{{exec}}
 
-A harvesting job targetting a small AoI and time range can now be started in Flowable using its API
+A harvesting job targetting a small time range can now be started in Flowable using its API
 
 ```
 source ~/.eoepca/state
@@ -41,7 +41,7 @@ curl -s -X POST "http://registration-harvester-api.eoepca.local/flowable-rest/se
     {
       "name": "filter",
       "type": "string",
-      "value": "startswith(Name,'S2') and contains(Name,'L2A') and contains(Name,'_N05') and PublicationDate ge 2024-11-13T10:00:00Z and PublicationDate lt 2024-11-13T10:01:00Z and Online eq true"
+      "value": "startswith(Name,'S2') and contains(Name,'L2A') and contains(Name,'_N05') and PublicationDate ge 2025-11-13T10:00:00Z and PublicationDate lt 2025-11-13T10:00:30Z and Online eq true"
     }
   ]
 }
@@ -68,11 +68,17 @@ curl -s "http://registration-harvester-api.eoepca.local/flowable-rest/service/ru
 Once complete, the catalogue will contain the harvested items which you can see with
 
 ```
-curl "http://resource-catalogue.eoepca.local/collections/landsat-ot-c2-l2/items" | jq
+curl "http://resource-catalogue.eoepca.local/collections/sentinel-2-c1-l2a/items" | jq
 ```{{exec}}
 
 Finally, to ensure that the http://eodata.eoepca.local/ links in the STAC Items work, start an nginx server to serve the harvested data
 
 ```
 kubectl apply -f registration-harvester/generated-eodata-server.yaml
+```{{exec}}
+
+Once it has started you should be able to see the data files listed in the STAC items, for example
+
+```
+curl http://eodata.eoepca.local/sentinel/eodata/Sentinel-2/MSI/L2A_N0500/2022/01/20/S2B_MSIL2A_20220120T064159_N0510_R120_T42VXJ_20240503T074206.SAFE/manifest.safe
 ```{{exec}}
