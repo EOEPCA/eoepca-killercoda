@@ -32,7 +32,13 @@ if [[ -e /tmp/assets/localdns ]]; then
   #DNS-es for dependencies
   echo "setting local dns..." >> /tmp/killercoda_setup.log
   WEBSITES="`tr -d '\n' < /tmp/assets/localdns`"
-  echo "172.30.1.2 $WEBSITES" >> /etc/hosts
+
+  if ! echo "172.30.1.2 $WEBSITES" >> /etc/hosts 2>/dev/null; then
+    cp /etc/hosts /tmp/hosts.tmp
+    echo "172.30.1.2 $WEBSITES" >> /tmp/hosts.tmp
+    mount --bind /tmp/hosts.tmp /etc/hosts
+  fi
+  
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
   kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
@@ -94,7 +100,11 @@ export KEYCLOAK_HOST="$(keycloak_host)"
 export KEYCLOAK_ADMIN_USER="admin"
 export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
 export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
-export OPA_CLIENT_SECRET="eoepcatest"
+export OPA_CLIENT_ID="opa"
+export OPA_CLIENT_SECRET="$(openssl rand -hex 16)"
+export KEYCLOAK_TEST_USER="eoepcauser"
+export KEYCLOAK_TEST_ADMIN="eoepcaadmin"
+export KEYCLOAK_TEST_PASSWORD="eoepcapassword"
 EOF
   source ~/.eoepca/state
   source /tmp/assets/iam
@@ -115,7 +125,16 @@ EOF
     while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
     # Create eoepca realm
     iam_create_realm
-  ) &
+    # Create IAM management client
+    iam_create_management_client
+    iam_configure_management_client
+    # Crossplane provider setup
+    iam_setup_crossplane_provider
+    # Test users
+    iam_create_test_users
+    # OPA client
+    iam_create_opa_client
+  ) >/tmp/iam-post-setup.log &
 fi
 
 if [[ -e /tmp/assets/killercodaproxy ]]; then
@@ -147,6 +166,11 @@ http {
     default upgrade;
     ''      close;
   }
+  # Large buffer sizes for handling large headers (e.g., auth tokens, OIDC flows etc.)
+  proxy_buffer_size          32k;
+  proxy_buffers              8 32k;
+  proxy_busy_buffers_size    64k;
+  large_client_header_buffers 4 32k;
 EOF
   #All the proxy redirects must be placed into all the proxied sites, otherwise cross-site
   #redirections like the ones done by OPA will not work...
@@ -260,55 +284,57 @@ fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo configuring gatekeeper to ignore resource limits...  >> /tmp/killercoda_setup.log
-  helm install gatekeeper --name-template=gatekeeper --namespace gatekeeper-system --create-namespace \
-    --repo https://open-policy-agent.github.io/gatekeeper/charts \
-    --set postInstall.labelNamespace.enabled=false --set postInstall.probeWebhook.enabled=false \
-    --set replicas=1 --set resources={} \
-    --set audit.resources.limits.cpu=0,audit.resources.limits.memory=0,controllerManager.resources.limits.cpu=0,controllerManager.resources.limits.memory=0 \
-    --set audit.resources.requests.cpu=0,audit.resources.requests.memory=0,controllerManager.resources.requests.cpu=0,controllerManager.resources.requests.memory=0
-  cat <<EOF | kubectl apply -f -
-apiVersion: mutations.gatekeeper.sh/v1
-kind: Assign
+  echo configuring kyverno to ignore resource limits...  >> /tmp/killercoda_setup.log
+  helm repo add kyverno https://kyverno.github.io/kyverno/
+  helm repo update kyverno
+  helm upgrade -i kyverno kyverno/kyverno \
+    --version 3.6.2 \
+    --namespace kyverno \
+    --create-namespace
+  # Create the cluster policy to remove resource limits/requests
+  # Note that, rather than zero, we actually set minimal cpu/memory requests to avoid potential issues
+  # with certain workloads that may not handle zero resource requests gracefully.
+  cat - <<'EOF' | kubectl apply -f -
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
-  name: relieve-resource-pods
+  name: remove-resource-requests
 spec:
-  applyTo:
-  - groups: [""]
-    kinds: ["Pod"]
-    versions: ["v1"]
-  match:
-    scope: Namespaced
-    kinds:
-      - apiGroups: [ "*" ]
-        kinds: [ "Pod" ]
-  location: "spec.containers[name:*].resources.requests"
-  parameters:
-    assign:
-      value:
-        cpu: "0"
-        memory: "0"
----
-apiVersion: mutations.gatekeeper.sh/v1
-kind: Assign
-metadata:
-  name: relieve-resource-inits
-spec:
-  applyTo:
-  - groups: [""]
-    kinds: ["Pod"]
-    versions: ["v1"]
-  match:
-    scope: Namespaced
-    kinds:
-      - apiGroups: [ "*" ]
-        kinds: [ "Pod" ]
-  location: "spec.initContainers[name:*].resources.requests"
-  parameters:
-    assign:
-      value:
-        cpu: "0"
-        memory: "0"
+  rules:
+    - name: remove-resource-requests
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        foreach:
+          # --- Containers ---
+          - list: "to_array(request.object.spec.containers)"
+            patchStrategicMerge:
+              spec:
+                containers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "1m"
+                        memory: "1M"
+
+          # --- Init containers ---
+          - list: "to_array(request.object.spec.initContainers)"
+            preconditions:
+              all:
+                - key: "{{ length(to_array(request.object.spec.initContainers)) }}"
+                  operator: GreaterThan
+                  value: 0
+            patchStrategicMerge:
+              spec:
+                initContainers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "1m"
+                        memory: "1M"
 EOF
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
@@ -347,6 +373,13 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
     su - postgres -c "psql -c \"CREATE USER $dbuser WITH PASSWORD '$dbpass'\"; createdb -O $dbuser $dbname"
     su - postgres -c "psql -c \"CREATE EXTENSION postgis;\" $dbname"
   done < /tmp/assets/postgrespostgis
+fi
+if [[ -e /tmp/assets/k9s ]]; then
+  echo installing k9s kubernetes CLI... >> /tmp/killercoda_setup.log
+  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_linux_amd64.deb
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  sudo apt install -y ./k9s_linux_amd64.deb
+  rm k9s_linux_amd64.deb
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done

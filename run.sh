@@ -31,4 +31,4 @@ fi
 
 # --- run logic ----------------------------------------------------------------
 
-"${LOCALCODA_ROOT}"/backend/bin/backend_run.sh "$PWD" "${TUTORIAL}/index.json"
+"${LOCALCODA_ROOT}"/backend/bin/backend_run.sh -Ldev "$PWD" "${TUTORIAL}/index.json"

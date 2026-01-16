@@ -1,0 +1,46 @@
+{
+  "title": "EOEPCA Datacube Access BB",
+  "description": "Access multi-dimensional EO data through OGC-compliant APIs.",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Check Prerequisites",
+        "text": "01-prerequisites.md"
+      },
+      {
+        "title": "Deploy Resource Discovery",
+        "text": "02-deploy-resource-discovery.md"
+      },
+      {
+        "title": "Ingest Datacube Collection",
+        "text": "03-ingest-datacube.md"
+      },
+      {
+        "title": "Deploy Datacube Access",
+        "text": "04-deploy-datacube-access.md"
+      },
+      {
+        "title": "Explore the Datacube API",
+        "text": "05-explore-api.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "title": "OpenEO ArgoWorkflows with Dask Deployment",
+  "description": "Deploy the EOEPCA Processing Building Block with OpenEO ArgoWorkflows and Dask distributed processing",
+  "details": {
+    "intro": {
+      "title": "Introduction",
+      "text": "intro.md",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Prerequisites",
+        "text": "1-prerequisites.md"
+      },
+      {
+        "title": "Configuration",
+        "text": "2-configure.md"
+      },
+      {
+        "title": "Deploy OpenEO ArgoWorkflows",
+        "text": "3-deploy-openeo-argo.md"
+      },
+      {
+        "title": "Deploy Ingress and Auth",
+        "text": "4-deploy-ingress.md"
+      },
+      {
+        "title": "Deploy Mock STAC",
+        "text": "5-deploy-mock-stac.md"
+      },
+      {
+        "title": "API Usage",
+        "text": "6-api-usage.md"
+      },
+      {
+        "title": "Run a Job",
+        "text": "7-run-job.md"
+      },
+      {
+        "title": "Monitoring",
+        "text": "8-monitoring.md"
+      }
+    ],
+    "finish": {
+      "title": "Complete",
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}

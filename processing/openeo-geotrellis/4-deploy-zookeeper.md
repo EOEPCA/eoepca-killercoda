@@ -6,7 +6,9 @@ We can deploy ZooKeeper using Helm:
 helm upgrade -i openeo-geotrellis-zookeeper \
     https://artifactory.vgt.vito.be/artifactory/helm-charts/zookeeper-11.1.6.tgz \
     --namespace openeo-geotrellis \
-    --create-namespace \
     --values zookeeper/generated-values.yaml \
+    --set image.registry=docker.io \
+    --set image.repository=bitnamilegacy/zookeeper \
+    --set image.tag=3.8.1-debian-11-r18 \
     --wait --timeout 5m
 ```{{exec}}

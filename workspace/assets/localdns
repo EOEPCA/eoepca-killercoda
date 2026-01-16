@@ -1,1 +1,1 @@
-auth.eoepca.local opa.eoepca.local minio.eoepca.local minio-console.eoepca.local workspace-api.eoepca.local
+auth.eoepca.local opa.eoepca.local minio.eoepca.local minio-console.eoepca.local workspace-api.eoepca.local ws-eoepcauser-default.eoepca.local editor-ws-eoepcauser-default.eoepca.local ws-eoepcauser-default-editor.eoepca.local data-ws-eoepcauser-default.eoepca.local ws-eoepcauser-default-data.eoepca.local

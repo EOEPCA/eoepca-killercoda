@@ -12,40 +12,23 @@ The Workspace deployment scripts are available in the `workspace` directory:
 cd deployment-guide/scripts/workspace
 ```{{exec}}
 
-Now we need to understand our pre-requisites. In general EOEPCA Building Blocks will require as a minimum pre-requisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. The Workspace BB integrates with the Identity & Access BB in conjuction with the APISIX ingress controller to provide authentication and authorization services.
+The EOEPCA Deployment Guide uses scripts to facilitate the deployment. The scripts are highly configurable to allow adaption to the target deployment environemnt, and so they request user input to gather information. This deployment information is maintained by the scripts in the state file `~/.eoepca/state`.
 
-Next we need to check the specific prerequisites for installing the Workspace building block are met. The Deployment Guide scripts provide a dedicated script for this task:
+The tutorial startup scripts have already pre-configured a number of aspects of the deployment to fit with the constraints of the tutorial environment, including:
+* use of `http` instead of `https`
+* `eoepca.local` as the 'platform' domain
+* use of the Storage Classes `local-path` (ReadWriteOnce) and `standard` (ReadWriteMany)
+* configuration of Keycloak and Minio services
+
+```bash
+cat ~/.eoepca/state
+```{{exec}}
+
+In general EOEPCA Building Blocks will require as a minimum prerequisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. The Workspace BB integrates with the Identity & Access BB in conjuction with the APISIX ingress controller to provide authentication and authorization services.
+
+We can check the specific prerequisites for installing the Workspace building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
 ```{{exec}}
 
-This will ask a few questions about the Kubernetes cluster configuration and check if all the necessary pre-requirements are installed. 
-
-EOEPCA components can work with or without certificates. We choose the `http` scheme since we are not using certificates and encryption for our tutorial:
-```
-http
-```{{exec}}
-
-EOEPCA components can work with different Ingress services installed in your Kubernetes cluster. The default configuration uses [apisix](https://apisix.apache.org/) to provide advanced authentication and authorization. For this demo environment, we will use the simpler nginx ingress without authorization
-
-```
-nginx
-```{{exec}}
-
-We enter the top-level domain for our EOEPCA services:
-```
-eoepca.local
-```{{exec}}
-
-We do not need a specific Storage Class for this component, so for this example we will use the basic storage class provided in this sandbox. Note that, in an operational environment, you should use a reliable (and possibly redundant and backed up) storage class, as this storage class will be used to store all the metadata of your data
-
-```
-local-path
-```{{exec}}
-
-We also do not need automatically generated certificates or indeed any certificates at all for our tutorial:
-```
-no
-```{{exec}}
-
-Now, all the pre-requisites should be met
+All the prerequisites should be met.

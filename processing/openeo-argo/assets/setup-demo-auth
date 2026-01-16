@@ -1,0 +1,97 @@
+#!/bin/bash
+# Setup demo authentication after OpenEO is deployed
+set -e
+
+echo "Setting up demo authentication..."
+
+# Wait for pods
+kubectl wait --for=condition=ready pod/openeo-postgresql-0 -n openeo --timeout=120s
+kubectl rollout status deployment openeo-openeo-argo -n openeo --timeout=300s
+
+# Create demo user
+kubectl exec -n openeo openeo-postgresql-0 -- env PGPASSWORD=changeme psql -U postgres -d openeo -c \
+  "INSERT INTO users (user_id, oidc_sub, created_at) VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'eoepcauser', NOW()) ON CONFLICT DO NOTHING;"
+
+# Generate token
+PRIVATE_KEY_B64=$(cat /root/.eoepca/openeo-private-key.b64)
+
+TOKEN=$(kubectl exec -n openeo deploy/openeo-openeo-argo -c openeo-argo -- python3 -c "
+import base64
+from jose import jwt
+import datetime
+
+private_key = base64.b64decode('${PRIVATE_KEY_B64}').decode('utf-8')
+payload = {
+    'sub': 'eoepcauser',
+    'iat': datetime.datetime.utcnow(),
+    'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30),
+    'iss': 'http://dummy-oidc-local.openeo.svc.cluster.local/realms/eoepca'
+}
+print(jwt.encode(payload, private_key, algorithm='RS256', headers={'kid': 'demo-key-1'}))
+")
+
+echo "$TOKEN" > /root/.eoepca/openeo-token
+
+# Deploy auth proxy with token
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openeo-proxy-config
+  namespace: openeo
+data:
+  .htpasswd: |
+    eoepcauser:\$apr1\$G6apHBqY\$Q1yGWKhh8CTOjlITqggaK/
+  nginx.conf: |
+    events { worker_connections 1024; }
+    http {
+      server {
+        listen 8080;
+        location / {
+          auth_basic "OpenEO";
+          auth_basic_user_file /etc/nginx/.htpasswd;
+          rewrite ^/(.*)\$ /openeo/1.1.0/\$1 break;
+          proxy_pass http://openeo-openeo-argo:8000;
+          proxy_set_header Host \$host;
+          proxy_set_header Authorization "Bearer oidc/eoepca/$TOKEN";
+          proxy_read_timeout 600s;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openeo-auth-proxy
+  namespace: openeo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: openeo-auth-proxy}
+  template:
+    metadata:
+      labels: {app: openeo-auth-proxy}
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports: [{containerPort: 8080}]
+        volumeMounts:
+        - {name: config, mountPath: /etc/nginx/nginx.conf, subPath: nginx.conf}
+        - {name: config, mountPath: /etc/nginx/.htpasswd, subPath: .htpasswd}
+      volumes:
+      - name: config
+        configMap: {name: openeo-proxy-config}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openeo-proxy
+  namespace: openeo
+spec:
+  selector: {app: openeo-auth-proxy}
+  ports: [{port: 8080, targetPort: 8080}]
+EOF
+
+kubectl rollout status deployment openeo-auth-proxy -n openeo --timeout=120s
+echo "Demo auth configured (user: eoepcauser / pass: eoepcapass)"
