@@ -10,7 +10,7 @@ In this scenario, you will learn how to deploy and interact with the EOEPCA Reso
 
 - Deploy the Resource Registration building block on Kubernetes
 - Trigger ingest of an externally-hosted STAC Collection
-- Harvest a small subset of Landsat data
+- Harvest a small subset of Landsat and Sentinel data
 
 ---
 

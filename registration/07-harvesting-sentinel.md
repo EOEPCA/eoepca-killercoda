@@ -80,5 +80,5 @@ kubectl apply -f registration-harvester/generated-eodata-server.yaml
 Once it has started you should be able to see the data files listed in the STAC items, for example
 
 ```
-curl http://eodata.eoepca.local/sentinel/eodata/Sentinel-2/MSI/L2A_N0500/2022/01/20/S2B_MSIL2A_20220120T064159_N0510_R120_T42VXJ_20240503T074206.SAFE/manifest.safe
+curl http://eodata.eoepca.local/sentinel/eodata/Sentinel-2/MSI/L2A/2025/11/13/S2B_MSIL2A_20251113T083119_N0511_R021_T37TBF_20251113T091555.SAFE/manifest.safe
 ```{{exec}}
