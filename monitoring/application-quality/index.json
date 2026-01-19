@@ -24,6 +24,14 @@
       {
         "title": "Explore the Application Quality BB",
         "text": "04-explore.md"
+      },
+      {
+        "title": "Authenticate with OIDC",
+        "text": "05-authenticate.md"
+      },
+      {
+        "title": "Create a Sample Pipeline",
+        "text": "06-create-pipeline.md"
       }
     ],
     "finish": {

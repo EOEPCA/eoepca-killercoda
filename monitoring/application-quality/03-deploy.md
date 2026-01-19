@@ -10,7 +10,10 @@ bash apply-secrets.sh
 The Application Quality BB is deployed from its GitHub repository. Clone it and update Helm dependencies:
 
 ```
-git clone -b reference-deployment https://github.com/EOEPCA/application-quality.git reference-repo
+git clone https://github.com/EOEPCA/application-quality.git reference-repo
+cd reference-repo
+git checkout cb9ad92e9ae5b8b08c2069804131fccb6a7ded4f
+cd ..
 helm dependency update reference-repo/application-quality-reference-deployment
 ```{{exec}}
 
@@ -50,6 +53,6 @@ Run the validation script to confirm the deployment:
 bash validation.sh
 ```{{exec}}
 
-The web portal should now be accessible at `http://application-quality.eoepca.local`{{}}.
+The web portal should now be accessible at `{{TRAFFIC_HOST1_81}}`.
 
-You can also access it from [this link]({{TRAFFIC_HOST1_80}}) (note: some features require OIDC authentication which isn't configured in this demo).
+[View Application Quality Web Portal]({{TRAFFIC_HOST1_81}})

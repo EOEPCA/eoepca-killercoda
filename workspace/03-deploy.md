@@ -61,25 +61,6 @@ This deploys a CronJob that automatically cleans up inactive DataLab sessions - 
 kubectl apply -f workspace-cleanup/datalab-cleaner.yaml
 ```{{exec}}
 
-## Workspace Admin Dashboard
-
-The Workspace BB solution is fully Kubernetes-native, making full use of custom CRDs via Crossplane. Thus the _Kubernetes Dashboard_ is relied upon for administration.
-
-```bash
-helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-helm repo update kubernetes-dashboard
-helm upgrade -i workspace-admin kubernetes-dashboard/kubernetes-dashboard \
-  --version 7.10.1 \
-  --namespace workspace \
-  --values workspace-admin/generated-values.yaml
-```{{exec}}
-
-The deployment does not establish any ingress for the Dashboard - but it can be accessed via port forwarding at http://localhost:8000.
-
-```bash
-kubectl -n workspace port-forward svc/workspace-admin-web 8000
-```{{exec}}
-
 ## Crossplane Provider Configurations
 
 The Workspace BB uses several Crossplane providers to manage resources - each of which requires a corresponding ProviderConfig to be deployed in the workspace namespace. The exception is the MinIO provider, which requires a cluster-wide ProviderConfig that was already deployed as part of the Crossplane prerequisite.
@@ -130,7 +111,7 @@ We create two Keycloak clients for use by the Workspace BB:
 
 > We use CRDs to create and configure these clients - via the Crossplane Keycloak Provider that has already been established in the `iam-management` namespace.
 
-### Client `workspace-pipeline`
+## Client `workspace-pipeline`
 
 **_Create the client_**
 
@@ -237,12 +218,22 @@ EOF
 done
 ```{{exec}}
 
-### Client `workspace-api`
+## Client `workspace-api`
+
+For the `workspace-api` client, we use the 'external tutorial' hostname for the Workspace API client - as this is what will be used via the tutorial UI to access the service.
+
+```bash
+source ~/.eoepca/state
+WORKSPACE_EXT_API_HOST="$(
+  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("workspace-api." host) {print $1}' /tmp/assets/killercodaproxy)#" \
+    /etc/killercoda/host
+)"
+echo "Workspace API external host: ${WORKSPACE_EXT_API_HOST}"
+```{{exec}}
 
 **_Create the client_**
 
 ```bash
-source ~/.eoepca/state
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
@@ -265,9 +256,9 @@ spec:
     description: Workspace API OIDC
     enabled: true
     accessType: CONFIDENTIAL
-    rootUrl: ${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}
-    baseUrl: ${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}
-    adminUrl: ${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}
+    rootUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
+    baseUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
+    adminUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
     serviceAccountsEnabled: true
     directAccessGrantsEnabled: true
     standardFlowEnabled: true
@@ -280,6 +271,7 @@ spec:
         policyEnforcementMode: ENFORCING
     validRedirectUris:
       - "/*"
+      - "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/*"
     webOrigins:
       - "/*"
     clientSecretSecretRef:

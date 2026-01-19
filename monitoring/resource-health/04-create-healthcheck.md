@@ -187,12 +187,3 @@ The corresponding CronJob should also be deleted:
 ```
 kubectl get cronjobs -n resource-health
 ```{{exec}}
-
-### View in Web Dashboard
-
-You can also view all health checks and their results in the web dashboard at [this link]({{TRAFFIC_HOST1_80}}).
-
-The dashboard shows:
-- All registered health checks
-- Recent check results
-- Success/failure status

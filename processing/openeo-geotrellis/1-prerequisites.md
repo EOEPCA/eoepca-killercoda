@@ -14,11 +14,6 @@ bash check-prerequisites.sh
 
 This will ask a few questions about the Kubernetes cluster configuration and check if all the necessary pre-requirements are installed.
 
-EOEPCA components can work with or without certificates. We choose th `http` scheme since we are not using certificates and encryption for our tutorial:
-```
-http
-```{{exec}}
-
 EOEPCA components can work with different Ingress services installed in your Kubernetes cluster. The default configuration uses [apisix](https://apisix.apache.org/) to provide advanced authentication and authorization. For this demo environment, we will use the simpler nginx ingress without authorization
 
 ```

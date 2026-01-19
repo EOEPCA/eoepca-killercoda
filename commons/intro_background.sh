@@ -192,6 +192,7 @@ EOF
       proxy_set_header X-Forwarded-Host \$http_x_forwarded_host;
       proxy_set_header X-Forwarded-Proto \$http_x_forwarded_proto;
       proxy_set_header X-Forwarded-For \$http_x_forwarded_for;
+      proxy_set_header X-Forwarded-Port \$http_x_forwarded_port;
       # websockets
       proxy_http_version 1.1;
       proxy_set_header Upgrade \$http_upgrade;

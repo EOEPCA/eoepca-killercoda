@@ -68,4 +68,7 @@ Test the landing page:
 curl -s "http://datacube-access.eoepca.local/" | jq '{title, description}'
 ```{{exec}}
 
+## Visit the Datacube Access UI
+[Click this link to view the Datacube Access UI]({{TRAFFIC_HOST1_82}})
+
 The Datacube Access building block is now deployed and connected to the Resource Discovery catalog.

@@ -1,7 +1,7 @@
 
 Let's start by installing EODAG and its dependencies.
 
-# Install Python and pip if not present
+# Install Python and pip
 ```
 apt-get update -qq
 apt-get install -y -qq python3 python3-pip python3-venv curl jq > /dev/null 2>&1
@@ -11,7 +11,7 @@ source ~/venv/bin/activate
 pip install --upgrade pip
 ```{{exec}}
 
-### Install EODAG
+## Install EODAG
 
 EODAG is available via pip. We'll install it with the server extras to enable the STAC REST API functionality:
 
@@ -21,7 +21,7 @@ pip install eodag[server]
 
 This installs the core EODAG library plus the dependencies needed to run it as a STAC server.
 
-### Verify Installation
+## Verify Installation
 
 Check that EODAG is installed correctly:
 
@@ -44,7 +44,7 @@ The main commands are:
 - `discover`: Fetch providers to discover available collections
 - `serve-rest`: Start a STAC-compliant REST API server
 
-### Initial Configuration
+## Initial Configuration
 
 The first time EODAG runs, it creates a configuration file at `~/.config/eodag/eodag.yml`. Let's trigger this:
 

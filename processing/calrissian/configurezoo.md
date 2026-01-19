@@ -6,12 +6,6 @@ bash configure-oapip.sh
 
 The script will start with the general EOEPCA configuration.
 
-For the demo deployment we are not generating certificates, so we will restrict ourself to the http scheme
-
-```
-http
-```{{exec}}
-
 As said in the previous chapter, we will use the nginx ingress in this demo deployment
 
 ```
@@ -24,10 +18,16 @@ as a domain, we use eoepca.local, which is mapped to the local machine in this d
 eoepca.local
 ```{{exec}}
 
-our storage class was already setup to 'standard' in the step before, so we do not need to update it
+For the persistant storage, we will use the standard storage class created in the pre-requisites
 
 ```
-no
+local-path
+```{{exec}}
+
+For the shared storage, we will use the Read-Write-Many storage class created in the pre-requisites
+
+```
+standard
 ```{{exec}}
 
 as we have http only services, we do not need certificate generation (which anyway would not work in this demo environment)

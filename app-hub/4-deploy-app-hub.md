@@ -40,10 +40,4 @@ kubectl get pods -n application-hub
 
 You should see the JupyterHub hub, proxy, and related components in `Running` state.
 
-Port forward first:
-```
-kubectl port-forward -n application-hub svc/application-hub-hub 8081:8081
-kubectl port-forward -n application-hub svc/application-hub-proxy-public 8080:80
-```{{exec}}
-
 Then visit the [Application Hub]({{TRAFFIC_HOST1_83}}/) of the deployed service.
