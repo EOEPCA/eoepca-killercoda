@@ -43,7 +43,7 @@ The Raster API can generate map tiles dynamically. Let's construct a tile URL fo
 ```
 ITEM_ID=$(curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=1" | jq -r '.features[0].id')
 echo "Preview URL for true colour composite:"
-echo "http://eoapi.eoepca.local/raster/collections/sentinel-2-iceland/items/${ITEM_ID}/preview?assets=visual"
+echo "{{TRAFFIC_HOST1_82}}/raster/collections/sentinel-2-iceland/items/${ITEM_ID}/preview?assets=visual"
 ```{{exec}}
 
 ### Vector API - Check Available Features
@@ -54,19 +54,6 @@ The Vector API provides OGC API Features access:
 curl -s "http://eoapi.eoepca.local/vector/" | jq '.links[] | select(.rel=="data") | {title, href}'
 ```{{exec}}
 
-### Health Checks
-
-All services provide health check endpoints:
-
-```
-echo "Checking service health..."
-echo -n "STAC API: "; curl -s -o /dev/null -w "%{http_code}" "http://eoapi.eoepca.local/stac/_mgmt/ping"
-echo ""
-echo -n "Raster API: "; curl -s -o /dev/null -w "%{http_code}" "http://eoapi.eoepca.local/raster/healthz"
-echo ""
-echo -n "Vector API: "; curl -s -o /dev/null -w "%{http_code}" "http://eoapi.eoepca.local/vector/healthz"
-echo ""
-```{{exec}}
 
 ### STAC Manager UI
 
@@ -75,13 +62,13 @@ The STAC Manager provides a web interface for administering the catalogue. You c
 - Edit metadata
 - Create new collections (when transactions are enabled)
 
-Access the STAC Manager from [this link]({{TRAFFIC_HOST1_80}}/manager/).
+Access the STAC Manager from [this link]({{TRAFFIC_HOST1_82}}/manager/).
 
 ### Swagger Documentation
 
 Each API provides interactive Swagger documentation:
-- STAC API: `http://eoapi.eoepca.local/stac/api.html`
-- Raster API: `http://eoapi.eoepca.local/raster/api.html`
-- Vector API: `http://eoapi.eoepca.local/vector/api.html`
+- STAC API: `{{TRAFFIC_HOST1_82}}/stac/api.html`
+- Raster API: `{{TRAFFIC_HOST1_82}}/raster/api.html`
+- Vector API: `{{TRAFFIC_HOST1_82}}/vector/api.html`
 
-You can access the STAC API documentation from [this link]({{TRAFFIC_HOST1_80}}/stac/api.html).
+You can access the STAC API documentation from [this link]({{TRAFFIC_HOST1_82}}/stac/api.html).

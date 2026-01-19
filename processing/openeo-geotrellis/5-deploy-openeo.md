@@ -35,3 +35,5 @@ We will see the pods for:
 
 
 Our local OpenEO APIs will be now accessible in the sandbox environment at `http://openeo.eoepca.local/`{{}}
+
+You can also access it over ingress at [this link]({{TRAFFIC_HOST1_81}}) (it may take a minute after the deployment for the ingress to be fully ready).

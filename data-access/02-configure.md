@@ -71,11 +71,5 @@ no
 The configuration is now complete. You can verify the generated files:
 
 ```
-ls -la eoapi/generated-*.yaml stac-manager/generated-*.yaml
-```{{exec}}
-
-Let's have a quick look at the generated eoAPI configuration:
-
-```
 head -50 eoapi/generated-values.yaml
 ```{{exec}}

@@ -21,11 +21,6 @@ Run the prerequisites check:
 bash check-prerequisites.sh
 ```{{exec}}
 
-Select HTTP scheme (we'll use http for this tutorial):
-```
-http
-```{{exec}}
-
 Select the ingress controller:
 ```
 nginx

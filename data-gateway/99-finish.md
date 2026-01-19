@@ -15,13 +15,6 @@ You've explored:
 - The STAC server capability allows integration with any STAC-compatible client
 - Other EOEPCA building blocks leverage the Data Gateway for data access
 
-### Next Steps
-
-- Configure credentials for providers that require authentication
-- Explore downloading products (requires provider credentials)
-- Integrate with the [Resource Registration Building Block](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/)
-- Use with the [Processing Building Block](https://eoepca.readthedocs.io/projects/processing/en/latest/)
-
 For more information:
 - [EOEPCA Website](https://eoepca.org/)
 - [EOEPCA Git Repository](https://github.com/EOEPCA/)

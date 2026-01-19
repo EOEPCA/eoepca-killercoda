@@ -17,6 +17,10 @@ Storage class for persistent data:
 local-path
 ```{{exec}}
 
+No cert manager
+```
+no
+```{{exec}}
 
 Internal cluster issuer:
 ```
@@ -25,17 +29,71 @@ eoepca-ca-clusterissuer
 
 Enable OIDC authentication for Application Quality?
 ```
-no
+yes
 ```{{exec}}
 
-The configuration script will generate the necessary Helm values. Let's verify the output files:
-
+OIDC Issuer URL
 ```
-ls -la generated-*.yaml
+http://auth.eoepca.local/auth/realms/eoepca
 ```{{exec}}
 
-Have a look at the generated values to understand the configuration:
 
+Client ID for Application Quality:
 ```
-head -50 generated-values.yaml
+application-quality
+```{{exec}}
+
+The script generates Helm values with OIDC configuration. 
+Now we need to create the Keycloak client for Application Quality. This allows the web portal to authenticate users:
+
+# Create the Keycloak client
+```
+source ~/.eoepca/state
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
+  namespace: iam-management
+stringData:
+  client_secret: ${APP_QUALITY_CLIENT_SECRET}
+---
+apiVersion: openidclient.keycloak.m.crossplane.io/v1alpha1
+kind: Client
+metadata:
+  name: ${APP_QUALITY_CLIENT_ID}
+  namespace: iam-management
+spec:
+  forProvider:
+    realmId: ${REALM:-eoepca}
+    clientId: ${APP_QUALITY_CLIENT_ID}
+    name: Application Quality
+    description: Application Quality OIDC
+    enabled: true
+    accessType: CONFIDENTIAL
+    rootUrl: ${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST:-eoepca.local}
+    baseUrl: ${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST:-eoepca.local}
+    adminUrl: ${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST:-eoepca.local}
+    serviceAccountsEnabled: true
+    directAccessGrantsEnabled: true
+    standardFlowEnabled: true
+    oauth2DeviceAuthorizationGrantEnabled: true
+    useRefreshTokens: true
+    authorization:
+      - allowRemoteResourceManagement: false
+        decisionStrategy: UNANIMOUS
+        keepDefaults: true
+        policyEnforcementMode: ENFORCING
+    validRedirectUris:
+      - "/*"
+    webOrigins:
+      - "/*"
+    clientSecretSecretRef:
+      name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
+      key: client_secret
+  providerConfigRef:
+    name: provider-keycloak
+    kind: ProviderConfig
+EOF
 ```{{exec}}
