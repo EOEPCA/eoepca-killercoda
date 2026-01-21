@@ -1,4 +1,3 @@
-## Policy Enforcement
 
 Now that we have validated the Keycloak and Open Policy Agent (OPA) services, we can apply an ingress that protects access to a given endpoint by applying an enforcement policy.
 
@@ -6,7 +5,7 @@ We will use the policy here - https://github.com/EOEPCA/iam-policies/blob/main/p
 
 > NOTE that use of the `data.json`{{}} file to specify privileged users is a simple approach. In production, you might instead use the policy to, for example, check Keycloak group memberships defined in the JWT claims.
 
-### 1. Service to be Protected
+## **1. Service to be Protected**
 
 We will create a dummy service to which the protection can be applied and demonstrated. For this we will use an nginx instance.
 
@@ -15,11 +14,76 @@ kubectl create deployment nginx --image=nginx
 kubectl expose deployment nginx --port=80
 ```{{exec}}
 
-### 2. Apply Protection
+## **2. Create a Keycloak Client for the Dummy Service**
+
+A Keycloak client is required for the ingress protection of the dummy nginx service - to paricipate in OIDC flows for delegated access.
+
+In order for the OIDC redirect URIs to work correctly, we need to create a dedicated client for the nginx service - which must use the external URLs that are exposed by this tutorial environment:
+
+```bash
+export DUMMY_HOST="$(port="$(grep nginx.eoepca.local /tmp/assets/killercodaproxy | awk '{print $1}')" ; sed "s#http://PORT#$port#" /etc/killercoda/host )"
+echo "External Dummy Service host: ${DUMMY_HOST}"
+```{{exec}}
+
+Create the client:
+
+```bash
+source ~/.eoepca/state
+export DUMMY_CLIENT_ID="dummy"
+export DUMMY_CLIENT_SECRET="$(openssl rand -hex 16)"
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dummy-keycloak-client
+  namespace: iam-management
+stringData:
+  client_secret: ${DUMMY_CLIENT_SECRET}
+---
+apiVersion: openidclient.keycloak.m.crossplane.io/v1alpha1
+kind: Client
+metadata:
+  name: ${DUMMY_CLIENT_ID}
+  namespace: iam-management
+spec:
+  forProvider:
+    realmId: ${REALM}
+    clientId: ${DUMMY_CLIENT_ID}
+    name: Dummy Service
+    description: Dummy Service OIDC
+    enabled: true
+    accessType: CONFIDENTIAL
+    rootUrl: ${HTTP_SCHEME}://${DUMMY_HOST}
+    baseUrl: ${HTTP_SCHEME}://${DUMMY_HOST}
+    adminUrl: ${HTTP_SCHEME}://${DUMMY_HOST}
+    serviceAccountsEnabled: true
+    directAccessGrantsEnabled: true
+    standardFlowEnabled: true
+    oauth2DeviceAuthorizationGrantEnabled: true
+    useRefreshTokens: true
+    authorization:
+      - allowRemoteResourceManagement: false
+        decisionStrategy: UNANIMOUS
+        keepDefaults: true
+        policyEnforcementMode: ENFORCING
+    validRedirectUris:
+      - "/*"
+    webOrigins:
+      - "/*"
+    clientSecretSecretRef:
+      name: ${DUMMY_CLIENT_ID}-keycloak-client
+      key: client_secret
+  providerConfigRef:
+    name: provider-keycloak
+    kind: ProviderConfig
+EOF
+```{{exec}}
+
+## **3. Apply Protection**
 
 To establish the external ingress to the service we use an `ApisixRoute`{{}} resource, which is used to configure the Apisix reverse proxy.
 
-For convenience we create first a template via:
+> For convenience we define the `ApisixRoute`{{}} resource in a template file - which allows us to inject the required values using `gomplate`{{}}.
 
 ```
 cat <<EOF > ~/apisixroute-nginx.yaml
@@ -50,18 +114,26 @@ spec:
         - serviceName: nginx
           servicePort: 80
       plugins:
+        # Disable caching for protected content
+        - name: response-rewrite
+          enable: true
+          config:
+            headers:
+              Cache-Control: "no-store"
+              Pragma: "no-cache"
         # Authenticate - expect JWT in 'Authorization: Bearer' header
         - name: openid-connect
           enable: true
           config:
             discovery: "{{ getenv "OIDC_ISSUER_URL" }}/.well-known/openid-configuration"
-            realm: {{ getenv "OPA_CLIENT_SECRET" }}
-            client_id: {{ getenv "OPA_CLIENT_ID" }}
-            client_secret: {{ getenv "OPA_CLIENT_SECRET" }}
+            realm: {{ getenv "REALM" }}
+            client_id: {{ getenv "DUMMY_CLIENT_ID" }}
+            client_secret: {{ getenv "DUMMY_CLIENT_SECRET" }}
             use_jwks: true
             bearer_only: false
             set_access_token_header: true
             access_token_in_authorization_header: true
+            logout_path: /logout
         # Authorization - required for access to API
         - name: opa
           enable: true
@@ -89,12 +161,13 @@ The `ApisixRoute`{{}} route includes two routes:
 * `nginx-open`{{}} - open access
 * `nginx`{{}} - protected access
 
-The protected `nginx`{{}} route uses 2 plugins:
+The protected `nginx`{{}} route uses 3 plugins:
 
 * `openid-connect`{{}} - Authnentication - ensures the user is authenticated via bearer JWT token, and will trigger an OIDC auth flow if required
 * `opa`{{}} - Authorization - enforces the [`example/tutorial/protected`{{}}](https://github.com/EOEPCA/iam-policies/blob/main/policies/example/tutorial/protected.rego) policy
+* `response-rewrite`{{}} - Disables caching for protected content
 
-### 3. Check the route
+## **4. Check the route**
 
 First we can use the open endpoint to check the service is running.
 
@@ -104,7 +177,7 @@ curl http://nginx-open.eoepca.local
 
 The typical nginx landing page html is returned.
 
-### 4. Check the protection (Unauthorized)
+## **5. Check the protection (Unauthorized)**
 
 First we attempt to access the protected endpoint with a simple unauthenticated request (i.e. no access token).
 
@@ -112,31 +185,29 @@ First we attempt to access the protected endpoint with a simple unauthenticated 
 curl http://nginx.eoepca.local -v
 ```{{exec}}
 
-This returns a `302` response with a `Location`{{}} response header that points to Keycloak's `/auth`{{}} endpoint.<br>
+This returns a `302`{{}} response with a `Location`{{}} response header that points to Keycloak's `/auth`{{}} endpoint.<br>
 The policy enforcement has recognised the absence of the access token, and has triggered an OIDC login flow via Keycloak.
 
-### 5. Check the protection (Allowed)
+## **6. Check the protection (Allowed)**
 
 For allowed access we need to authenticate as a user that is identified as `privileged`{{}} in accordance with the policy - such as our `eoepcauser`{{}} test user.
 
 **Authenticate to obtain an access token**
 
-> For convenience we are reusing the existing `opa`{{}} Keycloak client. Ordinarily a dedicated Keycloak client would be created to represent the endpoints of each specific application
-
 ```bash
 source ~/.eoepca/state
-# Authenticate as test user `eoepcauser`
+# Authenticate as test user `eoepcauser`{{}}
 ACCESS_TOKEN=$( \
   curl --silent --show-error \
     -X POST \
     -d "username=eoepcauser" \
     --data-urlencode "password=eoepcapassword" \
     -d "grant_type=password" \
-    -d "client_id=opa" \
-    -d "client_secret=${OPA_CLIENT_SECRET}" \
+    -d "client_id=dummy" \
+    -d "client_secret=${DUMMY_CLIENT_SECRET}" \
     "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
 )
-echo "ACCESS TOKEN: ${ACCESS_TOKEN}"
+echo "ACCESS TOKEN: ${ACCESS_TOKEN:0:20}..."
 ```{{exec}}
 
 **Use the access token for the protected service**
@@ -147,48 +218,25 @@ curl "http://nginx.eoepca.local" -H "Authorization: Bearer ${ACCESS_TOKEN}"
 
 The typical nginx landing page html is returned - indicating that the request was authorized.
 
-### 6. Check the protection (Forbidden)
+## **7. Check the protection (Forbidden)**
 
-As a final check we will make a request with a valid access token, but for the user `eric`{{}} that is not on the list of privileged users.
+As a final check we will make a request with a valid access token, but for the user `eoepcaadmin`{{}} that is not on the list of privileged users.
 
-**Create User `eric`{{}}**
-
-Create the user `eric`{{}} using the helper scripts, as before:
-
-```bash
-bash ../utils/create-user.sh
-```{{exec}}
-
-Use the following provided values:<br>
-_Select the provided values to inject them into the terminal prompts_
-
-> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
-
-* `KEYCLOAK_ADMIN_USER`{{}} already set: `n`{{exec}}
-* `KEYCLOAK_ADMIN_PASSWORD`{{}} already set: `n`{{exec}}
-* `KEYCLOAK_HOST`{{}} already set: `n`{{exec}}
-* `REALM`{{}} already set: `n`{{exec}}
-* Username: `eric`{{exec}}<br>
-  Name of the new user to create
-* Password: `eoepcapassword`{{exec}}<br>
-  Password for the newly created user
-
-**Obtain access token for (unprivileged) user `eric`{{}}**
+**Obtain access token for (unprivileged - according to policy) user `eoepcaadmin`{{}}**
 
 ```bash
 source ~/.eoepca/state
-# Authenticate as test user `eric`
 ACCESS_TOKEN=$( \
   curl --silent --show-error \
     -X POST \
-    -d "username=eric" \
+    -d "username=eoepcaadmin" \
     --data-urlencode "password=eoepcapassword" \
     -d "grant_type=password" \
-    -d "client_id=opa" \
-    -d "client_secret=${OPA_CLIENT_SECRET}" \
+    -d "client_id=dummy" \
+    -d "client_secret=${DUMMY_CLIENT_SECRET}" \
     "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
 )
-echo "ACCESS TOKEN: ${ACCESS_TOKEN}"
+echo "ACCESS TOKEN: ${ACCESS_TOKEN:0:20}..."
 ```{{exec}}
 
 **Use the access token for the protected service**
