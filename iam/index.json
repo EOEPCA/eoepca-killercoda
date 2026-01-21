@@ -25,25 +25,37 @@
         "text": "5-deployment.md"
       },
       {
-        "title": "Client and User Setup",
-        "text": "6-client-user.md"
+        "title": "Create EOEPCA Realm",
+        "text": "6-create-realm.md"
       },
       {
-        "title": "Keycloak Admin UI",
-        "text": "7-keycloak-ui.md"
+        "title": "Configure Keycloak Management",
+        "text": "7-keycloak-management.md"
+      },
+      {
+        "title": "Create Test Users",
+        "text": "8-create-test-users.md"
+      },
+      {
+        "title": "Create OPA Client",
+        "text": "9-create-opa-client.md"
       },
       {
         "title": "Validation of Deployment",
-        "text": "8-validation.md"
+        "text": "10-validation.md"
       },
       {
         "title": "Policy Enforcement",
-        "text": "9-policy-enforcement.md"
+        "text": "11-policy-enforcement.md"
+      },
+      {
+        "title": "Policy Enforcement (Browser)",
+        "text": "12-policy-enforcement-browser.md"
       }
     ],
     "finish": {
       "title": "IAM Setup Complete",
-      "text": "10-finish.md"
+      "text": "13-finish.md"
     },
     "assets": {
       "host01": [

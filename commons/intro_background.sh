@@ -97,6 +97,7 @@ if [[ -e /tmp/assets/iam ]]; then
   mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
 export REALM="eoepca"
 export KEYCLOAK_HOST="$(keycloak_host)"
+export OIDC_ISSUER_URL="${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}"
 export KEYCLOAK_ADMIN_USER="admin"
 export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
 export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
