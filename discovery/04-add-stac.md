@@ -38,7 +38,7 @@ curl --silent http://resource-catalogue.eoepca.local/stac/collections | jq .coll
 
 or via the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/metadata:main/items)
 
-> NOTE that the STAC Browser will not work in the case that (insecure) `http` has been used to expose the Resource Catalogue service, though it may work in some browsers (like Firefox) if you allow mixed http/https content for the site in your browser
+> NOTE that the STAC Browser will not work in Localcoda because it exposes proxied ports with plain HTTP, though it may work in some browsers (like Firefox) if you allow mixed http/https content for the site in your browser
 
 ### Add an Item
 
@@ -87,4 +87,4 @@ curl --silent http://resource-catalogue.eoepca.local/stac/collections/CAT_DEMO/i
 
 And in the [STAC browser](https://radiantearth.github.io/stac-browser/#/external/{{TRAFFIC_HOST1_81}}/stac) or via the [internal GUI]({{TRAFFIC_HOST1_81}}/collections/CAT_DEMO/items)
 
-> NOTE that the STAC Browser will not work in the case that (insecure) `http` has been used to expose the Resource Catalogue service, though it may work in some browsers (like Firefox) if you allow mixed http/https content for the site in your browser
+> NOTE that the STAC Browser will not work in Localcoda because it exposes proxied ports with plain HTTP, though it may work in some browsers (like Firefox) if you allow mixed http/https content for the site in your browser
