@@ -351,7 +351,7 @@ if [[ -e /tmp/assets/htcondor ]]; then
   #Allow ubuntu user to submit jobs
   usermod -a -G docker ubuntu
   #Mount the local /etc/hosts in docker for the DNS resolution
-  echo '#!/usr/bin/python
+  echo '#!/usr/bin/python3
 import sys, os
 n=sys.argv
 n[0]="/usr/bin/docker"
