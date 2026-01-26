@@ -3,6 +3,7 @@
     { "path": "prerequisites" },
     { "path": "discovery" },
     { "path": "processing" },
+    { "path": "registration" },
     { "path": "iam" },
     { "path": "workspace" }
   ]
