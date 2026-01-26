@@ -4,7 +4,7 @@ As with other EOEPCA building blocks, we'll use the [EOEPCA Deployment Guide](ht
 First, download the deployment guide repository:
 
 ```
-git clone https://github.com/EOEPCA/deployment-guide --branch release-2-jh
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc3 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 Now set up internal TLS for the EOEPCA services:

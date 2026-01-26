@@ -4,7 +4,7 @@ As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.re
 First, we download the EOEPCA Deployment Guide:
 
 ```
-git clone https://github.com/EOEPCA/deployment-guide --branch release-2-jh
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc3 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 cd deployment-guide/scripts/data-access
 ```{{exec}}
 
