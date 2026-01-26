@@ -21,20 +21,15 @@ bash check-prerequisites.sh
 
 This will ask a few questions about the Kubernetes cluster configuration and check if all the necessary pre-requirements are installed. 
 
-EOEPCA components can work with or without certificates. We choose the `http` scheme since we are not using certificates and encryption for our tutorial:
-```
-http
-```{{exec}}
-
 EOEPCA components can work with different Ingress services installed in your Kubernetes cluster. The default configuration uses [apisix](https://apisix.apache.org/) to provide advanced authentication and authorization. For this demo environment, we will use the simpler nginx ingress without authorization
 
 ```
 nginx
 ```{{exec}}
 
-We enter the top-level domain for our EOEPCA services:
+We accept the pre-configured top-level domain for our EOEPCA services:
 ```
-eoepca.local
+n
 ```{{exec}}
 
 We do not need a specific Storage Class for this component, so for this example we will use the basic storage class provided in this sandbox. Note that, in an operational environment, you should use a reliable (and possibly redundant and backed up) storage class, as this storage class will be used to store all the metadata of your data
