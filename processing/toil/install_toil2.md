@@ -17,6 +17,7 @@ source ~/toil/venv/bin/activate
 create an ID for our job
 
 ```
+sudo apt-get install uuid-runtime
 jobid=$(uuidgen)
 ```{{exec}}
 

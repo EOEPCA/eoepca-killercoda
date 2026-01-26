@@ -1,14 +1,10 @@
 
 As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us in configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.0-rc1b** version of the EOEPCA Deployment Guide, to which this tutorial refers:
-
-<!-- ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc1b | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
-```{{exec}} -->
+First, we download and uncompress the **eoepca-2.0-rc3** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-git clone https://github.com/EOEPCA/deployment-guide --branch release-2-jh
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc3 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 First, let's setup internal TLS for our EOEPCA services.
