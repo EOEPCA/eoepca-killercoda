@@ -97,6 +97,7 @@ if [[ -e /tmp/assets/iam ]]; then
   mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
 export REALM="eoepca"
 export KEYCLOAK_HOST="$(keycloak_host)"
+export OIDC_ISSUER_URL="${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}"
 export KEYCLOAK_ADMIN_USER="admin"
 export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
 export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
@@ -192,6 +193,7 @@ EOF
       proxy_set_header X-Forwarded-Host \$http_x_forwarded_host;
       proxy_set_header X-Forwarded-Proto \$http_x_forwarded_proto;
       proxy_set_header X-Forwarded-For \$http_x_forwarded_for;
+      proxy_set_header X-Forwarded-Port \$http_x_forwarded_port;
       # websockets
       proxy_http_version 1.1;
       proxy_set_header Upgrade \$http_upgrade;
@@ -349,7 +351,7 @@ if [[ -e /tmp/assets/htcondor ]]; then
   #Allow ubuntu user to submit jobs
   usermod -a -G docker ubuntu
   #Mount the local /etc/hosts in docker for the DNS resolution
-  echo '#!/usr/bin/python
+  echo '#!/usr/bin/python3
 import sys, os
 n=sys.argv
 n[0]="/usr/bin/docker"

@@ -51,6 +51,45 @@ stop_tutorial() {
   "${LOCALCODA_ROOT}"/backend/bin/backend_stop.sh "$id"
 }
 
+# --- cleanup ------------------------------------------------------------------
+
+clean_mounts() {
+  local id="$1" prefix="" _prefix m
+
+  if [[ -z "$id" ]]; then
+    echo "ERROR: clean_mounts requires an ID" >&2
+    return 1
+  fi
+
+  while IFS= read -r m; do
+    echo "Unmounting: $m"
+    sudo umount -l "$m"
+
+    _prefix="${m%%/$id/*}"
+
+    if [[ -z "$prefix" ]]; then
+      prefix="$_prefix"
+    elif [[ "$_prefix" != "$prefix" ]]; then
+      echo "ERROR: multiple mount prefixes detected: $prefix and $_prefix" >&2
+      return 2
+    fi
+
+  done < <(mount | awk -v t="$id" '$3 ~ ("^.*/" t "/.*$") {print $3}')
+
+  if [[ -z "$prefix" ]]; then
+    echo "No mountpoints found for ID: $id" >&2
+    return 3
+  fi
+
+  if [[ ! -d "$prefix/$id" ]]; then
+    echo "ERROR: expected directory does not exist: $prefix/$id" >&2
+    return 4
+  fi
+
+  echo "Removing shared kubelet mounts at: $prefix/$id"
+  sudo rm -rf "$prefix/$id"
+}
+
 # --- main stopping logic ------------------------------------------------------
 
 matched=0
@@ -59,6 +98,7 @@ while read -r id name; do
   if [[ "$TUTORIAL" == "all" || "$TUTORIAL" == "$name" ]]; then
     echo "Stopping tutorial: $name (ID: $id)"
     stop_tutorial "$id"
+    clean_mounts "$id"
     matched=$((matched + 1))
   fi
 done < <(./list.sh)

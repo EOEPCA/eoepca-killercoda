@@ -1,9 +1,9 @@
 
 ## Validating Your Deployment
 
-Now that everything is deployed and set up, let's check that the IAM system is working as expected. We'll use the `validation.sh` script for some quick checks, and also look at the system status ourselves.
+Now that everything is deployed and set up, let's check that the IAM system is working as expected. We'll use the `validation.sh`{{}} script for some quick checks, and also look at the system status ourselves.
 
-### 1. Run the Validation Script
+## 1. Run the Validation Script
 
 Run the script to carry out some basic tests:
 
@@ -11,7 +11,7 @@ Run the script to carry out some basic tests:
 bash validation.sh
 ```{{exec}}
 
-### 2. Keycloak Validation
+## 2. Keycloak Validation
 
 **Authenticate as user `eoepcauser`{{}}**
 
@@ -34,10 +34,10 @@ ACCESS_TOKEN=$( \
 Check the access token, which will be used in the following steps.
 
 ```bash
-echo "${ACCESS_TOKEN}"
+echo "${ACCESS_TOKEN:0:20}..."
 ```{{exec}}
 
-### 3. Open Policy Agent Validation
+## 3. Open Policy Agent Validation
 
 Check the OPA endpoint with some policy decision requests.
 
