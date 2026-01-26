@@ -25,7 +25,9 @@ while [[ `curl -s -o /dev/null -w "%{http_code}" "http://registration-api.eoepca
 
 Once deployed, the Resource Registration OGC Processes API should be accessible at `http://registration-api.eoepca.local`{{}}
 
-We can validate it with the provided script `validation.sh`{{}} (the harvester components will show as unavailable until after the next steps)
+We can validate it with the provided script `validation.sh`{{}}
+
+> The harvester components will show as unavailable until after the next steps
 
 ```
 bash validation.sh

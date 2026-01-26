@@ -23,40 +23,30 @@ kubectl apply -f registration-harvester/generated-ingress.yaml
 
 ## eodata Volume
 
-The harvesters harvest data into a location shared by all harvesters and from which it can be served to users. A shared PersistentVolume and PersistentVolumeClaim must be created to be mounted into each harvester. If either the Landsat or Sentinel harvesters are enabled you must create these now. Because we are using the hostpath provisioner we can do it like this:
+Each harvester worker stores their harvested data into a kubernetes persistent volume. We establish a single shared `eodata` volume to collate the outputs of all workers - and also to provide a single asset location to facilitate delivery of data through external services.
+
+The volume must be created as `ReadWriteMany` - and thus should use the `SHARED_STORAGECLASS` specified at the earlier configuration step.
 
 ```
 source ~/.eoepca/state
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: eodata
-spec:
-  accessModes:
-  - ReadWriteMany
-  capacity:
-    storage: 100Gi
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ${SHARED_STORAGECLASS}
-  volumeMode: Filesystem
-  hostPath:
-    type: DirectoryOrCreate
-    path: /tmp/hostpath-provisioner/resource-registration/eodata
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: eodata
   namespace: resource-registration
+  labels:
+    app.kubernetes.io/name: registration-harvester
+    app.kubernetes.io/component: eodata-storage
+  annotations:
+    helm.sh/resource-policy: keep
 spec:
   accessModes:
-  - ReadWriteMany
+    - ReadWriteMany
+  storageClassName: ${SHARED_STORAGECLASS}
   resources:
     requests:
       storage: 100Gi
-  volumeMode: Filesystem
-  volumeName: eodata
 EOF
 ```{{exec}}
 

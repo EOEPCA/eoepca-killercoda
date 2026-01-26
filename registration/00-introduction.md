@@ -6,22 +6,22 @@ In this scenario, you will learn how to deploy and interact with the EOEPCA Reso
 
 ---
 
-### What You'll Learn
+### **What You'll Learn**
 
 - Deploy the Resource Registration building block on Kubernetes
 - Trigger ingest of an externally-hosted STAC Collection
 - Harvest a small subset of Landsat and Sentinel data
 
-*Note*: In the Killercoda environment you should skip all of the Landsat-related steps due to resource constraints.
+> NOTE. In the Killercoda environment you should skip all of the Landsat-related steps due to resource constraints.
 
 ---
 
-### Use Case
+### **Use Case**
 
 The Resource Registration Building Block is intended to help you integrate dataset data and metadata from elsewhere into your platform.
 
 ---
 
-### Assumptions
+### **Assumptions**
 
 Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
