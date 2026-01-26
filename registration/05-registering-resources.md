@@ -38,6 +38,8 @@ A OGC Processes API Job should have run to ingest the Collection. You can see it
 curl http://registration-api.eoepca.local/jobs | jq
 ```{{exec}}
 
+The jobs status can also be viewed through the [web UI of the Registration API]({{TRAFFIC_HOST1_82}}/jobs).
+
 You should be able to see the ingested collections in the Resource Discovery BB's OGC Records API
 
 ```
@@ -55,3 +57,5 @@ and for Sentinel 2
 ```
 curl http://resource-catalogue.eoepca.local/stac/collections/sentinel-2-c1-l2a | jq
 ```{{exec}}
+
+Alternatively, the registered collections can be seen in the [web UI of the Resource Discovery]({{TRAFFIC_HOST1_81}}/collections): [**Landsat**]({{TRAFFIC_HOST1_81}}/collections/landsat-ot-c2-l2), [**Sentinel**]({{TRAFFIC_HOST1_81}}/collections/sentinel-2-c1-l2a)

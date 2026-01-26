@@ -10,7 +10,9 @@ git clone https://github.com/EOEPCA/deployment-guide
 
 ## Resource Discovery BB
 
-The Resource Discovery BB must be installed for the Resource Registration BB to work, so we do that first here. Follow the Resource Discovery tutorial for a full description. Unlike the Resource Discovery tutorial, here we use the apisix ingress controller because nginx is not compatible with the Resource Registration BB's support for OIDC.
+For this tutoral the Resource Discovery BB is installed to provide a registration target for the Resource Registration BB. So first we deploy the Resource Discovery catalogue service - follow the Resource Discovery tutorial for a full description.
+
+The Resource Registration BB relies upon the APISIX ingress controller for its OIDC integration with Keycloak. Thus, the Resource Discovery BB is deployed here configure for ingress via APISIX.
 
 ```
 cd deployment-guide/scripts/resource-discovery

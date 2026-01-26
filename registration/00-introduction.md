@@ -25,3 +25,16 @@ The Resource Registration Building Block is intended to help you integrate datas
 ### **Assumptions**
 
 Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
+
+---
+
+### **Wait for Readiness**
+
+Before proceeding, wait for the prerequisite services to be ready:
+
+```
+while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=10s &>/dev/null; do
+  not_ready=$(kubectl get pods -A --no-headers | awk '$3 !~ /1\/1/ {print "  " $1 "/" $2}')
+  echo -e "\nWaiting for Readiness - PODS not ready ($(date -u)): \n$not_ready"
+done
+```{{exec}}

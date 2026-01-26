@@ -1,4 +1,17 @@
-Before proceeding with the Resource Registration building block deployment, we need first to configure it. We can do it with the configuration script `configure-resource-registration.sh` provided in the EOEPCA deployment guide.
+Before proceeding with the Resource Registration building block deployment, we need first to configure it. We can do it with the configuration script `configure-resource-registration.sh`{{}} provided in the EOEPCA deployment guide.
+
+This includes configuration of the URL through which the harvested 'eodata' assets can be retrieved. This tutorial environment uses a proxy to route access to running services. Thus, we have to ensure that this proxied URL is well configured within the deployment.
+
+```bash
+source ~/.eoepca/state
+EODATA_EXT_URL="$(
+  sed "s#PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("eodata." host) {print $1}' /tmp/assets/killercodaproxy)#" \
+    /etc/killercoda/host
+)"
+echo "External host for eodata: ${EODATA_EXT_URL}/"
+```{{exec}}
+
+Taking note of this URL we can now configure the BB:
 
 ```
 bash configure-resource-registration.sh
@@ -6,7 +19,7 @@ bash configure-resource-registration.sh
 
 The script will load the general EOEPCA configuration and move to the Resource Registration building block specific configuration.
 
-We do not need to update domain or storage classes, we will use what's already set, so we answer `no` to the first three questions. We use eoepca/eoepca as the username and password for the Flowable workflow engine used for harvesting and opt not to use OIDC authentication as we have not installed the IAM building block.
+We do not need to update domain or storage classes, we will use what's already set, so we answer `no` to the first three questions. We use eoepca/eoepca as the username and password for the Flowable workflow engine used for harvesting.
 
 ```
 n
@@ -14,10 +27,16 @@ n
 n
 eoepca
 eoepca
+```{{exec}}
+
+For the 'base URL through which harvested 'eodata' assets will be accessed' we use the proxy URL computed above. Paste this to answer the question.
+
+We opt not to use OIDC authentication as we have not installed the IAM building block.
+
+```
 no
 no
 ```{{exec}}
-
 
 We must also store the Flowable username and password into a secret.
 

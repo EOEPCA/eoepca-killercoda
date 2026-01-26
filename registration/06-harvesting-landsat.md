@@ -79,7 +79,9 @@ Once complete, the catalogue will contain the harvested items which you can see 
 curl "http://resource-catalogue.eoepca.local/collections/landsat-ot-c2-l2/items" | jq
 ```{{exec}}
 
-Finally, to ensure that the http://eodata.eoepca.local/ links in the STAC Items work, start an nginx server to serve the harvested data
+The harvested items are best visualised via the [web UI of the Resource Discovery]({{TRAFFIC_HOST1_81}}/collections/landsat-ot-c2-l2/items).
+
+We start a simple nginx server to offer the harvetsed data for retrieval via the asset URLs configured in the registered STAC items.
 
 ```
 kubectl apply -f registration-harvester/generated-eodata-server.yaml

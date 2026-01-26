@@ -41,7 +41,7 @@ curl -s -X POST "http://registration-harvester-api.eoepca.local/flowable-rest/se
     {
       "name": "filter",
       "type": "string",
-      "value": "startswith(Name,'S2') and contains(Name,'L2A') and contains(Name,'_N05') and PublicationDate ge 2025-11-13T10:00:00Z and PublicationDate lt 2025-11-13T10:00:18Z and Online eq true"
+      "value": "startswith(Name,'S2') and contains(Name,'L2A') and contains(Name,'_N05') and PublicationDate ge 2025-11-13T10:00:00Z and PublicationDate lt 2025-11-13T10:00:30Z and Online eq true"
     }
   ]
 }
@@ -71,13 +71,15 @@ Once complete, the catalogue will contain the harvested items which you can see 
 curl "http://resource-catalogue.eoepca.local/collections/sentinel-2-c1-l2a/items" | jq
 ```{{exec}}
 
-Finally, to ensure that the http://eodata.eoepca.local/ links in the STAC Items work, start an nginx server to serve the harvested data
+The harvested items are best visualised via the [web UI of the Resource Discovery]({{TRAFFIC_HOST1_81}}/collections/sentinel-2-c1-l2a/items).
+
+We start a simple nginx server to offer the harvetsed data for retrieval via the asset URLs configured in the registered STAC items.
 
 ```
 kubectl apply -f registration-harvester/generated-eodata-server.yaml
 ```{{exec}}
 
-Once it has started you should be able to see the data files listed in the STAC items, for example
+Once harvested, you should be able to see the data files listed in the STAC items, for example
 
 ```
 curl http://eodata.eoepca.local/sentinel/eodata/Sentinel-2/MSI/L2A/2025/11/13/S2B_MSIL2A_20251113T083119_N0511_R021_T37TBF_20251113T091555.SAFE/manifest.safe
