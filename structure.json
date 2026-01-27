@@ -5,6 +5,14 @@
     { "path": "processing" },
     { "path": "registration" },
     { "path": "iam" },
-    { "path": "workspace" }
+    { "path": "workspace" },
+
+
+
+    { "path": "data-access" },
+    { "path": "datacube-access" },
+    { "path": "data-gateway" },
+    { "path": "monitoring" },
+    { "path": "app-hub" }
   ]
 }

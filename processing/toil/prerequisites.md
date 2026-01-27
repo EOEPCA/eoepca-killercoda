@@ -6,6 +6,18 @@ First, we download and uncompress the **eoepca-2.0-rc3** version of the EOEPCA D
 curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc3 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
+We also need to install uuidgen:
+```
+sudo apt-get install uuid-runtime
+```{{exec}}
+
+> If using Localcoda and its Docker runtime environment, also run this command:
+```
+sudo apt install docker.io
+sudo usermod -aG docker ubuntu
+sudo dockerd &
+```{{exec}}
+
 the OGC API Process interface deployment scripts are available in the `processing/oapip` directory, let's open it
 
 ```
