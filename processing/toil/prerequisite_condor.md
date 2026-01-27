@@ -21,12 +21,12 @@ and test that our HTCondor is properly accessible via:
 condor_status
 ```{{exec}}
 
-> If this returns an error please run:
+> If this returns an error please run as non-ubuntu user:
 
 ```
 sudo condor_master
 ```{{exec}}
 
-And wait 5 seconds, then run `condor_status` again.
+And wait 5 seconds, then run `condor_status` as ubuntu user again.
 
 we will then, in the next steps, proceed to the installation of the Toil software and Toil WES interface on own HPC cluster

@@ -17,7 +17,6 @@ source ~/toil/venv/bin/activate
 create an ID for our job
 
 ```
-sudo apt-get install uuid-runtime
 jobid=$(uuidgen)
 ```{{exec}}
 
@@ -25,6 +24,11 @@ write the parameters for our job execution
 
 ```
 mkdir -p ~/toil/storage/test/{work_dir,job_store}
+```{{exec}}
+
+And get the parameters file
+
+```
 cat <<EOF > ~/toil/storage/test/work_dir/$jobid.params.yaml
 fn: resize
 url: https://eoepca.org/media_portal/images/logo6_med.original.png
