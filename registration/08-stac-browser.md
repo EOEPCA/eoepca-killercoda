@@ -1,5 +1,13 @@
 The outcome of the harvesting is best visualised via [STAC Browser](https://github.com/radiantearth/stac-browser).
 
+### **Simple Data Server**
+
+We start a simple nginx server to offer the harvetsed data for retrieval via the asset URLs configured in the registered STAC items.
+
+```
+kubectl apply -f registration-harvester/generated-eodata-server.yaml
+```{{exec}}
+
 ### **Deploy STAC Browser**
 
 ```bash
@@ -69,9 +77,17 @@ spec:
 EOF
 ```{{exec}}
 
+### **Wait for Readiness**
+
+```bash
+kubectl rollout status -w deploy/stac-browser
+```{{exec}}
+
 ### **Open STAC Browser**
 
 Open the [STAC Browser Web UI]({{TRAFFIC_HOST1_85}}).
+
+> The harvesting of the scenes can take some time (10+ minutes). Refresh the view in STAC Browser to see their ongoing registration.
 
 Navigate through the [Landsat]({{TRAFFIC_HOST1_85}}/stac/collections/landsat-ot-c2-l2) and [Sentinel]({{TRAFFIC_HOST1_85}}/stac/collections/sentinel-2-c1-l2a) collections.
 

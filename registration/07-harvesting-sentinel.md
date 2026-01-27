@@ -73,12 +73,6 @@ curl "http://resource-catalogue.eoepca.local/collections/sentinel-2-c1-l2a/items
 
 The harvested items are best visualised via the [web UI of the Resource Discovery]({{TRAFFIC_HOST1_81}}/collections/sentinel-2-c1-l2a/items).
 
-We start a simple nginx server to offer the harvetsed data for retrieval via the asset URLs configured in the registered STAC items.
-
-```
-kubectl apply -f registration-harvester/generated-eodata-server.yaml
-```{{exec}}
-
 Once harvested, you should be able to see the data files listed in the STAC items, for example
 
 ```

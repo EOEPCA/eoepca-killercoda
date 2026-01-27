@@ -29,7 +29,7 @@ eoepca
 eoepca
 ```{{exec}}
 
-For the 'base URL through which harvested 'eodata' assets will be accessed' we use the proxy URL computed above. Paste this to answer the question.
+For the **'base URL through which harvested 'eodata' assets will be accessed'** we use the **EODATA_EXT_URL** proxy URL computed above.<br>Paste this to answer the question.
 
 We opt not to use OIDC authentication as we have not installed the IAM building block.
 
