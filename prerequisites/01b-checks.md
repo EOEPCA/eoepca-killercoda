@@ -56,6 +56,10 @@ And we are faced with some questions about the configuration we are going to use
   no
   no
   ```{{exec}}
+- Kubernetes storage class for shared volumes
+  ```
+  standard
+  ```{{exec}}
 
 --- 
 

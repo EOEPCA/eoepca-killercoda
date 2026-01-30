@@ -1,7 +1,8 @@
-Now we re-check whether all the prerequisites are met. To do this, we run the `check-prerequisites` script again, answering `no` to the two questions:
+Now we re-check whether all the prerequisites are met. To do this, we run the `check-prerequisites` script again, answering `no` to the three questions:
 ```
 cd ~/deployment-guide/scripts/infra-prereq
 bash check-prerequisites.sh
+no
 no
 no
 ```{{exec}}
