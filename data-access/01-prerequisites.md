@@ -16,15 +16,17 @@ bash check-prerequisites.sh
 
 This will ask a few questions about the Kubernetes cluster configuration and check if all the necessary pre-requirements are installed.
 
+> Some configuration has already been established by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
+
 For our ingress controller, we will use nginx.
 ```
 nginx
 ```{{exec}}
 
 
-We enter the top-level domain for our EOEPCA services:
+We accept the `eoepca.local`{{}} top-level domain for our EOEPCA services:
 ```
-eoepca.local
+n
 ```{{exec}}
 
 Storage class:

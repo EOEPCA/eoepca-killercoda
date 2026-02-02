@@ -243,6 +243,7 @@ if [[ -e /tmp/assets/minio.7z ]]; then
   sleep 1
   while ! mc config host add minio-local http://minio.eoepca.local:9000/ eoepca eoepcatest; do sleep 1; done
   mkdir -p ~/.eoepca && echo 'export S3_ENDPOINT="http://minio.eoepca.local:9000/"
+export S3_HOST="minio.eoepca.local:9000"
 export S3_ACCESS_KEY="eoepca"
 export S3_SECRET_KEY="eoepcatest"
 export S3_REGION="us-east-1"' >> ~/.eoepca/state
