@@ -1,6 +1,17 @@
 
 Before proceeding with the Data Access building block deployment, we need to configure it.
 
+This tutorial environment uses a proxy to route access to running services. We have to ensure that this proxied URL is well configured within the deployment - in particular for the STAC Manager web UI. Thus, we pre-configure here the environment variable `EOAPI_PUBLIC_HOST` which is deduced from the running enviornment.
+
+```bash
+source ~/.eoepca/state
+export EOAPI_PUBLIC_HOST="$(
+  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("eoapi." host) {print $1}' /tmp/assets/killercodaproxy)#" \
+    /etc/killercoda/host
+)"
+echo -e "\nPublic host for eoAPI: ${EOAPI_PUBLIC_HOST}"
+```{{exec}}
+
 Now we can run the configuration script `configure-data-access.sh` provided in the EOEPCA deployment guide:
 
 ```
