@@ -9,33 +9,24 @@ bash configure-data-access.sh
 
 The script will load the general EOEPCA configuration and move to the Data Access building block specific configuration.
 
+> Some configuration has already been established via the `check-prerequisites`{{}} script, and also by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
+
+We accept the `eoepca.local`{{}} top-level domain for our EOEPCA services:
 ```
-eoepca.local
+n
 ```{{exec}}
 
-We will use the basic storage class provided in this sandbox:
+We accept the basic `local-path`{{}} storage class provided in this sandbox:
 ```
-local-path
+n
 ```{{exec}}
 
-For the S3 host, we use our local MinIO instance:
+We accept the pre-configured details for the MinIO S3 object storage:
 ```
-minio.eoepca.local
-```{{exec}}
-
-Enter the S3 access key:
-```
-eoepca
-```{{exec}}
-
-Enter the S3 secret key:
-```
-eoepcatest
-```{{exec}}
-
-For the S3 endpoint used by eoAPI services:
-```
-minio.eoepca.local
+n
+n
+n
+n
 ```{{exec}}
 
 We will use the internal PostgreSQL (managed by the Crunchy Postgres Operator):

@@ -88,7 +88,7 @@ kubectl get all -n data-access
 We can validate the deployment using the provided validation script:
 
 ```
-bash validation.sh
+bash validation.sh nomonitoring
 ```{{exec}}
 
 Once deployed, the Data Access services should be accessible:

@@ -53,17 +53,4 @@ curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?lim
 
 ### Browse in STAC Browser
 
-The eoAPI deployment includes a built-in STAC Browser. You can explore the collection visually:
-
-```
-echo "Open: http://eoapi.eoepca.local/browser/#/collections/sentinel-2-iceland"
-```{{exec}}
-
-Or use the external STAC Browser with our catalogue:
-
-```
-source ~/.eoepca/state
-echo "Open: https://radiantearth.github.io/stac-browser/#/external/eoapi.${INGRESS_HOST}/stac/collections/sentinel-2-iceland"
-```{{exec}}
-
-You can also access the built-in browser from [this link]({{TRAFFIC_HOST1_80}}/browser/).
+The eoAPI deployment includes a built-in [STAC Browser]({{TRAFFIC_HOST1_82}}/browser), where you can [explore the collection visually]({{TRAFFIC_HOST1_82}}/browser/external/{{TRAFFIC_HOST1_82}}/stac/collections/sentinel-2-iceland).
