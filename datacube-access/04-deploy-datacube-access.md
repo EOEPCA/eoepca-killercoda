@@ -36,7 +36,7 @@ http://resource-catalogue.eoepca.local/stac
 ### Deploy Datacube Access
 
 ```
-helm upgrade -i datacube-access eoepca/datacube-access \
+helm upgrade -i datacube-access eoepca-dev/datacube-access \
   --values generated-values.yaml \
   --version 2.0.0-rc2 \
   --namespace datacube-access \

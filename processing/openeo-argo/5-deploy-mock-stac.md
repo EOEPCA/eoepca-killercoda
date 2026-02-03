@@ -19,12 +19,12 @@ no
 Add the helm repository and deploy:
 
 ```
-helm repo add eoepca https://eoepca.github.io/helm-charts-dev
-helm repo update
+helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+helm repo update eoepca-dev
 ```{{exec}}
 
 ```
-helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
+helm upgrade -i resource-discovery eoepca-dev/rm-resource-catalogue \
   --values generated-values.yaml \
   --version 2.0.0-rc2 \
   --namespace resource-discovery \
