@@ -3,7 +3,7 @@
 A quick sanity check of the deployment is made via some automated checks...
 
 ```bash
-bash validation.sh noadmin
+bash validation.sh
 ```{{exec}}
 
 ## OpenAPI Endpoint
