@@ -94,9 +94,12 @@ if [[ -e /tmp/assets/iam ]]; then
     port="$(grep auth /tmp/assets/killercodaproxy | awk '{print $1}')"
     sed "s#http://PORT#$port#" /etc/killercoda/host
   }
+  source ~/.eoepca/state
+  export REALM="eoepca"
+  export KEYCLOAK_HOST="$(keycloak_host)"
   mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
-export REALM="eoepca"
-export KEYCLOAK_HOST="$(keycloak_host)"
+export REALM="${REALM}"
+export KEYCLOAK_HOST="${KEYCLOAK_HOST}"
 export OIDC_ISSUER_URL="${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}"
 export KEYCLOAK_ADMIN_USER="admin"
 export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
