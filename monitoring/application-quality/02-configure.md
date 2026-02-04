@@ -32,12 +32,6 @@ Enable OIDC authentication for Application Quality?
 yes
 ```{{exec}}
 
-OIDC Issuer URL
-```
-http://auth.eoepca.local/auth/realms/eoepca
-```{{exec}}
-
-
 Client ID for Application Quality:
 ```
 application-quality
