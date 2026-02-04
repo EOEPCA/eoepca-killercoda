@@ -1,11 +1,11 @@
 
 ## Configure Groups in the Application Hub
 
-After having logged in with the `eric` user (password: `eoepcapassword`).
+After having [logged in]({{TRAFFIC_HOST1_83}}) with the `eric` user (password: `eoepcapassword`).
 
-Visit the [Admin Panel]({{TRAFFIC_HOST1_83}}/admin/) of the Application Hub.
+Visit the [Admin Panel]({{TRAFFIC_HOST1_83}}/hub/admin#/) of the Application Hub.
 
-1. Select **Manage Groups**
+1. Select [**Manage Groups**]({{TRAFFIC_HOST1_83}}/hub/admin#/groups)
 2. Create the following groups with exact naming:
    - `group-1`
    - `group-2`
