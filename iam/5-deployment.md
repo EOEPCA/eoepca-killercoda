@@ -4,7 +4,7 @@ Now that you have configured the IAM environment and applied the necessary secre
 helm repo add eoepca https://eoepca.github.io/helm-charts
 helm repo update eoepca
 helm upgrade -i iam eoepca/iam-bb \
-  --version 2.0.0-rc2 \
+  --version 2.0.0 \
   --namespace iam --create-namespace \
   --values generated-values.yaml
 ```{{exec}}
@@ -47,3 +47,17 @@ At this point we can check access to the [Keycloak Web UI]({{TRAFFIC_HOST1_90}})
 ```bash
 grep KEYCLOAK_ADMIN_ ~/.eoepca/state
 ```{{exec}}
+
+
+> If you are getting "HTTPS Required", please run:
+
+```
+source ~/.eoepca/state
+kubectl exec -it -n iam iam-keycloak-0 -- /opt/bitnami/keycloak/bin/kcadm.sh update realms/master \
+  --server http://localhost:8080 \
+  --realm master \
+  --user admin \
+  --password ${KEYCLOAK_ADMIN_PASSWORD} \
+  -s sslRequired=NONE
+```{{exec}}
+

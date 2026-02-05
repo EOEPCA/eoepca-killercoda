@@ -38,7 +38,8 @@ curl -X POST "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms" \
 {
   "realm": "${REALM}",
   "enabled": true,
-  "displayName": "EOEPCA"
+  "displayName": "EOEPCA",
+  "sslRequired": "NONE"
 }
 EOF
 ```{{exec}}
