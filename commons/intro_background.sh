@@ -124,20 +124,25 @@ EOF
     --values - \
     --create-namespace
   # IAM post-setup - do this in the background
-  (
-    # Wait for IAM to be ready
-    while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
-    # Create eoepca realm
-    iam_create_realm
-    # Create IAM management client
-    iam_create_management_client
-    iam_configure_management_client
-    # Crossplane provider setup
-    iam_setup_crossplane_provider
-    # Test users
-    iam_create_test_users
-    # OPA client
-    iam_create_opa_client
+(
+  # Wait for IAM to be ready
+  while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
+  # Wait for Crossplane Keycloak CRDs to be available
+  echo "[IAM setup] Waiting for Crossplane Keycloak CRDs..." >> /tmp/killercoda_setup.log
+  until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
+    sleep 5
+  done
+  # Create eoepca realm
+  iam_create_realm
+  # Create IAM management client
+  iam_create_management_client
+  iam_configure_management_client
+  # Crossplane provider setup
+  iam_setup_crossplane_provider
+  # Test users
+  iam_create_test_users
+  # OPA client
+  iam_create_opa_client
   ) >/tmp/iam-post-setup.log &
 fi
 
