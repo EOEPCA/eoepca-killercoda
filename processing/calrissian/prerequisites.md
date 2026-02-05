@@ -1,9 +1,9 @@
 As usual in this tutorial, we will use the [EOEPCA deployment-guide scripts](https://github.com/EOEPCA/deployment-guide) to help us configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.0-rc3** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we download and uncompress the **eoepca-2.0** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0-rc3 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 the OGC API Process interface deployment scripts are available in the `processing/oapip` directory, let's open it
