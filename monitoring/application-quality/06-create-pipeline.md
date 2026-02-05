@@ -5,24 +5,6 @@ A pipeline is a sequence of analysis tools that run against your code. Each tool
 
 ### Using the Web Interface to Create a Pipeline
 
-Due to the reverse proxy we have, we just need to update the CSRF trusted origins in the Application Quality deployment to include our domain (this is unique for this develop environment and wouldn't be necessary in production).
-
-```
-APP_QUALITY_EXTERNAL_URL="{{TRAFFIC_HOST1_81}}"
-
-kubectl patch configmap application-quality-api-env \
-  -n application-quality \
-  --type merge \
-  -p '{"data":{"PUBLIC_URL":"'"${APP_QUALITY_EXTERNAL_URL}"'"}}'
-
-sleep 2
-
-kubectl rollout restart deployment/application-quality-api -n application-quality
-
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=api -n application-quality --timeout=120s
-```{{exec}}
-
-
 For the full pipeline creation experience, use the web portal:
 
 1. Navigate to **Pipelines** in the sidebar

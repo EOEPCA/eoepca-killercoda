@@ -55,6 +55,11 @@ Now we need to create the Keycloak client for Application Quality. This allows t
 ```
 source ~/.eoepca/state
 
+REDIRECT_URIS=("/*")
+if [ "${APP_QUALITY_PUBLIC_HOST}" != "application-quality.${INGRESS_HOST}" ]; then
+  REDIRECT_URIS+=("${HTTP_SCHEME}://application-quality.${INGRESS_HOST}/*")
+fi
+
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
@@ -91,9 +96,9 @@ spec:
         keepDefaults: true
         policyEnforcementMode: ENFORCING
     validRedirectUris:
-      - "/*"
+$(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
     webOrigins:
-      - "/*"
+$(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
     clientSecretSecretRef:
       name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
       key: client_secret
