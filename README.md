@@ -74,10 +74,10 @@ http://4acc41fd4ccc4ed4b5a38a97682d0f1c-lc.c0a800e9.nip.io:23682/
 
 Open the provided link in your browser to connect with the tutorial.
 
-The available tutorial directories can be found using...
+The available tutorial directories can be found using
 
 ```bash
-find -name index.json
+find -name index.json -printf "%h\n"
 ```
 
 ### Other commands
