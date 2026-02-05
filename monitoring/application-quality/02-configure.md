@@ -1,15 +1,26 @@
 
 Before deploying the Application Quality building block, we need to configure it.
 
+This tutorial environment uses a proxy to route access to running services. We have to ensure that this proxied URL is well configured within the deployment - in particular for the Application Quality web UIs. Thus, we pre-configure here the environment variable `APP_QUALITY_PUBLIC_HOST` which is deduced from the running enviornment.
+
+```bash
+source ~/.eoepca/state
+export APP_QUALITY_PUBLIC_HOST="$(
+  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("application-quality." host) {print $1}' /tmp/assets/killercodaproxy)#" \
+    /etc/killercoda/host
+)"
+echo -e "\nPublic host for Application Quality: ${APP_QUALITY_PUBLIC_HOST}"
+```{{exec}}
+
 ```
 bash configure-application-quality.sh
 ```{{exec}}
 
 When prompted, provide the following values.
 
-Base domain name:
+Base domain name: (already set)
 ```
-eoepca.local
+n
 ```{{exec}}
 
 Storage class for persistent data:
@@ -22,9 +33,9 @@ No cert manager
 no
 ```{{exec}}
 
-Internal cluster issuer:
+Internal cluster issuer: (already set)
 ```
-eoepca-ca-clusterissuer
+n
 ```{{exec}}
 
 Enable OIDC authentication for Application Quality?
@@ -66,9 +77,9 @@ spec:
     description: Application Quality OIDC
     enabled: true
     accessType: CONFIDENTIAL
-    rootUrl: ${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST:-eoepca.local}
-    baseUrl: ${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST:-eoepca.local}
-    adminUrl: ${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST:-eoepca.local}
+    rootUrl: ${HTTP_SCHEME:-http}://${APP_QUALITY_PUBLIC_HOST}
+    baseUrl: ${HTTP_SCHEME:-http}://${APP_QUALITY_PUBLIC_HOST}
+    adminUrl: ${HTTP_SCHEME:-http}://${APP_QUALITY_PUBLIC_HOST}
     serviceAccountsEnabled: true
     directAccessGrantsEnabled: true
     standardFlowEnabled: true

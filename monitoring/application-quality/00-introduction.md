@@ -4,6 +4,16 @@ The Application Quality BB helps transition scientific algorithms from research 
 
 In this scenario, you'll deploy the Application Quality BB with full authentication, create a quality pipeline and run it against a real image.
 
+Before proceeding - wait for all prerequisite services to be ready...
+
+```bash
+echo "Waiting for readiness"
+until kubectl wait --for=condition=Ready --all=true -A pod --timeout=1m &>/dev/null; do
+  sleep 2
+  echo "Waiting for readiness"
+done
+```{{exec}}
+
 ---
 
 ### What You'll Learn
