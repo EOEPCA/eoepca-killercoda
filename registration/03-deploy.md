@@ -24,7 +24,7 @@ while [[ `curl -s -o /dev/null -w "%{http_code}" "http://registration-api.eoepca
 ```{{exec}}
 
 Once deployed, the Resource Registration OGC Processes API should be accessible at `http://registration-api.eoepca.local`{{}}
-Or via the [Killercoda proxy](http://{{TRAFFIC_HOST1_82}})
+Or via the [Killercoda proxy]({{TRAFFIC_HOST1_82}})
 
 
 You can also check the status of the Kubernetes resources directly
