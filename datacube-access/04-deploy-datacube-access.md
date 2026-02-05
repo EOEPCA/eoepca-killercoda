@@ -13,19 +13,19 @@ bash check-prerequisites.sh
 bash configure-datacube-access.sh
 ```{{exec}}
 
-Enter the domain:
+Enter the domain: (already set)
 ```
-eoepca.local
+n
 ```{{exec}}
 
-Cluster issuer (use default):
+Cluster issuer:
 ```
-letsencrypt-http01-apisix
+letsencrypt-http01-nginx
 ```{{exec}}
 
-Storage class:
+Storage class: (already set)
 ```
-local-path
+n
 ```{{exec}}
 
 STAC catalog endpoint (pointing to Resource Discovery):

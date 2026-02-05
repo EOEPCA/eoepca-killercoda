@@ -26,9 +26,9 @@ Select the ingress controller:
 nginx
 ```{{exec}}
 
-Enter the top-level domain:
+Enter the top-level domain: (already set)
 ```
-eoepca.local
+n
 ```{{exec}}
 
 Storage class for persistent data:
