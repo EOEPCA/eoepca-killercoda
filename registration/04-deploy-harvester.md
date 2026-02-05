@@ -55,8 +55,8 @@ EOF
 To harvest Landsat data a special Landsat Harvester Worker needs to be running. It can be installed using Helm
 
 ```
-helm upgrade -i registration-harvester-worker-landsat eoepca-dev/registration-harvester \
-  --version 2.0.0-rc3 \
+helm upgrade -i registration-harvester-worker-landsat eoepca/registration-harvester \
+  --version 2.0.0 \
   --namespace resource-registration \
   --create-namespace \
   --values registration-harvester/harvester-values/values-landsat.yaml
@@ -65,8 +65,8 @@ helm upgrade -i registration-harvester-worker-landsat eoepca-dev/registration-ha
 Similarly for Sentinel
 
 ```
-helm upgrade -i registration-harvester-worker-sentinel eoepca-dev/registration-harvester \
-  --version 2.0.0-rc3 \
+helm upgrade -i registration-harvester-worker-sentinel eoepca/registration-harvester \
+  --version 2.0.0 \
   --namespace resource-registration \
   --create-namespace \
   --values registration-harvester/harvester-values/values-sentinel.yaml
