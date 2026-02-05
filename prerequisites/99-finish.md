@@ -4,7 +4,7 @@ You can now play more with the deployed software, or jump to another one of the 
 
 For more information about EOEPCA and the EOEPCA Processing Building Block, and more advance deployments, have a look at the:
  - [EOEPCA Website](https://eoepca.org/)
- - [EOEPCA Git PRepository](https://github.com/EOEPCA/)
+ - [EOEPCA Git Repository](https://github.com/EOEPCA/)
  - [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/)
  - [General EOEPCA Documentation](https://eoepca.readthedocs.io/)
  - [Pre-requisites in EOEPCA Documentaiton](https://eoepca.readthedocs.io/projects/deploy/en/latest/prerequisites/prerequisites-overview/)
