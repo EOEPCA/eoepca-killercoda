@@ -29,6 +29,10 @@
       {
         "title": "Explore the APIs",
         "text": "05-explore-apis.md"
+      },
+      {
+        "title": "Advanced Usage",
+        "text": "06-advanced-usage.md"
       }
     ],
     "finish": {

@@ -46,6 +46,7 @@ Set the environment to reference the localcoda deployment.
 ```bash
 cat <<EOF >.envrc
 export LOCALCODA_ROOT="../localcoda"
+export EXT_DOMAIN_NAME=".<my ip>.nip.io"  # Optional: for external access
 EOF
 ```
 
@@ -78,6 +79,13 @@ The available tutorial directories can be found using
 
 ```bash
 find -name index.json -printf "%h\n"
+```
+
+### External Access
+
+To access tutorials via an external IP, set `EXT_DOMAIN_NAME` in your `.envrc`:
+```bash
+export EXT_DOMAIN_NAME=".<your external ip>.nip.io"
 ```
 
 ### Other commands

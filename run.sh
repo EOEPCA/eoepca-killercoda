@@ -30,5 +30,9 @@ if [ -z "$TUTORIAL" ]; then
 fi
 
 # --- run logic ----------------------------------------------------------------
+BACKEND_OPTS=""
+if [ -n "$EXT_DOMAIN_NAME" ]; then
+  BACKEND_OPTS="-o EXT_DOMAIN_NAME=${EXT_DOMAIN_NAME}"
+fi
 
-"${LOCALCODA_ROOT}"/backend/bin/backend_run.sh -Ldev "$PWD" "${TUTORIAL}/index.json"
+"${LOCALCODA_ROOT}"/backend/bin/backend_run.sh $BACKEND_OPTS "${BIN_DIR}" "${TUTORIAL}/index.json"
