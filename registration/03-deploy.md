@@ -24,14 +24,8 @@ while [[ `curl -s -o /dev/null -w "%{http_code}" "http://registration-api.eoepca
 ```{{exec}}
 
 Once deployed, the Resource Registration OGC Processes API should be accessible at `http://registration-api.eoepca.local`{{}}
+Or via the [Killercoda proxy](http://{{TRAFFIC_HOST1_82}})
 
-We can validate it with the provided script `validation.sh`{{}}
-
-> The harvester components will show as unavailable until after the next steps
-
-```
-bash validation.sh
-```{{exec}}
 
 You can also check the status of the Kubernetes resources directly
 
