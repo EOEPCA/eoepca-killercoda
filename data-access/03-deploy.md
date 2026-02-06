@@ -79,6 +79,8 @@ kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=stac-manager -n
 
 Let's check the status of all resources:
 
+> do not mind if you see some errors in jobs, this is because all systems needs to be up for jobs to complete successfully
+
 ```
 kubectl get all -n data-access
 ```{{exec}}
