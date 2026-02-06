@@ -23,7 +23,7 @@ Query the root endpoint:
 
 ```
 
-curl -s http://localhost:5000 | jq . | head -30
+curl -s http://localhost:5000 | jq . 2>/dev/null | head -30
 
 ```{{exec}}
 
@@ -33,7 +33,7 @@ Get all available collections (product types):
 
 ```
 
-curl -s "http://localhost:5000/collections" | jq . | head -50
+curl -s "http://localhost:5000/collections" | jq . 2>/dev/null | head -50
 
 ```{{exec}}
 
@@ -41,7 +41,7 @@ Filter collections by provider:
 
 ```
 
-curl -s "http://localhost:5000/collections?provider=earth_search" | jq . | head -50
+curl -s "http://localhost:5000/collections?provider=earth_search" | jq . 2>/dev/null | head -50
 
 ```{{exec}}
 
