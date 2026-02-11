@@ -12,7 +12,12 @@ Visit the [EOEPCA Tutorials](https://killercoda.com/eoepca) on Killercoda.
 
 ## Running on localcoda
 
-> localcoda relies upon `docker` for execution, which must already be installed and usable for the current user
+> **NOTES**
+> 
+> * localcoda relies upon `docker` for execution, which must already be installed and usable for the current user
+> * the `Workspace` tutorial must be run using `sysbox` (rather than `docker`)
+>   * ref. locacoda configuration `VIRT_ENGINE=sysbox`
+>   * see [Run localcoda using sysbox](https://github.com/spinto/localcoda/blob/main/docs/ADVANCED_CONFIG.md#run-using-sysbox)
 
 ### Setup
 
