@@ -373,31 +373,35 @@ EOF
     --namespace iam \
     --values - \
     --create-namespace
-  # IAM post-setup - do this in the background
-  # Wait for IAM to be ready
-  echo "waiting IAM to be ready (this may take a while)..." >> /tmp/killercoda_setup.log
-  while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
-  until curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/.well-known/openid-configuration" >/dev/null; do
-    echo "Waiting for Keycloak master Realm readiness..."
-    sleep 5
-  done
-  # Wait for Crossplane Keycloak CRDs to be available
-  echo "waiting for Crossplane Keycloak CRDs (this may also take a while)..." >> /tmp/killercoda_setup.log
-  until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
-    echo "Waiting for Crossplane Keycloak CRD readiness..."
-    sleep 5
-  done
-  # Create eoepca realm
-  iam_create_realm
-  # Create IAM management client
-  iam_create_management_client
-  iam_configure_management_client
-  # Crossplane provider setup
-  iam_setup_crossplane_provider
-  # Test users
-  iam_create_test_users
-  # OPA client
-  iam_create_opa_client
+  # IAM post-setup - direct outputs to dedicated log.
+  (
+    # Wait for IAM to be ready
+    echo "waiting IAM to be ready (this may take a while)..." >> /tmp/killercoda_setup.log
+    while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
+    until curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/.well-known/openid-configuration" >/dev/null; do
+      echo "Waiting for Keycloak master Realm readiness..."
+      sleep 5
+    done
+    # Wait for Crossplane Keycloak CRDs to be available
+    echo "waiting for Crossplane Keycloak CRDs (this may also take a while)..." >> /tmp/killercoda_setup.log
+    until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
+      echo "Waiting for Crossplane Keycloak CRD readiness..."
+      sleep 5
+    done
+    # Initialise Keycloak
+    echo "Initialising Keycloak" >> /tmp/killercoda_setup.log
+    # Create eoepca realm
+    iam_create_realm
+    # Create IAM management client
+    iam_create_management_client
+    iam_configure_management_client
+    # Crossplane provider setup
+    iam_setup_crossplane_provider
+    # Test users
+    iam_create_test_users
+    # OPA client
+    iam_create_opa_client
+  ) &> /tmp/iam_post_setup.log
 fi
 if [[ -e /tmp/assets/waitforpods ]]; then
   echo "waiting for all service pods to be ready (this may take some time)..." >> /tmp/killercoda_setup.log

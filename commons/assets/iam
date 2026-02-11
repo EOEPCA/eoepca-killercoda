@@ -28,11 +28,11 @@ function iam_admin_access_token() {
     )
     if [ $? -ne 0 -o -z "$ACCESS_TOKEN" -o "$ACCESS_TOKEN" = "null" ]; then
       ACCESS_TOKEN=
-      echo "[IAM setup] Failed to get access token, retrying..." >> /tmp/killercoda_setup.log
+      echo "[IAM setup] Failed to get access token, retrying..."
       sleep 10
     fi
   done
-  echo "Access Token: ${ACCESS_TOKEN:0:20}..." >> /tmp/killercoda_setup.log
+  echo "Access Token: ${ACCESS_TOKEN:0:20}..."
 }
 
 function iam_create_realm() {
@@ -44,7 +44,7 @@ function iam_create_realm() {
     --silent --show-error \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
-    -d @- <<EOF >> /tmp/killercoda_setup.log
+    -d @- <<EOF
 {
   "realm": "${REALM}",
   "enabled": true,
@@ -62,13 +62,13 @@ curl -X PUT "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/master" \
   }'
 
   if [ $? -eq 0 ]; then
-    echo "[IAM setup] Created EOEPCA realm" >> /tmp/killercoda_setup.log
+    echo "[IAM setup] Created EOEPCA realm"
     until curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/${REALM}/.well-known/openid-configuration" >/dev/null; do
       echo "Waiting for Keycloak ${REALM} Realm readiness..."
       sleep 5
     done
   else
-    echo "[IAM setup] Failed to create EOEPCA realm" >> /tmp/killercoda_setup.log
+    echo "[IAM setup] Failed to create EOEPCA realm"
   fi
 }
 
