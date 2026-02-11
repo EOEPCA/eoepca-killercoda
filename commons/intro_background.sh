@@ -88,64 +88,6 @@ if [[ -e /tmp/assets/apisix ]]; then
     --set apisix.ssl.enabled=true \
     --set ingress-controller.enabled=true
 fi
-if [[ -e /tmp/assets/iam ]]; then
-  echo "installing IAM..." >> /tmp/killercoda_setup.log
-  keycloak_host() {
-    port="$(grep auth /tmp/assets/killercodaproxy | awk '{print $1}')"
-    sed "s#http://PORT#$port#" /etc/killercoda/host
-  }
-  source ~/.eoepca/state
-  export REALM="eoepca"
-  export KEYCLOAK_HOST="$(keycloak_host)"
-  mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
-export REALM="${REALM}"
-export KEYCLOAK_HOST="${KEYCLOAK_HOST}"
-export OIDC_ISSUER_URL="${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}"
-export KEYCLOAK_ADMIN_USER="admin"
-export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
-export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
-export OPA_CLIENT_ID="opa"
-export OPA_CLIENT_SECRET="$(openssl rand -hex 16)"
-export KEYCLOAK_TEST_USER="eoepcauser"
-export KEYCLOAK_TEST_ADMIN="eoepcaadmin"
-export KEYCLOAK_TEST_PASSWORD="eoepcapassword"
-EOF
-  source ~/.eoepca/state
-  source /tmp/assets/iam
-  kubectl create namespace iam
-  # Secrets
-  iam_create_secrets
-  # Helm chart
-  helm repo add eoepca https://eoepca.github.io/helm-charts
-  helm repo update eoepca
-  iam_helm_values | helm upgrade -i iam eoepca/iam-bb \
-    --version 2.0.0 \
-    --namespace iam \
-    --values - \
-    --create-namespace
-  # IAM post-setup - do this in the background
-(
-  # Wait for IAM to be ready
-  while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
-  # Wait for Crossplane Keycloak CRDs to be available
-  echo "[IAM setup] Waiting for Crossplane Keycloak CRDs..." >> /tmp/killercoda_setup.log
-  until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
-    sleep 5
-  done
-  # Create eoepca realm
-  iam_create_realm
-  # Create IAM management client
-  iam_create_management_client
-  iam_configure_management_client
-  # Crossplane provider setup
-  iam_setup_crossplane_provider
-  # Test users
-  iam_create_test_users
-  # OPA client
-  iam_create_opa_client
-  ) >/tmp/iam-post-setup.log &
-fi
-
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
   #to work with killercoda proxy
@@ -153,6 +95,8 @@ if [[ -e /tmp/assets/killercodaproxy ]]; then
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
   #Install nginx with substitution mode
   apt-get install -y nginx libnginx-mod-http-subs-filter
+  #Create logs directories
+  mkdir -p /var/log/nginx/
   #source eoepca state - e.g. for HTTP_SCHEME
   source ~/.eoepca/state
   #write nginx configuration
@@ -269,29 +213,6 @@ if [[ -e /tmp/assets/readwritemany ]]; then
   kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/docs/prerequisites/hostpath-provisioner.yaml
   mkdir -p ~/.eoepca && echo 'export SHARED_STORAGECLASS="standard"'>>~/.eoepca/state
 fi
-if [[ -e /tmp/assets/crossplane ]]; then
-  # Deploy Crossplane
-  echo installing crossplane...  >> /tmp/killercoda_setup.log
-  # Deploy Crossplane via helm chart
-  helm upgrade --install crossplane crossplane \
-    --repo https://charts.crossplane.io/stable \
-    --version 2.0.2 \
-    --namespace crossplane-system \
-    --create-namespace \
-    --set provider.defaultActivations={}
-  # Secret with Minio credentials for Crossplane S3 provider
-  source ~/.eoepca/state
-  kubectl create secret generic minio-secret \
-    --from-literal=AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" \
-    --from-literal=AWS_SECRET_ACCESS_KEY="$S3_SECRET_KEY" \
-    --from-literal=AWS_ENDPOINT_URL="$S3_ENDPOINT" \
-    --from-literal=AWS_REGION="$S3_REGION" \
-    --namespace crossplane-system
-  # Deploy providers and associated setup
-  until kubectl apply -f /tmp/assets/crossplane &>/dev/null; do
-    sleep 2
-  done &
-fi
 if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
@@ -391,6 +312,94 @@ if [[ -e /tmp/assets/k9s ]]; then
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
   sudo apt install -y ./k9s_linux_amd64.deb
   rm k9s_linux_amd64.deb
+fi
+if [[ -e /tmp/assets/crossplane ]]; then
+  # Deploy Crossplane
+  echo installing crossplane...  >> /tmp/killercoda_setup.log
+  # Deploy Crossplane via helm chart
+  helm upgrade --install crossplane crossplane \
+    --repo https://charts.crossplane.io/stable \
+    --version 2.0.2 \
+    --namespace crossplane-system \
+    --create-namespace \
+    --set provider.defaultActivations={}
+  # Secret with Minio credentials for Crossplane S3 provider
+  source ~/.eoepca/state
+  kubectl create secret generic minio-secret \
+    --from-literal=AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY" \
+    --from-literal=AWS_SECRET_ACCESS_KEY="$S3_SECRET_KEY" \
+    --from-literal=AWS_ENDPOINT_URL="$S3_ENDPOINT" \
+    --from-literal=AWS_REGION="$S3_REGION" \
+    --namespace crossplane-system
+  # Deploy providers and associated setup
+  echo "waiting for crossplane to start (this may take a while)..."  >> /tmp/killercoda_setup.log
+  until kubectl apply -f /tmp/assets/crossplane &>/dev/null; do
+    sleep 2
+  done
+fi
+if [[ -e /tmp/assets/iam ]]; then
+  echo "installing IAM..." >> /tmp/killercoda_setup.log
+  keycloak_host() {
+    port="$(grep auth /tmp/assets/killercodaproxy | awk '{print $1}')"
+    sed "s#http://PORT#$port#" /etc/killercoda/host
+  }
+  source ~/.eoepca/state
+  export REALM="eoepca"
+  export KEYCLOAK_HOST="$(keycloak_host)"
+  mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
+export REALM="${REALM}"
+export KEYCLOAK_HOST="${KEYCLOAK_HOST}"
+export OIDC_ISSUER_URL="${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}"
+export KEYCLOAK_ADMIN_USER="admin"
+export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
+export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"
+export OPA_CLIENT_ID="opa"
+export OPA_CLIENT_SECRET="$(openssl rand -hex 16)"
+export KEYCLOAK_TEST_USER="eoepcauser"
+export KEYCLOAK_TEST_ADMIN="eoepcaadmin"
+export KEYCLOAK_TEST_PASSWORD="eoepcapassword"
+EOF
+  source ~/.eoepca/state
+  source /tmp/assets/iam
+  kubectl create namespace iam
+  # Secrets
+  iam_create_secrets
+  # Helm chart
+  helm repo add eoepca https://eoepca.github.io/helm-charts
+  helm repo update eoepca
+  iam_helm_values | helm upgrade -i iam eoepca/iam-bb \
+    --version 2.0.0 \
+    --namespace iam \
+    --values - \
+    --create-namespace
+  # IAM post-setup - do this in the background
+  # Wait for IAM to be ready
+  echo "waiting IAM to be ready (this may take a while)..." >> /tmp/killercoda_setup.log
+  while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
+  until curl -sf "http://auth.eoepca.local/realms/master/.well-known/openid-configuration" >/dev/null; do
+    echo "Waiting for Keycloak OIDC discovery..."
+    sleep 2
+  done
+  # Wait for Crossplane Keycloak CRDs to be available
+  echo "waiting for Crossplane Keycloak CRDs (this may also take a while)..." >> /tmp/killercoda_setup.log
+  until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
+    sleep 5
+  done
+  # Create eoepca realm
+  iam_create_realm
+  # Create IAM management client
+  iam_create_management_client
+  iam_configure_management_client
+  # Crossplane provider setup
+  iam_setup_crossplane_provider
+  # Test users
+  iam_create_test_users
+  # OPA client
+  iam_create_opa_client
+fi
+if [[ -e /tmp/assets/waitforpods ]]; then
+  echo "waiting for all service pods to be ready (this may take some time)..." >> /tmp/killercoda_setup.log
+  kubectl wait --for=condition=Ready pod --all --all-namespaces --timeout=-1s >> /tmp/killercoda_setup.log
 fi
 #Stop the foreground script (we may finish our script before tail starts in the foreground, so we need to wait for it to start if it does not exist)
 while ! killall tail; do sleep 1; done
