@@ -32,22 +32,24 @@ fi
 # --- sysbox requirement check -------------------------------------------------
 
 # Workspace tutorial requires sysbox due to CSI driver mount propagation requirements
-if [ "$TUTORIAL" = "workspace" ]; then
-  if [ -f "${LOCALCODA_ROOT}/backend/cfg/conf" ]; then
-    source "${LOCALCODA_ROOT}/backend/cfg/conf"
-  fi
+(
+  if [ "$TUTORIAL" = "workspace" ]; then
+    if [ -f "${LOCALCODA_ROOT}/backend/cfg/conf" ]; then
+      source "${LOCALCODA_ROOT}/backend/cfg/conf"
+    fi
 
-  if [ "$VIRT_ENGINE" != "sysbox" ]; then
-    echo "ERROR: The workspace tutorial requires sysbox virtualisation engine."
-    echo ""
-    echo "The CSI-rclone plugin used by the Workspace building block requires"
-    echo "mount propagation features that are only available with sysbox."
-    echo ""
-    echo ""
-    echo "See: https://github.com/EOEPCA/eoepca-killercoda#running-on-localcoda"
-    exit 1
+    if [ "$VIRT_ENGINE" != "sysbox" ]; then
+      echo "ERROR: The workspace tutorial requires sysbox virtualisation engine."
+      echo ""
+      echo "The CSI-rclone plugin used by the Workspace building block requires"
+      echo "mount propagation features that are only available with sysbox."
+      echo ""
+      echo ""
+      echo "See: https://github.com/EOEPCA/eoepca-killercoda#running-on-localcoda"
+      exit 1
+    fi
   fi
-fi
+) || exit $?
 
 # --- run logic ----------------------------------------------------------------
 BACKEND_OPTS=""
