@@ -47,6 +47,63 @@ export HTTP_SCHEME="http"
 export INGRESS_HOST="eoepca.local"
 EOF
 fi
+if [[ -e /tmp/assets/ignoreresrequests ]]; then
+  ### Avoid applying strict resource requests - to avoid premature exhaustion of node resources
+  ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
+  echo configuring kyverno to ignore resource requests...  >> /tmp/killercoda_setup.log
+  helm repo add kyverno https://kyverno.github.io/kyverno/
+  helm repo update kyverno
+  helm upgrade -i kyverno kyverno/kyverno \
+    --version 3.6.2 \
+    --namespace kyverno \
+    --create-namespace --wait
+  # Create the cluster policy to set minimal resource requests
+  # Note that, rather than zero, we actually set minimal cpu/memory requests to avoid potential issues
+  # with certain workloads that may not handle zero resource requests gracefully.
+  cat - <<'EOF' | kubectl apply -f -
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remove-resource-requests
+spec:
+  rules:
+    - name: remove-resource-requests
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        foreach:
+          # --- Containers ---
+          - list: "to_array(request.object.spec.containers)"
+            patchStrategicMerge:
+              spec:
+                containers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "1m"
+                        memory: "1M"
+
+          # --- Init containers ---
+          - list: "to_array(request.object.spec.initContainers)"
+            preconditions:
+              all:
+                - key: "{{ length(to_array(request.object.spec.initContainers)) }}"
+                  operator: GreaterThan
+                  value: 0
+            patchStrategicMerge:
+              spec:
+                initContainers:
+                  - name: "{{ element.name }}"
+                    resources:
+                      requests:
+                        cpu: "1m"
+                        memory: "1M"
+EOF
+kubectl wait --for=condition=Ready clusterpolicy/remove-resource-requests --timeout=30s
+fi
 if [[ -e /tmp/assets/gomplate.7z ]]; then
   echo "installing gomplate..." >> /tmp/killercoda_setup.log
   #Gomplate is a dependency of the deployment tool
@@ -212,62 +269,6 @@ if [[ -e /tmp/assets/readwritemany ]]; then
   echo enabling ReadWriteMany StorageClass..  >> /tmp/killercoda_setup.log
   kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/docs/prerequisites/hostpath-provisioner.yaml
   mkdir -p ~/.eoepca && echo 'export SHARED_STORAGECLASS="standard"'>>~/.eoepca/state
-fi
-if [[ -e /tmp/assets/ignoreresrequests ]]; then
-  ### Avoid applyiing resource limits, otherwise Clarissian will not work as limits are hardcoded in there...
-  ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
-  echo configuring kyverno to ignore resource limits...  >> /tmp/killercoda_setup.log
-  helm repo add kyverno https://kyverno.github.io/kyverno/
-  helm repo update kyverno
-  helm upgrade -i kyverno kyverno/kyverno \
-    --version 3.6.2 \
-    --namespace kyverno \
-    --create-namespace
-  # Create the cluster policy to remove resource limits/requests
-  # Note that, rather than zero, we actually set minimal cpu/memory requests to avoid potential issues
-  # with certain workloads that may not handle zero resource requests gracefully.
-  cat - <<'EOF' | kubectl apply -f -
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
-metadata:
-  name: remove-resource-requests
-spec:
-  rules:
-    - name: remove-resource-requests
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      mutate:
-        foreach:
-          # --- Containers ---
-          - list: "to_array(request.object.spec.containers)"
-            patchStrategicMerge:
-              spec:
-                containers:
-                  - name: "{{ element.name }}"
-                    resources:
-                      requests:
-                        cpu: "1m"
-                        memory: "1M"
-
-          # --- Init containers ---
-          - list: "to_array(request.object.spec.initContainers)"
-            preconditions:
-              all:
-                - key: "{{ length(to_array(request.object.spec.initContainers)) }}"
-                  operator: GreaterThan
-                  value: 0
-            patchStrategicMerge:
-              spec:
-                initContainers:
-                  - name: "{{ element.name }}"
-                    resources:
-                      requests:
-                        cpu: "1m"
-                        memory: "1M"
-EOF
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
   echo enabling python virtual environments... >> /tmp/killercoda_setup.log
