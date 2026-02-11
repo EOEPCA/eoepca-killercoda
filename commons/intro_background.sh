@@ -377,13 +377,14 @@ EOF
   # Wait for IAM to be ready
   echo "waiting IAM to be ready (this may take a while)..." >> /tmp/killercoda_setup.log
   while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
-  until curl -sf "http://auth.eoepca.local/realms/master/.well-known/openid-configuration" >/dev/null; do
-    echo "Waiting for Keycloak OIDC discovery..."
-    sleep 2
+  until curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/.well-known/openid-configuration" >/dev/null; do
+    echo "Waiting for Keycloak master Realm readiness..."
+    sleep 5
   done
   # Wait for Crossplane Keycloak CRDs to be available
   echo "waiting for Crossplane Keycloak CRDs (this may also take a while)..." >> /tmp/killercoda_setup.log
   until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
+    echo "Waiting for Crossplane Keycloak CRD readiness..."
     sleep 5
   done
   # Create eoepca realm
