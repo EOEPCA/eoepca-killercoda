@@ -49,7 +49,7 @@ cd eoepca-killercoda
 Set the environment to reference the localcoda deployment.
 
 ```bash
-cat <<EOF >.envrc
+cat <<EOF >.env
 export LOCALCODA_ROOT="../localcoda"
 export EXT_DOMAIN_NAME=".<my ip>.nip.io"  # Optional: for external access
 EOF
@@ -88,7 +88,7 @@ find -name index.json -printf "%h\n"
 
 ### External Access
 
-To access tutorials via an external IP, set `EXT_DOMAIN_NAME` in your `.envrc`:
+To access tutorials via an external IP, set `EXT_DOMAIN_NAME` in your `.env`:
 ```bash
 export EXT_DOMAIN_NAME=".<your external ip>.nip.io"
 ```

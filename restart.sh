@@ -13,7 +13,7 @@ trap "onExit" EXIT
 
 # --- environment setup --------------------------------------------------------
 
-if [ -f .envrc ] ; then source .envrc; fi
+if [ -f .env ] ; then source .env; fi
 
 # --- argument handling --------------------------------------------------------
 
