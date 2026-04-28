@@ -23,6 +23,7 @@ popd
 
 We can check if our ClusterIssuer is present:
 ```
+sleep 5
 kubectl --namespace cert-manager get clusterissuer -o wide
 ```{{exec}}
 
