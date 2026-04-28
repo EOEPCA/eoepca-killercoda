@@ -41,6 +41,12 @@ helm upgrade -i minio minio/minio \
   --create-namespace
 ```{{exec}}
 
+Apply additional ingress configuration:
+
+```bash
+kubectl -n minio apply -f ingress-plugin-config.yaml
+```{{exec}}
+
 We wait until the all pods in the `minio`{{}} namespace are ready:
 ```
 kubectl --namespace minio wait pod --all --timeout=10m --for=condition=Ready
@@ -73,6 +79,7 @@ mc alias set minio-local http://minio.eoepca.local/ ${MINIO_USER} ${MINIO_PASSWO
 
 Create Access Key:
 ```
+sleep 5
 mc admin accesskey create minio-local/ user --access-key ${S3_ACCESS_KEY} --secret-key ${S3_SECRET_KEY}
 ```{{exec}}
 
