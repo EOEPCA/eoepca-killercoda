@@ -341,8 +341,14 @@ fi
 if [[ -e /tmp/assets/iam ]]; then
   echo "installing IAM..." >> /tmp/killercoda_setup.log
   keycloak_host() {
-    port="$(grep auth /tmp/assets/killercodaproxy | awk '{print $1}')"
-    sed "s#http://PORT#$port#" /etc/killercoda/host
+    port="$(
+      awk '$2 == "auth.eoepca.local" { print $1; exit }' /tmp/assets/killercodaproxy
+    )"
+    if [[ -z "$port" ]]; then
+      echo "ERROR: auth.eoepca.local not found in /tmp/assets/killercodaproxy" >&2
+      return 1
+    fi
+    sed "s#PORT#$port#" /etc/killercoda/host
   }
   source ~/.eoepca/state
   export REALM="eoepca"
