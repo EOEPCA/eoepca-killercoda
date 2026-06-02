@@ -348,7 +348,9 @@ if [[ -e /tmp/assets/iam ]]; then
       echo "ERROR: auth.eoepca.local not found in /tmp/assets/killercodaproxy" >&2
       return 1
     fi
-    sed "s#PORT#$port#" /etc/killercoda/host
+
+    sed "s#PORT#$port#" /etc/killercoda/host \
+      | sed -E 's#^https?://##; s#/$##'
   }
   source ~/.eoepca/state
   export REALM="eoepca"
