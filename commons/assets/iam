@@ -114,11 +114,18 @@ EOF
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "Content-Type: application/json" \
     -d "${create_client_payload}" \
-    "${HTTP_SCHEME}://${KEYCLOAK_HOST}/admin/realms/${REALM}/clients"
+    "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/${REALM}/clients"
 }
 
 function iam_configure_management_client() {
   curl -JOLs https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/scripts/utils/crossplane-client-roles.sh
+
+  sed -i \
+    -e 's#${HTTP_SCHEME}://${KEYCLOAK_HOST}#${HTTP_SCHEME}://auth.${INGRESS_HOST}#g' \
+    -e 's#http://${KEYCLOAK_HOST}#${HTTP_SCHEME}://auth.${INGRESS_HOST}#g' \
+    -e 's#https://${KEYCLOAK_HOST}#${HTTP_SCHEME}://auth.${INGRESS_HOST}#g' \
+    crossplane-client-roles.sh
+
   bash crossplane-client-roles.sh "${IAM_MANAGEMENT_CLIENT_ID}"
   rm crossplane-client-roles.sh
 }
