@@ -118,16 +118,61 @@ EOF
 }
 
 function iam_configure_management_client() {
-  curl -JOLs https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/scripts/utils/crossplane-client-roles.sh
+  iam_admin_access_token
 
-  sed -i \
-    -e 's#${HTTP_SCHEME}://${KEYCLOAK_HOST}#${HTTP_SCHEME}://auth.${INGRESS_HOST}#g' \
-    -e 's#http://${KEYCLOAK_HOST}#${HTTP_SCHEME}://auth.${INGRESS_HOST}#g' \
-    -e 's#https://${KEYCLOAK_HOST}#${HTTP_SCHEME}://auth.${INGRESS_HOST}#g' \
-    crossplane-client-roles.sh
+  IAM_CLIENT_UUID=$(
+    curl -s \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/${REALM}/clients?clientId=${IAM_MANAGEMENT_CLIENT_ID}" |
+      jq -r '.[0].id'
+  )
 
-  bash crossplane-client-roles.sh "${IAM_MANAGEMENT_CLIENT_ID}"
-  rm crossplane-client-roles.sh
+  SA_USER_ID=$(
+    curl -s \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/${REALM}/clients/${IAM_CLIENT_UUID}/service-account-user" |
+      jq -r '.id'
+  )
+
+  REALM_MGMT_ID=$(
+    curl -s \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/${REALM}/clients?clientId=realm-management" |
+      jq -r '.[0].id'
+  )
+
+  ROLES_JSON=$(
+    curl -s \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/${REALM}/clients/${REALM_MGMT_ID}/roles" |
+      jq '[.[] | select(.name as $n | [
+        "view-realm",
+        "manage-realm",
+        "view-users",
+        "manage-users",
+        "query-users",
+        "view-clients",
+        "manage-clients",
+        "query-clients"
+      ] | index($n))]'
+  )
+
+  status=$(
+    curl -s -o /tmp/assign-iam-management-roles.out -w "%{http_code}" \
+      -X POST \
+      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+      -H "Content-Type: application/json" \
+      -d "${ROLES_JSON}" \
+      "${HTTP_SCHEME}://auth.${INGRESS_HOST}/admin/realms/${REALM}/users/${SA_USER_ID}/role-mappings/clients/${REALM_MGMT_ID}"
+  )
+
+  if [ "$status" != "204" ]; then
+    echo "[IAM setup] Failed to assign realm-management roles to ${IAM_MANAGEMENT_CLIENT_ID}; HTTP $status"
+    cat /tmp/assign-iam-management-roles.out
+    return 1
+  fi
+
+  echo "[IAM setup] Assigned realm-management roles to ${IAM_MANAGEMENT_CLIENT_ID}"
 }
 
 function iam_setup_crossplane_provider() {
