@@ -45,6 +45,14 @@ The configuration script generates two files:
 - `generated-values.yaml` - Helm values for the Application Hub
 - `generated-ingress.yaml` - Ingress configuration
 
+> TODO: Remove this when fixed properly....
+> Only run this if you are running from `lc.tutorials.eoepca.org`
+
+```bash
+source ~/.eoepca/state
+sed -i "s#http://${KEYCLOAK_HOST}#https://${KEYCLOAK_HOST}#g" generated-values.yaml
+```
+
 You can inspect the generated values:
 
 ```bash
