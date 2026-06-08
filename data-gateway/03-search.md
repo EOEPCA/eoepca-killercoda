@@ -87,6 +87,6 @@ eodag -vv search \
   --productType S2_MSI_L1C \
   --box 1 43 2 44 \
   --start 2024-01-01 \
-  --end 2024-01-02 \
+  --end 2024-01-05 \
   --storage verbose_results.geojson
 ```{{exec}}
