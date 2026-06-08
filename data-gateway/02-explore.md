@@ -37,7 +37,7 @@ List product types from a specific satellite platform:
 
 ```
 
-eodag list --platform SENTINEL2 --no-fetch
+eodag list --platform SENTINEL --no-fetch
 
 ```{{exec}}
 
