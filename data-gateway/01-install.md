@@ -16,7 +16,7 @@ pip install --upgrade pip
 EODAG is available via pip. We'll install it with the server extras to enable the STAC REST API functionality:
 
 ```
-pip install eodag[server]
+pip install "eodag[server]<4"
 ```{{exec}}
 
 This installs the core EODAG library plus the dependencies needed to run it as a STAC server.
