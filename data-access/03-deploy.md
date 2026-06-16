@@ -46,7 +46,8 @@ helm repo update stac-manager
 helm upgrade -i stac-manager stac-manager/stac-manager \
   --version 0.0.11 \
   --namespace data-access \
-  --values stac-manager/generated-values.yaml
+  --values stac-manager/generated-values.yaml \
+  --set service.port=8080
 ```{{exec}}
 
 ### Deploy EOAPI Maps Plugin
