@@ -309,7 +309,7 @@ if [[ -e /tmp/assets/postgrespostgis ]]; then
 fi
 if [[ -e /tmp/assets/k9s ]]; then
   echo installing k9s kubernetes CLI... >> /tmp/killercoda_setup.log
-  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_linux_amd64.deb
+  curl -JOLs https://github.com/derailed/k9s/releases/download/v0.51.0/k9s_linux_amd64.deb
   [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
   sudo apt install -y ./k9s_linux_amd64.deb
   rm k9s_linux_amd64.deb
