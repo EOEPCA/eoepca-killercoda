@@ -43,9 +43,10 @@ Each item contains geometry, temporal properties, and assets pointing to Cloud-O
 First, register the collection with the Resource Discovery STAC API:
 
 ```
-curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/metadata:main/items' \
+code=$(curl -s -o /tmp/datacube-collection-post.json -w "%{http_code}" -X POST 'http://resource-catalogue.eoepca.local/stac/collections/metadata:main/items' \
   -H "Content-Type: application/json" \
-  -d @collections/datacube-ready-collection/collections.json | jq '.id'
+  -d @collections/datacube-ready-collection/collections.json)
+echo "sentinel-2-datacube: HTTP $code"
 ```{{exec}}
 
 ### Ingest the Items
@@ -54,9 +55,11 @@ Add the items to the collection:
 
 ```
 cat collections/datacube-ready-collection/items.json | jq -c '.[]' | while read item; do
-  curl -X POST 'http://resource-catalogue.eoepca.local/stac/collections/sentinel-2-datacube/items' \
+  item_id=$(echo "$item" | jq -r '.id')
+  code=$(curl -s -o /tmp/datacube-item-post.json -w "%{http_code}" -X POST 'http://resource-catalogue.eoepca.local/stac/collections/sentinel-2-datacube/items' \
     -H "Content-Type: application/json" \
-    -d "$item" | jq '.id'
+    -d "$item")
+  echo "$item_id: HTTP $code"
 done
 ```{{exec}}
 

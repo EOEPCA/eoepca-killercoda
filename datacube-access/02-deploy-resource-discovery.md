@@ -42,8 +42,17 @@ kubectl apply -f generated-ingress.yaml
 Wait for the Resource Discovery service to be ready:
 
 ```
-while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
-echo "Resource Discovery is ready!"
+for i in {1..12}; do
+  code=$(curl -s -o /tmp/resource-catalogue-stac.json -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac" || true)
+  echo "Attempt $i/12: HTTP $code"
+  if [ "$code" = "200" ]; then
+    echo "Resource Discovery is ready!"
+    break
+  fi
+  kubectl get pods -n resource-discovery
+  sleep 30
+done
+test "$code" = "200"
 ```{{exec}}
 
 ### Verify Deployment
