@@ -2,6 +2,8 @@
   "title": "EOEPCA Processing BB",
   "description": "Data processing with different engines",
   "items": [
-    { "path": "toil" }
+    { "path": "toil" },
+    { "path": "calrissian" },
+    { "path": "openeo-geotrellis" }
   ]
 }
