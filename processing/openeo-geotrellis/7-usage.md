@@ -1,4 +1,4 @@
-Open EO users will not use the API directly, but mostly use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/) or the [OpenEO Web Editor](https://github.com/Open-EO/openeo-web-editor).
+OpenEO users will not use the API directly, but mostly use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/) or the [OpenEO Web Editor](https://github.com/Open-EO/openeo-web-editor).
 
 If we want to use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/), we can configure a python virtual environment and install it via
 
@@ -15,7 +15,7 @@ We can then run a basic processing from python. First we run python
 python3
 ```{{exec}}
 
-then we import Open client library abn all the other required libraries via
+then we import the OpenEO client library and all the other required libraries via
 
 ```
 import openeo
@@ -147,5 +147,4 @@ deactivate
 ```{{exec}}
 
 If you want to use the visual OpenEO Web Editor, you can connect to your instance via the [OpenEO Web Editor public Demo instance](https://editor.openeo.org/?server={{TRAFFIC_HOST1_81}}), and then authenticate with the user `testuser`{{copy}} and password `testuser123`{{copy}}. In the Web Editor, you can replicate what was done above by dragging boxes.
-
 

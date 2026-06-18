@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Localcoda/k3s runs inside a user namespace with a limited subordinate ID range.
+# The OpenEO GeoTrellis image contains one tiny layer with /home/jenkins owned by
+# very large Jenkins UID/GID values, which prevents k3s containerd from unpacking
+# the image. Fetch the image without unpacking, rewrite that small layer with
+# root-owned tar headers, and register the patched image locally for CRI.
+
+IMAGE_REPO="${OPENEO_GEOTRELLIS_IMAGE_REPO:-vito-docker.artifactory.vgt.vito.be/openeo-geotrellis-kube}"
+SOURCE_TAG="${OPENEO_GEOTRELLIS_SOURCE_TAG:-20251217-3348}"
+PATCHED_TAG="${OPENEO_GEOTRELLIS_PATCHED_TAG:-localcoda}"
+BAD_DIFF_ID="${OPENEO_GEOTRELLIS_BAD_DIFF_ID:-sha256:98c4808a579380f51d7ae39f1694f0bbbfe587662a4ccb85c47fb3ec0016ca2c}"
+
+SOURCE_IMAGE="${IMAGE_REPO}:${SOURCE_TAG}"
+PATCHED_IMAGE="${IMAGE_REPO}:${PATCHED_TAG}"
+WORK_DIR="${OPENEO_GEOTRELLIS_PATCH_WORK_DIR:-/tmp/openeo-geotrellis-image-fix}"
+FETCH_LOG="${WORK_DIR}/fetch.log"
+IMPORT_LOG="${WORK_DIR}/import.log"
+UNPACK_LOG="${WORK_DIR}/unpack.log"
+
+if crictl inspecti "${PATCHED_IMAGE}" >/dev/null 2>&1; then
+  echo "Patched OpenEO GeoTrellis image already present: ${PATCHED_IMAGE}"
+  exit 0
+fi
+
+mkdir -p "${WORK_DIR}"
+rm -rf "${WORK_DIR}/root" "${WORK_DIR}/oci"
+
+echo "Fetching ${SOURCE_IMAGE} into k3s containerd without unpacking..."
+if ! k3s ctr -n k8s.io content fetch "${SOURCE_IMAGE}" >"${FETCH_LOG}" 2>&1; then
+  echo "Failed to fetch ${SOURCE_IMAGE}. Last fetch log lines:" >&2
+  tail -80 "${FETCH_LOG}" >&2 || true
+  exit 1
+fi
+
+TOKEN="$(
+  curl -fsSL \
+    "https://artifactory.vgt.vito.be/artifactory/api/docker/vito-docker/v2/token?service=artifactory.vgt.vito.be&scope=repository:openeo-geotrellis-kube:pull" \
+    | jq -r .token
+)"
+
+MANIFEST="$(
+  curl -fsSL \
+    -H "Authorization: Bearer ${TOKEN}" \
+    -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+    "https://vito-docker.artifactory.vgt.vito.be/v2/openeo-geotrellis-kube/manifests/${SOURCE_TAG}"
+)"
+
+CONFIG_DIGEST="$(jq -r .config.digest <<<"${MANIFEST}")"
+curl -fsSL \
+  -H "Authorization: Bearer ${TOKEN}" \
+  "https://vito-docker.artifactory.vgt.vito.be/v2/openeo-geotrellis-kube/blobs/${CONFIG_DIGEST}" \
+  -o "${WORK_DIR}/config.orig.json"
+
+LAYER_INDEX="$(
+  jq --arg diff "${BAD_DIFF_ID}" '.rootfs.diff_ids | index($diff)' "${WORK_DIR}/config.orig.json"
+)"
+
+if [[ "${LAYER_INDEX}" == "null" ]]; then
+  echo "Image no longer contains the known high-UID layer; tagging fetched image for local use."
+  MANIFEST_ORIG="sha256:$(printf '%s' "${MANIFEST}" | sha256sum | awk '{print $1}')"
+  k3s ctr -n k8s.io images tag "${SOURCE_IMAGE}" "${PATCHED_IMAGE}" >/dev/null
+  k3s ctr -n k8s.io images label "${PATCHED_IMAGE}" io.cri-containerd.image=managed >/dev/null
+  k3s ctr -n k8s.io snapshots unpack "${MANIFEST_ORIG}" >"${UNPACK_LOG}" 2>&1 || true
+  exit 0
+fi
+
+BAD_LAYER="$(jq -r --argjson i "${LAYER_INDEX}" '.layers[$i].digest' <<<"${MANIFEST}")"
+curl -fsSL \
+  -H "Authorization: Bearer ${TOKEN}" \
+  "https://vito-docker.artifactory.vgt.vito.be/v2/openeo-geotrellis-kube/blobs/${BAD_LAYER}" \
+  -o "${WORK_DIR}/bad-layer.tar.gz"
+
+mkdir -p "${WORK_DIR}/root" "${WORK_DIR}/oci/blobs/sha256"
+gzip -cd "${WORK_DIR}/bad-layer.tar.gz" \
+  | tar -C "${WORK_DIR}/root" --no-same-owner -xf -
+
+tar \
+  --sort=name \
+  --numeric-owner \
+  --owner=0 \
+  --group=0 \
+  --mtime="UTC 2023-11-29 15:50:00" \
+  -C "${WORK_DIR}/root" \
+  -cf "${WORK_DIR}/fixed-layer.tar" .
+gzip -n -c "${WORK_DIR}/fixed-layer.tar" >"${WORK_DIR}/fixed-layer.tar.gz"
+
+FIXED_LAYER_DIFF="sha256:$(sha256sum "${WORK_DIR}/fixed-layer.tar" | awk '{print $1}')"
+FIXED_LAYER_DIGEST="sha256:$(sha256sum "${WORK_DIR}/fixed-layer.tar.gz" | awk '{print $1}')"
+FIXED_LAYER_SIZE="$(wc -c <"${WORK_DIR}/fixed-layer.tar.gz")"
+
+jq \
+  --argjson i "${LAYER_INDEX}" \
+  --arg diff "${FIXED_LAYER_DIFF}" \
+  '.rootfs.diff_ids[$i] = $diff' \
+  "${WORK_DIR}/config.orig.json" >"${WORK_DIR}/config.json"
+
+CONFIG_SHA="$(sha256sum "${WORK_DIR}/config.json" | awk '{print $1}')"
+CONFIG_SIZE="$(wc -c <"${WORK_DIR}/config.json")"
+CONFIG_NEW="sha256:${CONFIG_SHA}"
+
+jq \
+  --argjson i "${LAYER_INDEX}" \
+  --arg config "${CONFIG_NEW}" \
+  --argjson csize "${CONFIG_SIZE}" \
+  --arg layer "${FIXED_LAYER_DIGEST}" \
+  --argjson lsize "${FIXED_LAYER_SIZE}" \
+  '.config.digest = $config
+    | .config.size = $csize
+    | .layers[$i].digest = $layer
+    | .layers[$i].size = $lsize' \
+  <<<"${MANIFEST}" >"${WORK_DIR}/manifest.json"
+
+MANIFEST_SHA="$(sha256sum "${WORK_DIR}/manifest.json" | awk '{print $1}')"
+MANIFEST_SIZE="$(wc -c <"${WORK_DIR}/manifest.json")"
+MANIFEST_NEW="sha256:${MANIFEST_SHA}"
+
+cp "${WORK_DIR}/fixed-layer.tar.gz" "${WORK_DIR}/oci/blobs/sha256/${FIXED_LAYER_DIGEST#sha256:}"
+cp "${WORK_DIR}/config.json" "${WORK_DIR}/oci/blobs/sha256/${CONFIG_SHA}"
+cp "${WORK_DIR}/manifest.json" "${WORK_DIR}/oci/blobs/sha256/${MANIFEST_SHA}"
+printf '{"imageLayoutVersion":"1.0.0"}\n' >"${WORK_DIR}/oci/oci-layout"
+jq -n \
+  --arg digest "${MANIFEST_NEW}" \
+  --argjson size "${MANIFEST_SIZE}" \
+  --arg ref "${PATCHED_IMAGE}" \
+  '{
+    schemaVersion: 2,
+    manifests: [
+      {
+        mediaType: "application/vnd.docker.distribution.manifest.v2+json",
+        digest: $digest,
+        size: $size,
+        annotations: {"org.opencontainers.image.ref.name": $ref}
+      }
+    ]
+  }' >"${WORK_DIR}/oci/index.json"
+
+tar -C "${WORK_DIR}/oci" -cf "${WORK_DIR}/openeo-geotrellis-patched.oci.tar" .
+
+echo "Importing patched image metadata..."
+if ! k3s ctr -n k8s.io images import "${WORK_DIR}/openeo-geotrellis-patched.oci.tar" >"${IMPORT_LOG}" 2>&1; then
+  echo "Failed to import patched image. Last import log lines:" >&2
+  tail -80 "${IMPORT_LOG}" >&2 || true
+  exit 1
+fi
+
+k3s ctr -n k8s.io images label "${PATCHED_IMAGE}" io.cri-containerd.image=managed >/dev/null
+
+if ! k3s ctr -n k8s.io snapshots unpack "${MANIFEST_NEW}" >"${UNPACK_LOG}" 2>&1; then
+  if ! grep -qi "already exists" "${UNPACK_LOG}"; then
+    echo "Failed to unpack patched image. Last unpack log lines:" >&2
+    tail -80 "${UNPACK_LOG}" >&2 || true
+    exit 1
+  fi
+fi
+
+echo "Patched OpenEO GeoTrellis image ready: ${PATCHED_IMAGE}"

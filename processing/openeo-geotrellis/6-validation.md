@@ -1,6 +1,6 @@
 To check if the OpenEO backend is working properly, we can first directly query the OpenEO APIs.
 
-To do so, we need first to setup authentication. As we disabled OIDC, we need to use the hardocded test basic authentication, via
+To do so, we first need to set up authentication. As we disabled OIDC, we need to use the hardcoded test basic authentication, via
 
 ```bash
 # Basic auth: password = username + "123"
@@ -84,7 +84,7 @@ curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/collections/TestCollection-LonLat16x16" | jq .
 ```{{exec}}
 
-Process count (156 available):
+Process count:
 ```bash
 curl -s -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/processes" | jq '.processes | length'

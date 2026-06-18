@@ -1,4 +1,4 @@
-The OpenEO GeoTrellis engine requires Apache Spark for processing. This is instantiated bia the [Spark Operator](https://github.com/kubeflow/spark-operator). We can deploy it via:
+The OpenEO GeoTrellis engine requires Apache Spark for processing. This is instantiated via the [Spark Operator](https://github.com/kubeflow/spark-operator). We can deploy it via:
 
 ```bash
 helm upgrade -i openeo-geotrellis-sparkoperator spark-operator \

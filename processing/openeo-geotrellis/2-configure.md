@@ -10,14 +10,14 @@ This building block supports two possible backends for running the processing, a
 geotrellis
 ```{{exec}}
 
-We are then asked if we want to update the configuration we defined below. We do not need to, and we can just reply no to the next two questions
+We are then asked whether we want to update the base domain and persistent storage class that were configured in the prerequisite step. We do not need to, and can reply `no` to both questions.
 
 ```
 no
 no
 ```{{exec}}
 
-We are now asked if we want to enable authentication using the [EOEPCA AIM](https://eoepca.readthedocs.io/projects/iam/en/latest/) component via its [OIDC Interface](https://openid.net/). For this demo, we will not use authentication, so we also reply
+We are now asked if we want to enable authentication using the [EOEPCA IAM](https://eoepca.readthedocs.io/projects/iam/en/latest/) component via its [OIDC Interface](https://openid.net/). For this demo, we will not use OIDC authentication, so we also reply
 
 ```
 no

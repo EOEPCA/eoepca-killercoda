@@ -7,7 +7,7 @@ curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx -
 cd deployment-guide/scripts/processing/openeo
 ```{{exec}}
 
-Next we need to check the specific Resource Discovery BB prerequisites for installing the Resource Discovery building block are met. The Deployment Guide scripts provide a dedicated script for this task:
+Next we need to check that the prerequisites for installing the OpenEO building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
 ```{{exec}}
@@ -36,4 +36,4 @@ We also do not need automatically generated certificates or indeed any certifica
 no
 ```{{exec}}
 
-Now, all the pre-requisites should be met. If you want to know more abot the pre-requisites above, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
+Now, all the prerequisites should be met. If you want to know more about the prerequisites above, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Prerequisites</a> tutorial.
