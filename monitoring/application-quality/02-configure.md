@@ -5,6 +5,7 @@ This tutorial environment uses a proxy to route access to running services. Pre-
 
 ```bash
 bash /tmp/assets/application-quality-localcoda-access preconfigure
+cd ../application-quality
 ```{{exec}}
 
 ```
