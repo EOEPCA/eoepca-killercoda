@@ -1,0 +1,243 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="${1:-}"
+
+if [[ -f ~/.eoepca/state ]]; then
+  # shellcheck disable=SC1090
+  source ~/.eoepca/state
+fi
+
+traffic_url() {
+  local host port
+  host="$(< /etc/killercoda/host)"
+  port="$1"
+  sed "s#PORT#${port}#" <<< "${host}"
+}
+
+traffic_scheme() {
+  local url="$1"
+  if [[ "${url}" == *"://"* ]]; then
+    printf '%s\n' "${url%%://*}"
+  else
+    printf 'http\n'
+  fi
+}
+
+url_host() {
+  sed -E 's#^[A-Za-z][A-Za-z0-9+.-]*://##; s#/$##' <<< "$1"
+}
+
+proxy_port_for() {
+  local host="$1"
+  awk -v host="${host}" '$0 ~ (host) {print $1; exit}' /tmp/assets/killercodaproxy
+}
+
+set_state() {
+  local key="$1"
+  local value="$2"
+
+  mkdir -p ~/.eoepca
+  if grep -q "^export ${key}=" ~/.eoepca/state 2>/dev/null; then
+    sed -i "s|^export ${key}=.*|export ${key}=\"${value}\"|" ~/.eoepca/state
+  else
+    printf 'export %s="%s"\n' "${key}" "${value}" >> ~/.eoepca/state
+  fi
+}
+
+application_quality_public_url() {
+  traffic_url "$(proxy_port_for "application-quality.${INGRESS_HOST}")"
+}
+
+keycloak_public_url() {
+  traffic_url "$(proxy_port_for "auth.${INGRESS_HOST}")"
+}
+
+preconfigure() {
+  local app_url app_host
+
+  app_url="$(application_quality_public_url)"
+  app_host="$(url_host "${app_url}")"
+
+  # The Deployment Guide templates use HTTP_SCHEME for in-cluster ingress.
+  # Keep that internal scheme as HTTP, and patch public URLs after generation.
+  set_state HTTP_SCHEME "http"
+  set_state APP_QUALITY_PUBLIC_HOST "${app_host}"
+
+  printf '\nPublic URL for Application Quality: %s\n' "${app_url}"
+}
+
+postconfigure() {
+  local app_url keycloak_url
+
+  app_url="$(application_quality_public_url)"
+  keycloak_url="$(keycloak_public_url)"
+
+  sed -i \
+    -e "s#^    publicUrl: .*#    publicUrl: \"${app_url}\"#" \
+    -e "s#^    realmBaseUrl: .*#    realmBaseUrl: ${keycloak_url}/realms/${REALM}#" \
+    -e "s#^    postLogoutRedirectUrl: .*#    postLogoutRedirectUrl: \"${app_url}/\"#" \
+    -e "s#^    loginRedirectUrl:.*#    loginRedirectUrl:  \"${app_url}/\"#" \
+    -e "s#^    rpRedirectUri:.*#    rpRedirectUri:  \"${app_url}/oidc/callback/\"#" \
+    generated-values.yaml
+
+  REDIRECT_URIS=("${app_url}/*" "http://${APP_QUALITY_PUBLIC_HOST}/*")
+  if [[ "${APP_QUALITY_PUBLIC_HOST}" != "application-quality.${INGRESS_HOST}" ]]; then
+    REDIRECT_URIS+=("${HTTP_SCHEME:-http}://application-quality.${INGRESS_HOST}/*")
+  fi
+
+  cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
+  namespace: iam-management
+stringData:
+  client_secret: ${APP_QUALITY_CLIENT_SECRET}
+---
+apiVersion: openidclient.keycloak.m.crossplane.io/v1alpha1
+kind: Client
+metadata:
+  name: ${APP_QUALITY_CLIENT_ID}
+  namespace: iam-management
+spec:
+  forProvider:
+    realmId: ${REALM:-eoepca}
+    clientId: ${APP_QUALITY_CLIENT_ID}
+    name: Application Quality
+    description: Application Quality OIDC
+    enabled: true
+    accessType: CONFIDENTIAL
+    rootUrl: ${app_url}
+    baseUrl: ${app_url}
+    adminUrl: ${app_url}
+    serviceAccountsEnabled: true
+    directAccessGrantsEnabled: true
+    standardFlowEnabled: true
+    oauth2DeviceAuthorizationGrantEnabled: true
+    useRefreshTokens: true
+    authorization:
+      - allowRemoteResourceManagement: false
+        decisionStrategy: UNANIMOUS
+        keepDefaults: true
+        policyEnforcementMode: ENFORCING
+    validRedirectUris:
+$(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
+    webOrigins:
+$(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
+    clientSecretSecretRef:
+      name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
+      key: client_secret
+  providerConfigRef:
+    name: provider-keycloak
+    kind: ProviderConfig
+EOF
+
+  kubectl exec -n iam iam-keycloak-0 -- \
+    /opt/bitnami/keycloak/bin/kcadm.sh config credentials \
+      --config /tmp/kcadm.config \
+      --server http://localhost:8080 \
+      --realm master \
+      --user "${KEYCLOAK_ADMIN_USER}" \
+      --password "${KEYCLOAK_ADMIN_PASSWORD}"
+
+  kubectl exec -n iam iam-keycloak-0 -- \
+    /opt/bitnami/keycloak/bin/kcadm.sh update realms/${REALM} \
+      --config /tmp/kcadm.config \
+      -s attributes.frontendUrl="${keycloak_url}"
+}
+
+proxy_watch() {
+  local app_url app_host app_ingress_host app_scheme
+
+  for _ in $(seq 1 2160); do
+    if [[ -f ~/.eoepca/state ]]; then
+      # shellcheck disable=SC1090
+      source ~/.eoepca/state
+    fi
+
+    if [[ -n "${APP_QUALITY_PUBLIC_HOST:-}" ]] &&
+       kubectl get namespace application-quality >/dev/null 2>&1 &&
+       kubectl get service application-quality-web -n application-quality >/dev/null 2>&1 &&
+       kubectl get service application-quality-api -n application-quality >/dev/null 2>&1; then
+
+      app_url="$(application_quality_public_url)"
+      app_host="$(url_host "${app_url}")"
+      app_ingress_host="${app_host%%:*}"
+      app_scheme="$(traffic_scheme "${app_url}")"
+
+      cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: application-quality-public
+  namespace: application-quality
+  annotations:
+    kubernetes.io/ingress.class: apisix
+spec:
+  ingressClassName: apisix
+  rules:
+  - host: ${app_ingress_host}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: application-quality-web
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: application-quality-api
+            port:
+              number: 8000
+      - path: /oidc
+        pathType: Prefix
+        backend:
+          service:
+            name: application-quality-api
+            port:
+              number: 8000
+      - path: /static
+        pathType: Prefix
+        backend:
+          service:
+            name: application-quality-api
+            port:
+              number: 8000
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: application-quality-api
+            port:
+              number: 8000
+EOF
+
+      if [[ -f /etc/nginx/nginx.conf ]]; then
+        sed -i "0,/proxy_set_header Host application-quality.${INGRESS_HOST};/s//proxy_set_header Host ${app_host};/" /etc/nginx/nginx.conf
+        sed -i "s/proxy_set_header X-Forwarded-Proto \\\$http_x_forwarded_proto;/proxy_set_header X-Forwarded-Proto ${app_scheme};/g" /etc/nginx/nginx.conf
+        nginx -t && nginx -s reload
+      fi
+      exit 0
+    fi
+
+    sleep 5
+  done
+
+  echo "Timed out waiting to configure Application Quality Localcoda proxy" >&2
+  exit 1
+}
+
+case "${mode}" in
+  preconfigure|postconfigure|proxy-watch)
+    "${mode//-/_}"
+    ;;
+  *)
+    echo "Usage: $0 {preconfigure|postconfigure|proxy-watch}" >&2
+    exit 2
+    ;;
+esac

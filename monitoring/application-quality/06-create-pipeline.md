@@ -20,9 +20,10 @@ Switch to the **Monitoring** view to watch your pipeline run. You'll see:
 - Execution timeline
 - Resource usage
 
-You can also view the pods in the `applicationqualitypipeline-1` namespace that has been created for this pipeline execution (May take a minute before you see the pods):
+Each execution creates a namespace named `applicationqualitypipeline-<run id>`. For the first run this is usually `applicationqualitypipeline-1`, but if you retry the execution the number will increase. It may take a minute before pods appear:
 
 ```
+kubectl get ns | grep applicationqualitypipeline
 kubectl get pods -n applicationqualitypipeline-1
 ```{{exec}}
 

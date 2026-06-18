@@ -6,7 +6,7 @@
       "text": "00-introduction.md",
       "title": "Introduction",
       "foreground": "intro_foreground.sh",
-      "background": "intro_background.sh"
+      "background": "application_quality_intro_background.sh"
     },
     "steps": [
       {

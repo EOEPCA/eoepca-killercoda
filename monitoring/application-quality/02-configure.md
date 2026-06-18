@@ -1,15 +1,10 @@
 
 Before deploying the Application Quality building block, we need to configure it.
 
-This tutorial environment uses a proxy to route access to running services. We have to ensure that this proxied URL is well configured within the deployment - in particular for the Application Quality web UIs. Thus, we pre-configure here the environment variable `APP_QUALITY_PUBLIC_HOST` which is deduced from the running enviornment.
+This tutorial environment uses a proxy to route access to running services. Pre-configure the public Application Quality URL before running the Deployment Guide script:
 
 ```bash
-source ~/.eoepca/state
-export APP_QUALITY_PUBLIC_HOST="$(
-  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("application-quality." host) {print $1}' /tmp/assets/killercodaproxy)#" \
-    /etc/killercoda/host
-)"
-echo -e "\nPublic host for Application Quality: ${APP_QUALITY_PUBLIC_HOST}"
+bash /tmp/assets/application-quality-localcoda-access preconfigure
 ```{{exec}}
 
 ```
@@ -48,62 +43,8 @@ Client ID for Application Quality:
 application-quality
 ```{{exec}}
 
-The script generates Helm values with OIDC configuration. 
-Now we need to create the Keycloak client for Application Quality. This allows the web portal to authenticate users:
+The script generates Helm values with OIDC configuration. Now apply the Localcoda access settings and create the Keycloak client for Application Quality:
 
-# Create the Keycloak client
-```
-source ~/.eoepca/state
-
-REDIRECT_URIS=("/*")
-if [ "${APP_QUALITY_PUBLIC_HOST}" != "application-quality.${INGRESS_HOST}" ]; then
-  REDIRECT_URIS+=("${HTTP_SCHEME}://application-quality.${INGRESS_HOST}/*")
-fi
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
-  namespace: iam-management
-stringData:
-  client_secret: ${APP_QUALITY_CLIENT_SECRET}
----
-apiVersion: openidclient.keycloak.m.crossplane.io/v1alpha1
-kind: Client
-metadata:
-  name: ${APP_QUALITY_CLIENT_ID}
-  namespace: iam-management
-spec:
-  forProvider:
-    realmId: ${REALM:-eoepca}
-    clientId: ${APP_QUALITY_CLIENT_ID}
-    name: Application Quality
-    description: Application Quality OIDC
-    enabled: true
-    accessType: CONFIDENTIAL
-    rootUrl: ${HTTP_SCHEME:-http}://${APP_QUALITY_PUBLIC_HOST}
-    baseUrl: ${HTTP_SCHEME:-http}://${APP_QUALITY_PUBLIC_HOST}
-    adminUrl: ${HTTP_SCHEME:-http}://${APP_QUALITY_PUBLIC_HOST}
-    serviceAccountsEnabled: true
-    directAccessGrantsEnabled: true
-    standardFlowEnabled: true
-    oauth2DeviceAuthorizationGrantEnabled: true
-    useRefreshTokens: true
-    authorization:
-      - allowRemoteResourceManagement: false
-        decisionStrategy: UNANIMOUS
-        keepDefaults: true
-        policyEnforcementMode: ENFORCING
-    validRedirectUris:
-$(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
-    webOrigins:
-$(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
-    clientSecretSecretRef:
-      name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
-      key: client_secret
-  providerConfigRef:
-    name: provider-keycloak
-    kind: ProviderConfig
-EOF
+```bash
+bash /tmp/assets/application-quality-localcoda-access postconfigure
 ```{{exec}}
