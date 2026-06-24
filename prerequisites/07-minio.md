@@ -6,7 +6,7 @@ Note that in this step we will be deploying MinIO into our Kubernetes cluster fo
 
 As usual, we will use scripts provided with the EOEPCA Deployment Guide:
 ```
-cd ~/deployment-guide/scripts/minio
+cd /deployment-guide/scripts/minio
 ```{{exec}}
 
 First, we check the prerequisites. At this point all of them should be met:
@@ -83,11 +83,17 @@ sleep 5
 mc admin accesskey create minio-local/ user --access-key ${S3_ACCESS_KEY} --secret-key ${S3_SECRET_KEY}
 ```{{exec}}
 
-We can now validate our deployment with the provided script `validation.sh`{{}}. This requires `s3cmd`{{}} which we need to install before:
+We can now validate the Kubernetes resources and HTTP endpoints with the
+provided `validation.sh`{{}} script. This requires `s3cmd`{{}}, which we install
+first. Decline the optional `s3cmd` functionality test: that upstream test
+assumes HTTPS, while this tutorial deliberately configures the MinIO endpoint
+with HTTP. The following `mc` commands perform the object-storage functionality
+test instead.
+
 ```
 apt update && apt install -y s3cmd
 bash validation.sh
-y
+n
 ```{{exec}}
 
 Let's also do some manual checks using the `mc`{{}} client.

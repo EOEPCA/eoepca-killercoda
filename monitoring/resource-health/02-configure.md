@@ -1,41 +1,40 @@
 
-Before proceeding with the Resource Health building block deployment, we need first to configure it. 
+Before deploying the Resource Health building block, configure it with the
+Deployment Guide script:
 
-Now we can run the configuration script `configure-resource-health.sh` provided in the EOEPCA deployment guide:
-
-```
+```bash
 bash configure-resource-health.sh
 ```{{exec}}
 
 The script will load the general EOEPCA configuration and move to the Resource Health building block specific configuration.
 
-We will use the default internal cluster issuer:
+The internal cluster issuer is already configured. Keep the existing value:
 ```
-eoepca-ca-clusterissuer
+n
 ```{{exec}}
 
-We will use the basic storage class provided in this sandbox. Note that, in an operational environment, you should use a reliable (and possibly redundant and backed up) storage class:
+The `local-path` storage class is also already configured. Keep it:
 ```
-local-path
+n
 ```{{exec}}
 
-We do not need to update the domain, we will use what's already set:
-```
-no
-```{{exec}}
-
-For this demonstration, we will not be enabling OIDC authentication:
+Keep the existing domain:
 ```
 no
 ```{{exec}}
 
-The configuration is now complete. You can verify the generated files:
+Do not enable OIDC authentication for this demonstration:
+```
+no
+```{{exec}}
+
+The configuration is now complete. Verify the generated files:
 
 ```
 ls -la generated-*.yaml
 ```{{exec}}
 
-Let's have a quick look at the generated ingress configuration:
+Inspect the generated ingress configuration:
 
 ```
 cat generated-ingress.yaml

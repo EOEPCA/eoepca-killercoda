@@ -1,15 +1,22 @@
 
 Before proceeding with the Data Access building block deployment, we need to configure it.
 
-This tutorial environment uses a proxy to route access to running services. We have to ensure that this proxied URL is well configured within the deployment - in particular for the STAC Manager web UI. Thus, we pre-configure here the environment variable `EOAPI_PUBLIC_HOST` which is deduced from the running enviornment.
+This tutorial environment uses a proxy to route access to running services. We have to ensure that this public URL is correctly configured for the STAC Manager web UI.
+
+The deployment guide expects `EOAPI_PUBLIC_HOST` to contain only a hostname, without `http://` or `https://`. We also retain the complete external URL in `EOAPI_PUBLIC_URL` for the STAC Manager deployment step.
 
 ```bash
 source ~/.eoepca/state
-export EOAPI_PUBLIC_HOST="$(
-  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("eoapi." host) {print $1}' /tmp/assets/killercodaproxy)#" \
-    /etc/killercoda/host
-)"
-echo -e "\nPublic host for eoAPI: ${EOAPI_PUBLIC_HOST}"
+EOAPI_PROXY_PORT=$(
+  awk -v host="$INGRESS_HOST" '$0 ~ ("eoapi." host) {print $1; exit}' \
+    /tmp/assets/killercodaproxy
+)
+export EOAPI_PUBLIC_URL=$(
+  sed "s/PORT/${EOAPI_PROXY_PORT}/" /etc/killercoda/host
+)
+export EOAPI_PUBLIC_HOST="${EOAPI_PUBLIC_URL#*://}"
+
+printf 'Public URL for eoAPI: %s\n' "$EOAPI_PUBLIC_URL"
 ```{{exec}}
 
 Now we can run the configuration script `configure-data-access.sh` provided in the EOEPCA deployment guide:
@@ -74,4 +81,7 @@ The configuration is now complete. You can verify the generated files:
 
 ```
 head -50 eoapi/generated-values.yaml
+grep -E '^(publicUrl|stacApi):' stac-manager/generated-values.yaml
 ```{{exec}}
+
+The generated STAC Manager URLs use the cluster's HTTP scheme. In the next step, the Helm command overrides them with the HTTPS Localcoda proxy URL.

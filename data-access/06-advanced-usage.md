@@ -61,6 +61,7 @@ CLEAREST=$(curl -s -X POST "http://eoapi.eoepca.local/stac/search" \
   -d '{
     "collections": ["sentinel-2-iceland"],
     "bbox": [-23, 63.5, -20, 65],
+    "datetime": "2023-06-01T00:00:00Z/2023-08-31T23:59:59Z",
     "query": {"eo:cloud_cover": {"lt": 10}},
     "sortby": [{"field": "properties.eo:cloud_cover", "direction": "asc"}],
     "limit": 1
@@ -76,10 +77,23 @@ echo "{{TRAFFIC_HOST1_82}}/raster/collections/sentinel-2-iceland/items/${CLEARES
 Instead of viewing individual items, you can access the entire collection as a seamless mosaic:
 
 ```bash
-curl -s "http://eoapi.eoepca.local/raster/collections/sentinel-2-iceland/WebMercatorQuad/tilejson.json?assets=visual" | jq '{name: .name, bounds, minzoom, maxzoom}'
+source ~/.eoepca/state
+EOAPI_PROXY_PORT=$(
+  awk -v host="$INGRESS_HOST" '$0 ~ ("eoapi." host) {print $1; exit}' \
+    /tmp/assets/killercodaproxy
+)
+EOAPI_PUBLIC_URL=$(
+  sed "s/PORT/${EOAPI_PROXY_PORT}/" /etc/killercoda/host
+)
+
+curl -s "http://eoapi.eoepca.local/raster/collections/sentinel-2-iceland/WebMercatorQuad/tilejson.json?assets=visual" |
+  jq --arg base "${EOAPI_PUBLIC_URL}/raster" '
+    .tiles |= map(sub("^https?://[^/]+"; $base))
+    | {name, bounds, minzoom, maxzoom, tiles}
+  '
 ```{{exec}}
 
-The tile URL from this TileJSON can be used in GIS applications like QGIS or web mapping libraries like Leaflet and OpenLayers.
+The command rewrites the service's internal tile hostname and adds the `/raster` ingress prefix. The resulting `tiles` URL can be used from your workstation in QGIS or web mapping libraries such as Leaflet and OpenLayers.
 
 ---
 

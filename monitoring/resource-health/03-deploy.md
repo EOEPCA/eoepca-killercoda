@@ -1,7 +1,7 @@
 
 We can now deploy the Resource Health building block.
 
-First, we create the namespace:
+First, create the namespace and apply the Resource Health secrets:
 
 ```
 bash apply-secrets.sh
@@ -14,28 +14,38 @@ git clone -b 2.0.0 https://github.com/EOEPCA/resource-health.git reference-repo
 helm dependency update reference-repo/resource-health-reference-deployment
 ```{{exec}}
 
-Now we deploy the Resource Health BB using Helm with our generated values:
+Now deploy the Resource Health BB using the generated values and the
+Localcoda-specific compatibility values:
 
 ```
 helm upgrade -i resource-health reference-repo/resource-health-reference-deployment \
   -f generated-values.yaml \
+  -f /tmp/assets/localcoda-values.yaml \
   -n resource-health \
   --timeout 10m
 ```{{exec}}
 
-And we create the ingress for our newly created Resource Health services to make them available:
+The additional values disable an OpenSearch sysctl init container that cannot
+change host-level kernel settings from a nested Localcoda container. They also
+configure the demo OpenSearch credentials used by the telemetry components.
+
+Create the ingress resources:
 
 ```
 kubectl apply -f generated-ingress.yaml
 ```{{exec}}
 
-Now we wait for all Resource Health pods to start. This may take some time, especially in this demo environment. To automatically wait until all services are ready:
+Wait for OpenSearch and all deployments. This can take a few minutes while
+images are downloaded:
 
 ```
 echo "Waiting for OpenSearch to be ready..."
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=opensearch -n resource-health --timeout=600s 2>/dev/null || true
-echo "Waiting for Resource Health pods to be ready..."
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=resource-health -n resource-health --timeout=600s 2>/dev/null || true
+kubectl rollout status statefulset/resource-health-opensearch \
+  -n resource-health --timeout=300s
+
+echo "Waiting for Resource Health deployments to be ready..."
+kubectl wait --for=condition=Available deployment --all \
+  -n resource-health --timeout=300s
 ```{{exec}}
 
 Let's check the status of all resources:
@@ -44,16 +54,14 @@ Let's check the status of all resources:
 kubectl get all -n resource-health
 ```{{exec}}
 
-Once deployed, the Resource Health services should be accessible:
-- Web Dashboard: [Access Here]({{TRAFFIC_HOST1_81}})
-- Health Checks API: [Access Here]({{TRAFFIC_HOST1_81}}/api/healthchecks/)
-- Telemetry API: [Access Here]({{TRAFFIC_HOST1_81}}/api/telemetry/)
+Once deployed, the services are available through the Localcoda proxy:
+
+- [Resource Health dashboard]({{TRAFFIC_HOST1_81}})
+- [Health Checks API documentation]({{TRAFFIC_HOST1_81}}/api/healthchecks/docs)
+- [Telemetry API documentation]({{TRAFFIC_HOST1_81}}/api/telemetry/docs)
 
 We can validate the deployment using the provided validation script:
 
 ```
 bash validation.sh
 ```{{exec}}
-
-
-You can also access the web dashboard from [this link]({{TRAFFIC_HOST1_80}}) (come back here afterwards, the tutorial is not over).

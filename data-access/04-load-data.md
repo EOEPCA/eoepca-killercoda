@@ -20,7 +20,7 @@ cd ../..
 
 This script:
 1. Connects to a running eoAPI pod
-2. Installs the pypgstac tool
+2. Installs the `pypgstac` ingestion tool in the raster pod
 3. Loads the collection metadata and items into pgSTAC
 
 ### Verify the Collection
@@ -51,6 +51,8 @@ Let's see how many items are in the collection:
 curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=1" | jq '.numberMatched'
 ```{{exec}}
 
+The sample contains 226 items.
+
 ### Browse in STAC Browser
 
-The eoAPI deployment includes a built-in [STAC Browser]({{TRAFFIC_HOST1_82}}/browser), where you can [explore the collection visually]({{TRAFFIC_HOST1_82}}/browser/external/{{TRAFFIC_HOST1_82}}/stac/collections/sentinel-2-iceland).
+The eoAPI deployment includes a built-in [STAC Browser]({{TRAFFIC_HOST1_82}}/browser). It is already configured to use this tutorial's STAC API: open it, select `sentinel-2-iceland`, and browse the items visually.

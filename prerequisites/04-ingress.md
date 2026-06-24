@@ -63,7 +63,7 @@ EOF
 
 Now we can check if our ingress works. We need first to wait some time for the ingress to be configured properly, then we can attempt to connect one of the services we have configured in DNS:
 ```
-sleep 5
+kubectl rollout status deployment/http-svc --timeout=120s
 curl -s -S http://test.eoepca.local
 ```{{exec}}
 
@@ -144,4 +144,3 @@ Finally, let's delete our sample ingress:
 ```
 kubectl delete ingress/test deployment/http-svc service/http-svc
 ```{{exec}}
-

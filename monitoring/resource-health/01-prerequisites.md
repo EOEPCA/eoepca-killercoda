@@ -7,7 +7,7 @@ First, we download and uncompress the **eoepca-2.0** version of the EOEPCA Deplo
 curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
-First, let's setup internal TLS for our EOEPCA services.
+Next, set up internal TLS for our EOEPCA services:
 ```
 cd deployment-guide/scripts/internal-tls
 bash setup-internal-tls.sh
@@ -21,9 +21,10 @@ EOEPCA components can work with different Ingress services installed in your Kub
 nginx
 ```{{exec}}
 
-We enter the top-level domain for our EOEPCA services:
+The tutorial environment has already set the top-level domain to
+`eoepca.local`. Keep the existing value:
 ```
-eoepca.local
+n
 ```{{exec}}
 
 Storage class:
@@ -38,18 +39,17 @@ no
 
 This will install cert-manager and create the necessary secrets and cluster issuers for internal TLS communication.
 
-Now, we navigate to the Resource Health deployment scripts.
-The Resource Health deployment scripts are available in the `resource-health` directory:
+Now navigate to the Resource Health deployment scripts:
 ```
 cd ../resource-health
 ```{{exec}}
 
 
-Next we need to check the specific Resource Health BB prerequisites for installing the Resource Health building block are met. The Deployment Guide scripts provide a dedicated script for this task:
+Use the Deployment Guide's dedicated script to check the Resource Health
+prerequisites:
 ```
 bash check-prerequisites.sh
 ```{{exec}}
 
 
-Now, all the pre-requisites should be met.
-
+All prerequisites should now be met.

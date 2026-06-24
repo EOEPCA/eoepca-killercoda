@@ -1,0 +1,47 @@
+opensearch:
+  # A nested Localcoda container cannot change this host-level sysctl.
+  # OpenSearch runs in single-node mode here, so the init container is not needed.
+  sysctlInit:
+    enabled: false
+
+  # The upstream demo values refer to admin/admin but do not create that user.
+  securityConfig:
+    config:
+      data:
+        internal_users.yml: |-
+          _meta:
+            type: "internalusers"
+            config_version: 2
+
+          admin:
+            hash: "$2y$12$PQE.rUG38VWE.pPXVjYZteHlAL.DZxECbmlMBOsunCVxRSkh3tVXm"
+            reserved: true
+            backend_roles:
+              - "admin"
+            description: "Resource Health tutorial administrator"
+        roles_mapping.yml: |-
+          _meta:
+            type: "rolesmapping"
+            config_version: 2
+
+          all_access:
+            backend_roles:
+              - "admin"
+              - "all_access"
+            users:
+              - "admin"
+              - "otel-collector"
+              - "CN=otel-collector"
+
+opentelemetry-collector:
+  config:
+    exporters:
+      opensearch:
+        http:
+          headers:
+            Authorization: "Basic YWRtaW46YWRtaW4="
+
+resource-health:
+  global:
+    defaultCheckAPIBaseURL: http://resource-health.eoepca.local/api/healthchecks/
+    defaultTelemetryAPIBaseURL: http://resource-health.eoepca.local/api/telemetry/

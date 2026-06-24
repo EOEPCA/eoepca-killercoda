@@ -28,6 +28,8 @@ kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/
 
 We can check if the provisioner has been deployed:
 ```
+kubectl rollout status -n kube-system deployment/hostpath-storage-provisioner \
+  --timeout=120s
 kubectl get -n kube-system sc/standard deploy/hostpath-storage-provisioner
 ```{{exec}}
 
@@ -50,6 +52,7 @@ EOF
 
 Check that the PVC is created and has the status `Bound`:
 ```
+kubectl wait pvc/test-rwx-pvc --for=jsonpath='{.status.phase}'=Bound --timeout=120s
 kubectl get pvc
 ```{{exec}}
 

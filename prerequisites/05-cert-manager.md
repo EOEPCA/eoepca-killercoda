@@ -16,7 +16,7 @@ helm upgrade -i cert-manager jetstack/cert-manager \
 
 Then, there is an already provided script in the Deployment Guide to set up local CA and ClusterIssuer. The ClusterIssuer name is `eoepca-ca-clusterissuer` which we already configured in our EOEPCA settings in the beginning of this tutorial.
 ```
-pushd ~/deployment-guide/scripts/internal-tls
+pushd /deployment-guide/scripts/internal-tls
 bash setup-internal-tls.sh
 popd
 ```{{exec}}

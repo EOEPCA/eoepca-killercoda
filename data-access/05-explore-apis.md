@@ -48,10 +48,32 @@ echo "{{TRAFFIC_HOST1_82}}/raster/collections/sentinel-2-iceland/items/${ITEM_ID
 
 ### Vector API - Check Available Features
 
-The Vector API provides OGC API Features access:
+The Vector API provides OGC API Features access to database tables exposed by TiPG:
 
 ```
 curl -s "http://eoapi.eoepca.local/vector/" | jq '.links[] | select(.rel=="data") | {title, href}'
+```{{exec}}
+
+### OGC API Maps - Check Synced Collections
+
+The Maps Plugin synchronises STAC collections into an OGC API Maps catalogue every ten minutes. Trigger a sync now so the collection we just loaded is immediately available:
+
+```
+MAPS_SYNC_JOB=eoapi-maps-plugin-sync-manual
+kubectl delete job "$MAPS_SYNC_JOB" -n data-access --ignore-not-found
+kubectl create job "$MAPS_SYNC_JOB" \
+  --from=cronjob/eoapi-maps-plugin-sync \
+  --namespace data-access
+kubectl wait --for=condition=complete job/"$MAPS_SYNC_JOB" \
+  --namespace data-access \
+  --timeout=180s
+```{{exec}}
+
+Now list the synchronised collections:
+
+```
+curl -s "http://eoapi.eoepca.local/maps/collections" |
+  jq '.collections[] | {id, title}'
 ```{{exec}}
 
 
@@ -70,5 +92,6 @@ Each API provides interactive Swagger documentation:
 - STAC API: `{{TRAFFIC_HOST1_82}}/stac/api.html`
 - Raster API: `{{TRAFFIC_HOST1_82}}/raster/api.html`
 - Vector API: `{{TRAFFIC_HOST1_82}}/vector/api.html`
+- OGC API Maps: `{{TRAFFIC_HOST1_82}}/maps/openapi?f=html`
 
 You can access the STAC API documentation from [this link]({{TRAFFIC_HOST1_82}}/stac/api.html).

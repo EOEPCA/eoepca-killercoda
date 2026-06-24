@@ -54,7 +54,7 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   helm repo add kyverno https://kyverno.github.io/kyverno/
   helm repo update kyverno
   helm upgrade -i kyverno kyverno/kyverno \
-    --version 3.6.2 \
+    --version 3.2.8 \
     --namespace kyverno \
     --create-namespace --wait
   # Create the cluster policy to set minimal resource requests

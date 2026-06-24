@@ -1,40 +1,45 @@
-Now that we have our Resource Health system deployed, let's create and run a health check.
+Now that Resource Health is deployed, create and run a health check.
 
-### View Available Templates
+### View the available templates
 
-First, let's see what health check templates are available:
+List the installed check templates:
 
-```
-curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/check_templates/" | jq '.data[].id'
+```bash
+curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/check_templates/" \
+  | jq '.data[] | {id, description: .attributes.metadata.description}'
 ```{{exec}}
 
-You should see two templates:
-- `simple_ping` - For checking if an endpoint responds with an expected HTTP status code
-- `generic_script_template` - For running custom pytest scripts
+The deployment includes:
 
-Let's look at the details of the `simple_ping` template:
+- `simple_ping` — checks an HTTP endpoint and its response status
+- `generic_script_template` — runs a user-provided pytest script
 
-```
-curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/check_templates/simple_ping" | jq
+Inspect the input schema for `simple_ping`:
+
+```bash
+curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/check_templates/simple_ping" \
+  | jq '.data.attributes'
 ```{{exec}}
 
-### Create a Health Check
+### Create a health check
 
-The Resource Health API uses JSON:API format. Let's create a health check that verifies Google is reachable:
+Create a scheduled check for the mock service included in the Resource Health
+deployment. Using an in-cluster target keeps this workshop independent of
+external internet access:
 
-```
-cat <<EOF | tee healthcheck-google.json | jq
+```bash
+cat <<'EOF' > healthcheck-mock.json
 {
   "data": {
     "type": "check",
     "attributes": {
       "schedule": "*/5 * * * *",
       "metadata": {
-        "name": "google-ping-check",
-        "description": "Check if Google is reachable",
+        "name": "mock-service-check",
+        "description": "Check the bundled Resource Health mock service",
         "template_id": "simple_ping",
         "template_args": {
-          "endpoint": "https://www.google.com",
+          "endpoint": "http://resource-health-mock-api:5000/",
           "expected_status_code": 200
         }
       }
@@ -42,148 +47,153 @@ cat <<EOF | tee healthcheck-google.json | jq
   }
 }
 EOF
+
+jq . healthcheck-mock.json
 ```{{exec}}
 
-This health check will run every 5 minutes and verify that Google returns a 200 status code.
+Register it and retain the generated check ID:
 
-Now let's register this health check:
-
-```
-curl -X POST "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
+```bash
+CREATE_RESPONSE=$(curl -sS -X POST \
+  "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
   -H "Content-Type: application/vnd.api+json" \
-  -d @healthcheck-google.json | jq
-```{{exec}}
+  -d @healthcheck-mock.json)
 
-Note the `id` field in the response - this is the UUID assigned to your health check.
-
-### List Health Checks
-
-We can see all registered health checks:
-
-```
-curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" | jq '.data[] | {id: .id, name: .attributes.metadata.name, schedule: .attributes.schedule}'
-```{{exec}}
-
-### View the CronJob
-
-The health check is implemented as a Kubernetes CronJob. Let's view it:
-
-```
-kubectl get cronjobs -n resource-health
-```{{exec}}
-
-The CronJob name matches the UUID of the health check.
-
-### Trigger a Health Check Manually
-
-Rather than waiting for the scheduled time, we can trigger a health check manually by creating a Job from the CronJob. First, get the check ID:
-
-```
-CHECK_ID=$(curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" | jq -r '.data[0].id')
+echo "$CREATE_RESPONSE" | jq
+CHECK_ID=$(echo "$CREATE_RESPONSE" | jq -r '.data.id')
 echo "Check ID: $CHECK_ID"
 ```{{exec}}
 
-Now create a manual job:
+The API creates a Kubernetes CronJob with the same UUID:
 
-```
-kubectl create job --from=cronjob/${CHECK_ID} manual-google-check -n resource-health
+```bash
+kubectl get cronjob "$CHECK_ID" -n resource-health
 ```{{exec}}
 
-Wait for the job to complete:
+The current `healthcheck_runner:2.0.0` image needs an older setuptools release
+for its OpenTelemetry launcher. Add this temporary compatibility command to the
+generated CronJob:
 
-```
-kubectl wait --for=condition=complete job/manual-google-check -n resource-health --timeout=120s
+```bash
+kubectl set env cronjob/"$CHECK_ID" -n resource-health \
+  RH_RUNNER_RUN_BEFORE="uv pip install 'setuptools<81'"
 ```{{exec}}
 
-### View Job Results
+### Run the check now
 
-Let's check the job status and logs:
+Rather than waiting for the five-minute schedule, create a one-off Job from the
+CronJob:
 
-```
-kubectl get jobs -n resource-health
+```bash
+kubectl delete job manual-mock-check -n resource-health --ignore-not-found
+kubectl create job --from=cronjob/"$CHECK_ID" \
+  manual-mock-check -n resource-health
+kubectl wait --for=condition=complete job/manual-mock-check \
+  -n resource-health --timeout=180s
 ```{{exec}}
 
-```
-kubectl logs job/manual-google-check -n resource-health --all-containers 2>/dev/null | tail -15
+Inspect the result:
+
+```bash
+kubectl get job manual-mock-check -n resource-health
+kubectl logs job/manual-mock-check -n resource-health --all-containers \
+  | tail -20
 ```{{exec}}
 
-You should see pytest output showing the test passed.
+The pytest summary should report `1 passed`.
 
-### Create a Second Health Check
+### Query the recorded telemetry
 
-Let's create another health check that tests a different endpoint - the Kubernetes API server:
+OpenTelemetry batches results before writing them to OpenSearch. Poll for up to
+30 seconds for the first result:
 
-```
-cat <<EOF | tee healthcheck-k8s.json | jq
+```bash
+for attempt in {1..6}; do
+  TELEMETRY=$(curl -sS \
+    "http://resource-health.eoepca.local/api/telemetry/v1/spans")
+  RESULT_COUNT=$(echo "$TELEMETRY" \
+    | jq '.data[0].attributes.resourceSpans | length')
+  [ "$RESULT_COUNT" -gt 0 ] && break
+  sleep 5
+done
+
+echo "$TELEMETRY" | jq '{
+  result_count: (.data[0].attributes.resourceSpans | length),
+  health_checks: [
+    .data[0].attributes.resourceSpans[]?.resource.attributes[]?
+    | select(.key == "health_check.name")
+    | .value.stringValue
+  ] | unique
+}'
+```{{exec}}
+
+You should see `mock-service-check` in the telemetry results.
+
+### Monitor another Resource Health component
+
+Create a second check that monitors the Resource Health web service itself:
+
+```bash
+cat <<'EOF' > healthcheck-web.json
 {
   "data": {
     "type": "check",
     "attributes": {
       "schedule": "*/10 * * * *",
       "metadata": {
-        "name": "k8s-api-check",
-        "description": "Check if Kubernetes API is responding",
+        "name": "resource-health-web-check",
+        "description": "Check the Resource Health web service",
         "template_id": "simple_ping",
         "template_args": {
-          "endpoint": "https://kubernetes.default.svc.cluster.local/healthz",
-          "expected_status_code": 401
+          "endpoint": "http://resource-health-web:80/",
+          "expected_status_code": 200
         }
       }
     }
   }
 }
 EOF
-```{{exec}}
 
-Note: We expect a 401 (Unauthorized) because we're not providing authentication, but this confirms the API server is responding.
-
-Register it:
-
-```
-curl -X POST "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
+WEB_RESPONSE=$(curl -sS -X POST \
+  "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
   -H "Content-Type: application/vnd.api+json" \
-  -d @healthcheck-k8s.json | jq
+  -d @healthcheck-web.json)
+
+echo "$WEB_RESPONSE" | jq
+WEB_CHECK_ID=$(echo "$WEB_RESPONSE" | jq -r '.data.id')
+kubectl set env cronjob/"$WEB_CHECK_ID" -n resource-health \
+  RH_RUNNER_RUN_BEFORE="uv pip install 'setuptools<81'"
 ```{{exec}}
 
-### Query Telemetry Results
+List the registered checks and their schedules:
 
-After health checks have run, results are stored in OpenSearch and can be queried via the Telemetry API:
-
-```
-curl -s "http://resource-health.eoepca.local/api/telemetry/v1/spans/" | jq
+```bash
+curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
+  | jq '.data[] | {
+      id,
+      name: .attributes.metadata.name,
+      schedule: .attributes.schedule
+    }'
 ```{{exec}}
 
-If no data appears yet, wait a moment for the checks to complete and telemetry to be collected.
+Open the [Resource Health dashboard]({{TRAFFIC_HOST1_81}}) to view the two
+checks. The dashboard uses the same Health Checks and Telemetry APIs exercised
+above.
 
-### Get Details of a Specific Check
+### Delete a health check
 
-To get details about a specific health check using its ID:
+Delete the second check through the API:
 
-```
-CHECK_ID=$(curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" | jq -r '.data[0].id')
-curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/checks/${CHECK_ID}" | jq
+```bash
+curl -sS -X DELETE \
+  "http://resource-health.eoepca.local/api/healthchecks/v1/checks/${WEB_CHECK_ID}"
+
+curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
+  | jq '.data[].attributes.metadata.name'
 ```{{exec}}
 
-### Delete a Health Check
+The API also removes its CronJob:
 
-To remove a health check, use the DELETE endpoint with the check ID:
-
-```
-# Get the k8s-api-check ID
-K8S_CHECK_ID=$(curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" | jq -r '.data[] | select(.attributes.metadata.name=="k8s-api-check") | .id')
-echo "Deleting check: $K8S_CHECK_ID"
-
-curl -X DELETE "http://resource-health.eoepca.local/api/healthchecks/v1/checks/${K8S_CHECK_ID}" | jq
-```{{exec}}
-
-Verify it's been removed:
-
-```
-curl -s "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" | jq '.data[].attributes.metadata.name'
-```{{exec}}
-
-The corresponding CronJob should also be deleted:
-
-```
+```bash
 kubectl get cronjobs -n resource-health
 ```{{exec}}

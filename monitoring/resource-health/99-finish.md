@@ -3,10 +3,12 @@ We have learned in this tutorial how to deploy and use the EOEPCA Resource Healt
 
 ### Key Concepts
 
-- **Health Check Templates**: Pre-defined patterns for common health check scenarios (e.g., `simple_ping`, `generic_script_template`)
-- **Scheduled Checks**: Use cron expressions to run checks automatically
-- **CronJobs**: Health checks are implemented as Kubernetes CronJobs
-- **Telemetry**: Results are collected via OpenTelemetry and stored in OpenSearch
+- **Health check templates**: Pre-defined patterns for checks such as
+  `simple_ping` and `generic_script_template`
+- **Scheduled checks**: Cron expressions control when checks run
+- **Kubernetes CronJobs**: Each registered check creates a CronJob
+- **Telemetry**: OpenTelemetry sends outcomes to OpenSearch for querying and
+  dashboard display
 
 You can now play more with the deployed software, creating additional health checks or jump to another one of the [EOEPCA Tutorials](https://killercoda.com/eoepca/).
 

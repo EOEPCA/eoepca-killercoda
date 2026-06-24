@@ -8,7 +8,7 @@ curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx -
 
 In the Deployment Guide scripts there is a special script for checking if the Kubernetes and infrastructure prerequisites are met. Let's run it now:
 ```
-cd ~/deployment-guide/scripts/infra-prereq
+cd /deployment-guide/scripts/infra-prereq
 bash check-prerequisites.sh
 ```{{exec}}
 
