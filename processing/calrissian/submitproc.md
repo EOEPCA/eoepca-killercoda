@@ -38,4 +38,11 @@ EOF
 echo "$JOB_ID"
 ```{{exec}}
 
-the execution returned us a job id, which we are saving in the `$JOB_ID`{{}} variable for later use
+The execution returns a job ID, which is saved in the `$JOB_ID`{{}} variable for later use.
+
+Calrissian creates a dedicated namespace for this execution. Save its exact name as well:
+
+```
+JOB_NAMESPACE="convert-url-$JOB_ID"
+echo "$JOB_NAMESPACE"
+```{{exec}}

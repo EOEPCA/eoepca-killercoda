@@ -1,51 +1,46 @@
-before proceeding with the building block deployment, we need first to configure it. We can do so with the help of the EOEPCA dployment guide configuration script, by running
+Before deploying the building block, we need to configure it with the EOEPCA Deployment Guide script:
 
 ```
 bash configure-oapip.sh
 ```{{exec}}
 
-The script will start with the general EOEPCA configuration.
+The script starts with the general EOEPCA configuration. The Localcoda environment has already configured the domain, shared storage, and S3 service in `~/.eoepca/state`.
 
-As said in the previous chapter, we will use the nginx ingress in this demo deployment
+Use the nginx ingress:
 
 ```
 nginx
 ```{{exec}}
 
-as a domain, we use eoepca.local, which is mapped to the local machine in this demo
+The domain is already set to `eoepca.local`, so keep it:
 
 ```
-eoepca.local
+no
 ```{{exec}}
 
-For the persistant storage, we will use the standard storage class created in the pre-requisites
+For persistent ReadWriteOnce storage, use the default Localcoda storage class:
 
 ```
 local-path
 ```{{exec}}
 
-For the shared storage, we will use the Read-Write-Many storage class created in the pre-requisites
-
-```
-standard
-```{{exec}}
-
-as we have http only services, we do not need certificate generation (which anyway would not work in this demo environment)
+The tutorial uses HTTP only, so disable automatic certificate generation:
 
 ```
 no
 ```{{exec}}
 
-we now move to the Processing Building Block specific configuration, starting with the general Zoo configuration.
+We now move to the Processing Building Block configuration.
 
-We do not need to update domain and storage class, as we can use the standard ones
+Keep the existing domain, persistent storage class, and shared ReadWriteMany storage class:
 
 ```
 no
 no
+no
 ```{{exec}}
 
-the S3 endpoint that we will use for storing the output is the local S3 storage, which was already configured in the pre-requisites, so we do not need to update its configuration (endpoint, access key, secret key and region)
+The local S3 endpoint, access key, secret key, and region were also configured by the prerequisites. Keep all four values:
 
 ```
 no
@@ -54,26 +49,26 @@ no
 no
 ```{{exec}}
 
-For this test, we will not use the EOEPCA Workspace, but store results into a generic object storage. Thus we reply false to the next question
+For this tutorial, store results directly in object storage rather than using the EOEPCA Workspace API:
 
 ```
 false
 ```{{exec}}
 
-we will also use the same S3 storage for stagein and stageout, so we reply again to no to the next question
+Use the same S3 service for stage-in and stage-out:
 
 ```
 no
 ```{{exec}}
 
-now, the script is asking if we want to enable authentication via Open ID connect.
+The script now asks whether to enable OpenID Connect authentication.
 
 This is strongly recommended for the processing API, as otherwise every user will be able to deploy processing and run it.
 
-Anyway, for this basic demo, we will disable it by responding false to the question.
+For this basic tutorial, disable it:
 
 ```
 false
 ```{{exec}}
 
-we completed the Zoo general configuration and we will proceed in the next step with the processing engine specific configuration
+The general Zoo configuration is complete. In the next step, we configure the processing engine.
