@@ -95,14 +95,18 @@ curl -s "http://eoapi.eoepca.local/raster/collections/sentinel-2-iceland/WebMerc
 
 The command rewrites the service's internal tile hostname and adds the `/raster` ingress prefix. The resulting `tiles` URL can be used from your workstation in QGIS or web mapping libraries such as Leaflet and OpenLayers.
 
+> The first uncached mosaic tile can take a minute or more to render while the
+> source imagery is fetched. If the Localcoda proxy times out on that first
+> request, retry the tile once it has warmed the raster cache.
+
 ---
 
 ### Using the STAC Browser
 
 The deployment includes a built-in STAC Browser for visual exploration:
 
-1. Open the [STAC Browser]({{TRAFFIC_HOST1_82}}/browser)
-2. The root catalogue shows available collections
-3. Click into `sentinel-2-iceland` to browse items
+1. Open the [Iceland collection]({{TRAFFIC_HOST1_82}}/browser/collections/sentinel-2-iceland)
+2. Browse the available items
+3. Open an item to inspect its footprint and assets
 4. Each item shows a thumbnail and metadata
 5. Click on asset links to view or download data

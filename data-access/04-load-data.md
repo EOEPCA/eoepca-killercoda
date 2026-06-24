@@ -23,6 +23,9 @@ This script:
 2. Installs the `pypgstac` ingestion tool in the raster pod
 3. Loads the collection metadata and items into pgSTAC
 
+The first run installs a few Debian and Python packages in the pod, so expect
+about a minute of package-manager output before ingestion completes.
+
 ### Verify the Collection
 
 Let's verify the collection was loaded successfully by querying the STAC API:
@@ -55,4 +58,7 @@ The sample contains 226 items.
 
 ### Browse in STAC Browser
 
-The eoAPI deployment includes a built-in [STAC Browser]({{TRAFFIC_HOST1_82}}/browser). It is already configured to use this tutorial's STAC API: open it, select `sentinel-2-iceland`, and browse the items visually.
+The eoAPI deployment includes a built-in STAC Browser that is already configured
+to use this tutorial's STAC API. [Open the Iceland collection
+directly]({{TRAFFIC_HOST1_82}}/browser/collections/sentinel-2-iceland) to browse
+its items visually.

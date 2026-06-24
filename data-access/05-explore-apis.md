@@ -46,9 +46,11 @@ echo "Preview URL for true colour composite:"
 echo "{{TRAFFIC_HOST1_82}}/raster/collections/sentinel-2-iceland/items/${ITEM_ID}/preview?assets=visual"
 ```{{exec}}
 
-### Vector API - Check Available Features
+### Vector API - Discover Feature Endpoints
 
-The Vector API provides OGC API Features access to database tables exposed by TiPG:
+The Vector API provides OGC API Features access to PostgreSQL tables exposed by
+TiPG. This tutorial does not load a separate vector dataset, but we can inspect
+the links that advertise its collection and feature endpoints:
 
 ```
 curl -s "http://eoapi.eoepca.local/vector/" | jq '.links[] | select(.rel=="data") | {title, href}'
@@ -69,13 +71,41 @@ kubectl wait --for=condition=complete job/"$MAPS_SYNC_JOB" \
   --timeout=180s
 ```{{exec}}
 
-Now list the synchronised collections:
+The sync updates the live Maps configuration, which can briefly restart its
+worker. Retry the API for up to one minute, then list the synchronised
+collections:
 
 ```
-curl -s "http://eoapi.eoepca.local/maps/collections" |
-  jq '.collections[] | {id, title}'
+for attempt in {1..12}; do
+  if curl -fsS "http://eoapi.eoepca.local/maps/collections" \
+      -o /tmp/maps-collections.json &&
+     jq -e '.collections | type == "array"' \
+      /tmp/maps-collections.json >/dev/null; then
+    break
+  fi
+  echo "Waiting for the Maps API to reload (${attempt}/12)..."
+  sleep 5
+done
+
+jq '.collections[] | {id, title}' /tmp/maps-collections.json
 ```{{exec}}
 
+Request a small map around Reykjavik and verify that the Maps API returns a PNG:
+
+```
+MAP_QUERY='f=png&bbox=-22.5,63.8,-21.5,64.5&width=256&height=256&transparent=true'
+
+curl -fsS --max-time 60 \
+  -o /tmp/reykjavik-map.png \
+  -w 'Map response: HTTP %{http_code}, %{content_type}, %{size_download} bytes\n' \
+  "http://eoapi.eoepca.local/maps/collections/sentinel-2-iceland/map?${MAP_QUERY}"
+
+echo "{{TRAFFIC_HOST1_82}}/maps/collections/sentinel-2-iceland/map?${MAP_QUERY}"
+```{{exec}}
+
+The printed URL opens the generated map in your browser. Keeping the bounding
+box focused avoids the much heavier request needed to render all of Iceland at
+once.
 
 ### STAC Manager UI
 
