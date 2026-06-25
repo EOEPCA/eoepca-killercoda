@@ -60,5 +60,5 @@ The sample contains 226 items.
 
 The eoAPI deployment includes a built-in STAC Browser that is already configured
 to use this tutorial's STAC API. [Open the Iceland collection
-directly]({{TRAFFIC_HOST1_82}}/browser/collections/sentinel-2-iceland) to browse
+directly]({{TRAFFIC_HOST1_82}}/browser/external/{{TRAFFIC_HOST1_82}}/stac/collections/sentinel-2-iceland) to browse
 its items visually.

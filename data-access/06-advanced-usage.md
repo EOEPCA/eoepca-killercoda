@@ -105,7 +105,7 @@ The command rewrites the service's internal tile hostname and adds the `/raster`
 
 The deployment includes a built-in STAC Browser for visual exploration:
 
-1. Open the [Iceland collection]({{TRAFFIC_HOST1_82}}/browser/collections/sentinel-2-iceland)
+1. Open the [Iceland collection]({{TRAFFIC_HOST1_82}}/browser/external/{{TRAFFIC_HOST1_82}}/stac/collections/sentinel-2-iceland)
 2. Browse the available items
 3. Open an item to inspect its footprint and assets
 4. Each item shows a thumbnail and metadata
