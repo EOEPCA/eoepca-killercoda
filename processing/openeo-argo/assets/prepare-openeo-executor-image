@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+IMAGE="${OPENEO_EXECUTOR_IMAGE:-docker.io/eoepca/openeo-argoworkflows:executor-localcoda}"
+WORK_DIR="${OPENEO_EXECUTOR_BUILD_DIR:-/tmp/openeo-executor-image}"
+IMPORT_LOG="${WORK_DIR}/import.log"
+
+if crictl inspecti "${IMAGE}" >/dev/null 2>&1; then
+  echo "Local OpenEO executor image already present: ${IMAGE}"
+  exit 0
+fi
+
+mkdir -p "${WORK_DIR}"
+cp /tmp/assets/Dockerfile.executor-v2 "${WORK_DIR}/Dockerfile"
+cp /tmp/assets/io_fixed.py "${WORK_DIR}/io_fixed.py"
+
+echo "Building ${IMAGE}..."
+docker build --progress=plain --tag "${IMAGE}" "${WORK_DIR}"
+
+echo "Importing ${IMAGE} into k3s containerd..."
+if ! docker save "${IMAGE}" | k3s ctr --namespace k8s.io images import - >"${IMPORT_LOG}" 2>&1; then
+  echo "Failed to import ${IMAGE}. Last import log lines:" >&2
+  tail -80 "${IMPORT_LOG}" >&2 || true
+  exit 1
+fi
+k3s ctr --namespace k8s.io images label \
+  "${IMAGE}" io.cri-containerd.image=managed >/dev/null
+
+echo "Local OpenEO executor image ready: ${IMAGE}"

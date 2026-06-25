@@ -1,6 +1,6 @@
 {
-  "title": "OpenEO ArgoWorkflows with Dask Deployment",
-  "description": "Deploy the EOEPCA Processing Building Block with OpenEO ArgoWorkflows and Dask distributed processing",
+  "title": "OpenEO ArgoWorkflows with Dask",
+  "description": "Deploy and use the EOEPCA OpenEO ArgoWorkflows backend with Dask distributed processing",
   "details": {
     "intro": {
       "title": "Introduction",
@@ -14,7 +14,7 @@
         "text": "1-prerequisites.md"
       },
       {
-        "title": "Configuration",
+        "title": "Configure OpenEO",
         "text": "2-configure.md"
       },
       {
@@ -22,23 +22,23 @@
         "text": "3-deploy-openeo-argo.md"
       },
       {
-        "title": "Deploy Ingress and Auth",
+        "title": "Ingress and Demo Auth",
         "text": "4-deploy-ingress.md"
       },
       {
-        "title": "Deploy Mock STAC",
+        "title": "Resource Discovery and Data",
         "text": "5-deploy-mock-stac.md"
       },
       {
-        "title": "API Usage",
+        "title": "Explore the OpenEO API",
         "text": "6-api-usage.md"
       },
       {
-        "title": "Run a Job",
+        "title": "Run a Processing Job",
         "text": "7-run-job.md"
       },
       {
-        "title": "Monitoring",
+        "title": "Monitoring and Troubleshooting",
         "text": "8-monitoring.md"
       }
     ],

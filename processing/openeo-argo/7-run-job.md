@@ -1,107 +1,117 @@
-## Running a Job
+## Run a Sentinel-2 Processing Job
 
-### Create a Job
-
-Submit a job that loads from our test collection:
+Create a batch job that loads the red (`B04`) and near-infrared (`B08`) bands over a small area, then writes the result as NetCDF. The smaller extent keeps the workshop job quick while still reading real public Sentinel-2 COGs.
 
 ```bash
-curl -s -u eoepcauser:eoepcapass -X POST \
-  -H "Content-Type: application/json" \
-  http://openeo.eoepca.local/jobs \
+JOB_HEADERS=$(mktemp)
+
+curl -fsS -D "${JOB_HEADERS}" -o /dev/null \
+  -u "${OPENEO_USER}:${OPENEO_PASSWORD}" \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  "${OPENEO_URL}/jobs" \
   -d '{
     "process": {
       "process_graph": {
         "load": {
           "process_id": "load_collection",
           "arguments": {
-            "id": "test",
-            "spatial_extent": {"west": 11.4, "south": 46.5, "east": 11.5, "north": 46.6},
-            "temporal_extent": ["2024-06-01", "2024-06-10"]
+            "id": "sentinel-2-datacube",
+            "spatial_extent": {
+              "west": -33.80,
+              "south": 40.75,
+              "east": -33.75,
+              "north": 40.80
+            },
+            "temporal_extent": ["2025-10-29", "2025-10-31"],
+            "bands": ["B04", "B08"]
           }
         },
         "save": {
           "process_id": "save_result",
           "arguments": {
             "data": {"from_node": "load"},
-            "format": "JSON"
+            "format": "netCDF"
           },
           "result": true
         }
       }
     },
-    "title": "Test Job"
-  }' | jq .
+    "title": "Sentinel-2 B04/B08 subset"
+  }'
+
+export JOB_ID=$(
+  awk 'BEGIN {IGNORECASE=1}
+       /^openeo-identifier:/ {gsub("\r", "", $2); print $2}' \
+    "${JOB_HEADERS}"
+)
+echo "Created job: ${JOB_ID}"
 ```{{exec}}
 
-### Start the Job
-
-Get the job ID and start execution:
+Start the job:
 
 ```bash
-JOB_ID=$(curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/jobs | jq -r '.jobs[-1].id')
-echo "Starting job: $JOB_ID"
+export WORKFLOW_COUNT=$(
+  kubectl get workflows -n openeo \
+    --sort-by=.metadata.creationTimestamp \
+    -o json | jq '.items | length'
+)
 
-curl -s -u eoepcauser:eoepcapass -X POST \
-  http://openeo.eoepca.local/jobs/${JOB_ID}/results
+curl -fsS -u "${OPENEO_USER}:${OPENEO_PASSWORD}" \
+  -X POST "${OPENEO_URL}/jobs/${JOB_ID}/results"
+echo
 ```{{exec}}
 
-### Monitor Execution
-
-Watch the pods to see the executor and Dask workers spin up:
+Argo creates an executor pod and Dask creates a temporary scheduler and worker. Poll every 30 seconds until the newest workflow reaches a terminal phase:
 
 ```bash
-kubectl get pods -n openeo -w
+for attempt in $(seq 1 20); do
+  workflow=$(
+    kubectl get workflows -n openeo \
+      --sort-by=.metadata.creationTimestamp \
+      -o json \
+      | jq -r --argjson index "${WORKFLOW_COUNT}" '
+          .items[$index] // {}
+          | if .metadata.name
+            then "\(.metadata.name) \(.status.phase // "Pending")"
+            else "waiting for workflow"
+            end
+        '
+  )
+  echo "attempt ${attempt}/20: ${workflow}"
+  case "${workflow}" in
+    *Succeeded|*Failed|*Error) break ;;
+  esac
+  sleep 30
+done
 ```{{exec}}
 
-Press `Ctrl+C` once you see the executor pod reach `Completed` status.
-
-You should see:
-- `openeo-executor-*` pod start and complete
-- `dask-scheduler-*` pod spin up temporarily
-- `dask-worker-*` pod spin up temporarily
-
-### Check Job Status
+The job metadata endpoint can briefly lag behind Argo. The results endpoint is the definitive validation that output was published:
 
 ```bash
-curl -s -u eoepcauser:eoepcapass http://openeo.eoepca.local/jobs/${JOB_ID} | jq '{id, status, title}'
+RESULTS=$(
+  curl -fsS -u "${OPENEO_USER}:${OPENEO_PASSWORD}" \
+    "${OPENEO_URL}/jobs/${JOB_ID}/results"
+)
+
+jq '{
+  id,
+  status: .["openeo:status"],
+  bbox: .extent.spatial.bbox[0],
+  assets: (.assets | keys)
+}' <<<"${RESULTS}"
 ```{{exec}}
 
-Expected output:
-```json
-{
-  "id": "<job-id>",
-  "status": "finished",
-  "title": "Test Job"
-}
-```
-
-### View Workflow Status
+Download the first result asset through the authenticated ingress:
 
 ```bash
-kubectl get workflows -n openeo
+RESULT_URL=$(jq -r '.assets | to_entries[0].value.href' <<<"${RESULTS}")
+
+curl -fsS -u "${OPENEO_USER}:${OPENEO_PASSWORD}" \
+  "${RESULT_URL}" \
+  -o ~/openeo-result.nc
+
+ls -lh ~/openeo-result.nc
 ```{{exec}}
 
-You should see the workflow with `STATUS: Succeeded`.
-
-### Verify Output
-
-The job generates a STAC collection in the user workspace. View the output:
-
-```bash
-USER_ID="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
-kubectl exec -n openeo deploy/openeo-openeo-argo -c openeo-argo -- \
-  cat /user_workspaces/${USER_ID}/${JOB_ID}/STAC/${JOB_ID}_collection.json | jq '{type, id, description}'
-```{{exec}}
-
-Expected output:
-```json
-{
-  "type": "Collection",
-  "id": "<job-id>",
-  "description": "The STAC Collection representing the output of job <job-id>"
-}
-```
-
-This confirms the job executed successfully and generated output. The STAC collection is empty because our mock catalogue has no actual data items, but the entire processing pipeline ran correctly.
-
-With a real STAC catalogue containing Earth observation data, the output would include processed raster files in the `RESULTS` directory.
+You now have a real NetCDF result generated from the two Sentinel-2 bands.

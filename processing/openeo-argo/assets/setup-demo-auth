@@ -50,7 +50,7 @@ data:
         location / {
           auth_basic "OpenEO";
           auth_basic_user_file /etc/nginx/.htpasswd;
-          rewrite ^/(.*)\$ /openeo/1.1.0/\$1 break;
+          rewrite ^/(?!openeo/1\\.1\\.0/)(.*)\$ /openeo/1.1.0/\$1 break;
           proxy_pass http://openeo-openeo-argo:8000;
           proxy_set_header Host \$host;
           proxy_set_header Authorization "Bearer oidc/eoepca/$TOKEN";
@@ -93,5 +93,6 @@ spec:
   ports: [{port: 8080, targetPort: 8080}]
 EOF
 
+kubectl rollout restart deployment openeo-auth-proxy -n openeo
 kubectl rollout status deployment openeo-auth-proxy -n openeo --timeout=120s
 echo "Demo auth configured (user: eoepcauser / pass: eoepcapass)"

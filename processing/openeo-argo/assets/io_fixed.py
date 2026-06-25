@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 import os
 import pyproj
 import pystac_client
@@ -62,6 +61,11 @@ def load_collection(
 
     example_item = result_items[0]
 
+    crs = None
+    resolution = None
+    nodata = None
+    dtype = None
+
     if "proj:wkt2" in example_item.properties.keys():
         crs = pyproj.CRS.from_wkt(example_item.properties["proj:wkt2"])
     elif "proj:epsg" in example_item.properties.keys():
@@ -77,16 +81,21 @@ def load_collection(
                         nodata = band['nodata']
                     if 'data_type' in band:
                         dtype = band['data_type']
-            if resolution and nodata and dtype:
+            if resolution is not None and nodata is not None and dtype:
                 break
-    else:
-        # FIX 1: crs is already a CRS object, don't call from_wkt on it
+
+    if crs is None:
+        raise ValueError("The selected STAC items do not define proj:wkt2 or proj:epsg.")
+
+    if resolution is None:
         crs_measurement = crs.axis_info[0].unit_name
 
         if crs_measurement == 'metre':
             resolution = 10
         elif crs_measurement == 'degree':
             resolution = 0.0009
+        else:
+            raise ValueError(f"Unsupported CRS unit: {crs_measurement}")
         
     # TODO Need to tidy up the logic above.
     kwargs = {}
@@ -97,11 +106,12 @@ def load_collection(
         if "int" in dtype and isinstance(nodata, float):
             nodata = int(nodata)
 
-    if nodata:
+    if nodata is not None:
         kwargs["nodata"] = nodata       
 
     lazy_xarray = stac_load(
         result_items,
+        bands=bands,
         crs=crs,
         resolution=resolution,
         # TODO Add some way to decide chunks
@@ -135,8 +145,8 @@ def save_result(
 
     import uuid
 
-    logging.info("DATA ", data)
-    logging.info("DATA ATTRS ", data.attrs)
+    logging.info("DATA %s", data)
+    logging.info("DATA ATTRS %s", data.attrs)
 
     _id = str(uuid.uuid4())
     # TODO A nice abstraction to split the xarray into the respective output datasets

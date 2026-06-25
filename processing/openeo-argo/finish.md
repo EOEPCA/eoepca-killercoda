@@ -1,35 +1,21 @@
+## OpenEO ArgoWorkflows Deployment Complete
 
-## Congratulations! 🎉
+You have:
 
-You've successfully deployed OpenEO ArgoWorkflows with Dask distributed processing.
+- Deployed the OpenEO API, PostgreSQL, Redis, Argo Workflows, and Dask Gateway.
+- Exposed the API through NGINX ingress with workshop-only demo authentication.
+- Deployed EOEPCA Resource Discovery and ingested a datacube-ready Sentinel-2 collection.
+- Explored OpenEO collections and processes through the API.
+- Submitted a real Sentinel-2 batch job.
+- Observed Argo and temporary Dask resources during execution.
+- Downloaded the generated NetCDF result.
 
-### What You Accomplished
+The demo OIDC provider and hard-coded credentials are intentionally workshop-only. A production deployment should use the platform identity provider, persistent secrets, appropriately sized resource requests, and a maintained executor image.
 
-- ✅ Deployed OpenEO API with PostgreSQL and Redis
-- ✅ Fixed the executor image missing `libexpat`
-- ✅ Set up authentication without external OIDC
-- ✅ Deployed a mock STAC catalogue
-- ✅ Submitted and executed a job through the full pipeline
-- ✅ Observed Dask scheduler and workers scaling dynamically
+Useful references:
 
-### Architecture Overview
-
-- **OpenEO API** - Handles job submission and management
-- **PostgreSQL** - Stores job metadata and user data
-- **Redis** - Manages job queues and caching
-- **Argo Workflows** - Orchestrates job execution on Kubernetes
-- **Dask Gateway** - Manages distributed Dask clusters for processing
-
-### Next Steps
-
-1. Connect to a real STAC catalogue with actual Earth observation data
-2. Configure OIDC authentication for production use
-3. Adjust Dask worker resources based on your workload
-4. Integrate with existing processing pipelines
-
-### Resources
-
-- [OpenEO Documentation](https://openeo.org)
-- [EOEPCA Documentation](https://eoepca.org)
-- [Dask Documentation](https://docs.dask.org)
+- [OpenEO](https://openeo.org/)
+- [OpenEO API specification](https://api.openeo.org/)
+- [Dask](https://docs.dask.org/)
 - [Argo Workflows](https://argoproj.github.io/workflows/)
+- [EOEPCA](https://eoepca.org/)
