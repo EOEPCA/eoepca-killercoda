@@ -1,26 +1,33 @@
-We need now to configure the OpenEO building block. To do so, we can use the deployment guide via
+Next, run the Deployment Guide configuration script:
 
 ```
 bash configure-openeo.sh
 ```{{exec}}
 
-This building block supports two possible backends for running the processing, a [Spark/Geotrellis](https://github.com/locationtech/geotrellis) backend and a [Dask](https://www.dask.org/) backend. In this demonstration, we'll use the GeoTrellis backend as it's more suitable for demonstration purposes.
+The Processing Building Block supports a [Spark/GeoTrellis](https://github.com/locationtech/geotrellis) backend and a [Dask](https://www.dask.org/) backend. Select GeoTrellis for this workshop:
 
 ```bash
 geotrellis
 ```{{exec}}
 
-We are then asked whether we want to update the base domain and persistent storage class that were configured in the prerequisite step. We do not need to, and can reply `no` to both questions.
+Keep the base domain and persistent storage class configured in the prerequisite step by answering `no` to both update prompts:
 
 ```
 no
 no
 ```{{exec}}
 
-We are now asked if we want to enable authentication using the [EOEPCA IAM](https://eoepca.readthedocs.io/projects/iam/en/latest/) component via its [OIDC Interface](https://openid.net/). For this demo, we will not use OIDC authentication, so we also reply
+The final prompt offers authentication through the [EOEPCA IAM](https://eoepca.readthedocs.io/projects/iam/en/latest/) component using [OIDC](https://openid.net/). This self-contained workshop uses the backend's demo basic authentication instead, so disable OIDC:
 
 ```
 no
 ```{{exec}}
 
-The deployment script has now generated the necessary configuration files for the deployment.
+The script uses the shared state in `~/.eoepca/state` to generate:
+
+- `sparkoperator/generated-values.yaml`
+- `zookeeper/generated-values.yaml`
+- `openeo-geotrellis/generated-values.yaml`
+- `openeo-geotrellis/generated-ingress.yaml`
+
+The next steps pass these generated files directly to Helm and `kubectl`. The OpenEO image tag and pull policy are overridden only in the deployment command to use the Localcoda-compatible image prepared later in this tutorial.

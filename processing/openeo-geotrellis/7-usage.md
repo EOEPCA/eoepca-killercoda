@@ -1,37 +1,36 @@
-OpenEO users will not use the API directly, but mostly use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/) or the [OpenEO Web Editor](https://github.com/Open-EO/openeo-web-editor).
+OpenEO users usually work through a client such as the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/) or the [OpenEO Web Editor](https://github.com/Open-EO/openeo-web-editor), rather than constructing HTTP requests manually.
 
-If we want to use the [Python OpenEO Client](https://open-eo.github.io/openeo-python-client/), we can configure a python virtual environment and install it via
+Create a Python virtual environment and install the client and the libraries used to inspect downloaded NetCDF files:
 
-```
+```bash
 cd ~
 python3 -m venv openeo-test
 source openeo-test/bin/activate
-pip install --upgrade openeo xarray netCDF4 h5netcdf
+pip install --upgrade openeo xarray netCDF4
 ```{{exec}}
 
-We can then run a basic processing from python. First we run python
+Start the Python interpreter:
 
-```
+```bash
 python3
 ```{{exec}}
 
-then we import the OpenEO client library and all the other required libraries via
+Import the required libraries:
 
-```
+```python
 import openeo
 import json
-import os
 import xarray
 ```{{exec}}
 
-we connect to the OpenEO backend via
+Connect and authenticate with the demo account:
 
 ```python
 connection = openeo.connect("http://openeo.eoepca.local")
-connection.authenticate_basic("testuser","testuser123")
+connection.authenticate_basic("testuser", "testuser123")
 ```{{exec}}
 
-and define a test dataset via
+Define the test collection and the subset used by the examples:
 
 ```python
 collection_id = "TestCollection-LonLat16x16"
@@ -39,16 +38,16 @@ temporal_extent = "2024-09"
 spatial_extent = {"west": 3, "south": 51, "east": 5, "north": 53}
 ```{{exec}}
 
-and we can run the basic operations below
+We can now run the operations below.
 
-Quick Collections and Processes Discovery:
+### Discover Collections and Processes
 
 ```python
 print(f"Collections: {connection.list_collection_ids()}")
 print(f"Process count: {len(connection.list_processes())}")
 ```{{exec}}
 
-Execute Simple Process:
+### Execute a Simple Process
 
 ```python
 result = connection.execute({
@@ -61,7 +60,9 @@ result = connection.execute({
 print(f"3 + 5 = {result}")
 ```{{exec}}
 
-Load and Download Data:
+### Load and Download Data
+
+This is a synchronous processing request. It normally takes around 30 seconds in the workshop environment while the Spark executor performs the calculation.
 
 ```python
 cube_original = connection.load_collection(
@@ -75,7 +76,7 @@ ds = xarray.load_dataset("original.nc")
 print(ds)
 ```{{exec}}
 
-Build Complex Processing Chain:
+### Build a Processing Chain
 
 ```python
 cube_processed = connection.load_collection(
@@ -92,17 +93,22 @@ graph = json.loads(cube_processed.to_json())
 print(f"Processing chain: {' → '.join(graph['process_graph'].keys())}")
 ```{{exec}}
 
-Save and Validate Process Graph:
+### Save and Validate the Process Graph
 
 ```python
 with open("workflow.json", "w") as f:
     json.dump(graph, f, indent=2)
 
-connection.validate_process_graph(graph)
-print("✓ Graph validated and saved")
+validation_errors = connection.validate_process_graph(graph)
+if validation_errors:
+    raise RuntimeError(validation_errors)
+
+print("✓ Graph is valid and saved")
 ```{{exec}}
 
-Band Mathematics:
+### Band Mathematics
+
+The two downloads below are also synchronous and can each take around 30 seconds.
 
 ```python
 cube_bands = connection.load_collection(
@@ -121,7 +127,7 @@ cube_bands.download("bands.nc")
 average.download("average.nc")
 ```{{exec}}
 
-Verify Band Calculation:
+### Verify the Band Calculation
 
 ```python
 ds_bands = xarray.load_dataset("bands.nc")
@@ -138,13 +144,12 @@ print(f"Expected average: {expected:.2f}, Actual: {actual:.2f}")
 print(f"✓ Calculation correct" if abs(expected - actual) < 0.001 else "✗ Mismatch")
 ```{{exec}}
 
-Once done, you can exit the python virtual environment:
+Exit Python, inspect the generated files, and deactivate the virtual environment:
 
-```python
+```text
 exit()
 ls -lh *.nc *.json
 deactivate
 ```{{exec}}
 
-If you want to use the visual OpenEO Web Editor, you can connect to your instance via the [OpenEO Web Editor public Demo instance](https://editor.openeo.org/?server={{TRAFFIC_HOST1_81}}), and then authenticate with the user `testuser`{{copy}} and password `testuser123`{{copy}}. In the Web Editor, you can replicate what was done above by dragging boxes.
-
+To build a process graph visually, open the [OpenEO Web Editor connected to this backend](https://editor.openeo.org/?server={{TRAFFIC_HOST1_81}}). Authenticate with username `testuser`{{copy}} and password `testuser123`{{copy}}, then use the **Processes** panel to reproduce the examples by connecting process nodes.

@@ -1,4 +1,4 @@
-[Apache ZooKeeper](https://zookeeper.apache.org/) is required for coordination within the OpenEO GeoTrellis components.
+[Apache ZooKeeper](https://zookeeper.apache.org/) provides coordination for the OpenEO GeoTrellis components. The generated values create one ZooKeeper replica with persistent storage, which is sufficient for this workshop but not a production high-availability setup.
 
 We can deploy ZooKeeper using Helm:
 
@@ -12,3 +12,5 @@ helm upgrade -i openeo-geotrellis-zookeeper \
     --set image.tag=3.8.1-debian-11-r18 \
     --wait --timeout 5m
 ```{{exec}}
+
+The command should finish with `STATUS: deployed`. Helm may also print optional `zkCli.sh` connection instructions; no additional action is needed.
