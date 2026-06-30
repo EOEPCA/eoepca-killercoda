@@ -56,6 +56,18 @@ the links that advertise its collection and feature endpoints:
 curl -s "http://eoapi.eoepca.local/vector/" | jq '.links[] | select(.rel=="data") | {title, href}'
 ```{{exec}}
 
+### Multidimensional API - Inspect Available Operations
+
+The Multidimensional API uses TiTiler and xarray to access formats such as Zarr
+and NetCDF. This tutorial does not load a multidimensional dataset, but its
+OpenAPI document confirms the service is available and shows how many operations
+it exposes:
+
+```
+curl -fsS "http://eoapi.eoepca.local/multidim/api" |
+  jq '{title: .info.title, version: .info.version, endpoints: (.paths | keys | length)}'
+```{{exec}}
+
 ### OGC API Maps - Check Synced Collections
 
 The Maps Plugin synchronises STAC collections into an OGC API Maps catalogue every ten minutes. Trigger a sync now so the collection we just loaded is immediately available:
@@ -119,9 +131,8 @@ Access the STAC Manager from [this link]({{TRAFFIC_HOST1_82}}/manager/).
 ### Swagger Documentation
 
 Each API provides interactive Swagger documentation:
-- STAC API: `{{TRAFFIC_HOST1_82}}/stac/api.html`
-- Raster API: `{{TRAFFIC_HOST1_82}}/raster/api.html`
-- Vector API: `{{TRAFFIC_HOST1_82}}/vector/api.html`
-- OGC API Maps: `{{TRAFFIC_HOST1_82}}/maps/openapi?f=html`
-
-You can access the STAC API documentation from [this link]({{TRAFFIC_HOST1_82}}/stac/api.html).
+- [STAC API]({{TRAFFIC_HOST1_82}}/stac/api.html)
+- [Raster API]({{TRAFFIC_HOST1_82}}/raster/api.html)
+- [Vector API]({{TRAFFIC_HOST1_82}}/vector/api.html)
+- [Multidimensional API]({{TRAFFIC_HOST1_82}}/multidim/api.html)
+- [OGC API Maps]({{TRAFFIC_HOST1_82}}/maps/openapi?f=html)

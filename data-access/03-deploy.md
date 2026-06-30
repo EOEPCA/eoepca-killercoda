@@ -108,7 +108,7 @@ bash validation.sh nomonitoring
 Finally, verify every ingress route used in this tutorial, including the STAC Manager:
 
 ```
-for path in stac/ raster/ vector/ maps manager/ browser; do
+for path in stac/ raster/ vector/ multidim/ maps manager/ browser; do
   curl -fsS -o /dev/null \
     -w "${path} -> HTTP %{http_code}\n" \
     "${EOAPI_PUBLIC_URL}/${path}"
@@ -119,5 +119,6 @@ Once deployed, the Data Access services should be accessible:
 - STAC API: [Access here]({{TRAFFIC_HOST1_82}}/stac/)
 - Raster API: [Access here]({{TRAFFIC_HOST1_82}}/raster/)
 - Vector API: [Access here]({{TRAFFIC_HOST1_82}}/vector/)
+- Multidimensional API: [Access here]({{TRAFFIC_HOST1_82}}/multidim/)
 - OGC API Maps: [Access here]({{TRAFFIC_HOST1_82}}/maps)
 - STAC Manager: [Access here]({{TRAFFIC_HOST1_82}}/manager/)

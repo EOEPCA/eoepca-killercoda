@@ -1,7 +1,7 @@
 
 We have learned in this tutorial how to deploy and use the EOEPCA Data Access Building Block.
 
-You can now play more with the deployed software, loading additional collections or exploring the APIs further, or jump to another one of the [EOEPCA Tutorials](https://killercoda.com/eoepca/).
+You can now play more with the deployed software, loading additional collections or exploring the APIs further, or choose another scenario from the [EOEPCA tutorial repository](https://github.com/EOEPCA/eoepca-killercoda).
 
 For more information about EOEPCA and the Data Access Building Block, and more advanced deployments (including OIDC authentication with Keycloak), have a look at:
 
