@@ -46,10 +46,12 @@ kubectl wait --for=condition=Ready --timeout=600s \
 The pod can become Kubernetes-ready shortly before the OpenEO HTTP server starts accepting requests. Use this bounded check to wait up to five more minutes for the API:
 
 ```bash
+api_ready=false
 for attempt in $(seq 1 20); do
   if curl -fsS http://openeo.eoepca.local/openeo/1.2/ \
       >/dev/null 2>&1; then
     echo "OpenEO API is ready."
+    api_ready=true
     break
   fi
 
@@ -57,12 +59,14 @@ for attempt in $(seq 1 20); do
     echo "OpenEO API did not become ready in time." >&2
     kubectl logs -n openeo-geotrellis \
       -l spark-role=driver --tail=50
-    exit 1
+    break
   fi
 
   echo "OpenEO API is still starting (${attempt}/20)..."
   sleep 15
 done
+
+test "${api_ready}" = true
 ```{{exec}}
 
 Display the completed deployment:

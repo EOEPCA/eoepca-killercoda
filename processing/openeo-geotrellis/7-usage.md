@@ -6,8 +6,10 @@ Create a Python virtual environment and install the client and the libraries use
 cd ~
 python3 -m venv openeo-test
 source openeo-test/bin/activate
-pip install --upgrade openeo xarray netCDF4
+pip install openeo==0.50.0 xarray==2025.1.1 netCDF4==1.7.4
 ```{{exec}}
+
+The versions are pinned to keep the workshop reproducible and are the versions used by the examples below.
 
 Start the Python interpreter:
 
@@ -60,6 +62,8 @@ result = connection.execute({
 print(f"3 + 5 = {result}")
 ```{{exec}}
 
+The expected result is `3 + 5 = 8`.
+
 ### Load and Download Data
 
 This is a synchronous processing request. It normally takes around 30 seconds in the workshop environment while the Spark executor performs the calculation.
@@ -75,6 +79,8 @@ cube_original.download("original.nc")
 ds = xarray.load_dataset("original.nc")
 print(ds)
 ```{{exec}}
+
+The dataset summary should show the `Longitude`, `Latitude`, and `Day` variables with dimensions `t`, `y`, and `x`.
 
 ### Build a Processing Chain
 

@@ -26,7 +26,7 @@ Localcoda has already set the top-level domain to `eoepca.local`. When asked whe
 no
 ```{{exec}}
 
-We do not need a specific StorageClass for this component, so for this example we will use the basic storage class provided in this sandbox. In an operational environment, use a reliable, backed-up storage class for persistent data:
+ZooKeeper needs persistent storage. For this workshop, use the `local-path` StorageClass provided by the sandbox. In an operational environment, select a reliable, backed-up StorageClass instead:
 
 ```
 local-path
