@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# The upstream STAC Browser image contains numeric file owners outside the
+# Localcoda/sysbox user-namespace range. Use the pre-sanitized public image and
+# update the Application Hub profiles without changing the Deployment Guide.
+
+SOURCE_IMAGE="docker.io/eoepca/stac-browser:main@sha256:005dbf4abc03afcd051e7ae316760e0532f975b71016f2c598bc50b310f236bd"
+OLD_LOCAL_IMAGE="docker.io/eoepca/stac-browser:localcoda"
+STAC_BROWSER_IMAGE="${STAC_BROWSER_IMAGE:-docker.io/eoepcaci/stac-browser:main-005dbf4a-localcoda@sha256:1ca73ea20f303fea3edd67f9507aebb82b59a5d8c81bcce084a20cab860873f0}"
+WORK_DIR="$(mktemp -d /tmp/configure-stac-browser-image.XXXXXX)"
+trap 'rm -rf "${WORK_DIR}"' EXIT
+
+CONFIG_FILE="${WORK_DIR}/config.yml"
+JUPYTER_CONFIG_FILE="${WORK_DIR}/jupyter_config.py"
+NEEDS_UPDATE=false
+
+echo "Pulling the Localcoda-compatible STAC Browser image..."
+crictl pull "${STAC_BROWSER_IMAGE}"
+
+if ! kubectl get configmap application-hub-jupyter-config \
+    -n application-hub -o jsonpath='{.data.config\.yml}' >"${CONFIG_FILE}"; then
+  echo "Application Hub profile ConfigMap was not found. Deploy the Application Hub first." >&2
+  exit 1
+fi
+
+kubectl get configmap application-hub-jupyter-config \
+  -n application-hub -o jsonpath='{.data.jupyter_config\.py}' \
+  >"${JUPYTER_CONFIG_FILE}"
+
+if ! grep -qF "${STAC_BROWSER_IMAGE}" "${CONFIG_FILE}"; then
+  if grep -qF "${SOURCE_IMAGE}" "${CONFIG_FILE}"; then
+    sed -i "s#${SOURCE_IMAGE}#${STAC_BROWSER_IMAGE}#g" "${CONFIG_FILE}"
+  elif grep -qF "${OLD_LOCAL_IMAGE}" "${CONFIG_FILE}"; then
+    sed -i "s#${OLD_LOCAL_IMAGE}#${STAC_BROWSER_IMAGE}#g" "${CONFIG_FILE}"
+  else
+    echo "Could not find the expected STAC Browser profile image." >&2
+    exit 1
+  fi
+  NEEDS_UPDATE=true
+fi
+
+# Restore the chart's normal remote-image policy if the previous local-image
+# workaround was used in this cluster.
+if grep -q 'c.KubeSpawner.image_pull_policy = "IfNotPresent"' \
+    "${JUPYTER_CONFIG_FILE}"; then
+  sed -i \
+    's/c.KubeSpawner.image_pull_policy = "IfNotPresent"/c.KubeSpawner.image_pull_policy = "Always"/' \
+    "${JUPYTER_CONFIG_FILE}"
+  NEEDS_UPDATE=true
+fi
+
+if [[ "${NEEDS_UPDATE}" == false ]]; then
+  echo "STAC Browser profile image is already configured."
+  exit 0
+fi
+
+kubectl patch configmap application-hub-jupyter-config \
+  -n application-hub --type=merge \
+  -p "$(jq -n \
+    --rawfile config "${CONFIG_FILE}" \
+    --rawfile jupyter_config "${JUPYTER_CONFIG_FILE}" \
+    '{data: {
+      "config.yml": $config,
+      "jupyter_config.py": $jupyter_config
+    }}')" >/dev/null
+
+kubectl rollout restart deployment/application-hub-hub -n application-hub >/dev/null
+kubectl rollout status deployment/application-hub-hub \
+  -n application-hub --timeout=180s
+
+echo "STAC Browser profile image is ready."

@@ -40,4 +40,13 @@ kubectl get pods -n application-hub
 
 You should see the JupyterHub hub, proxy, and related components in `Running` state.
 
-Then visit the [Application Hub]({{TRAFFIC_HOST1_83}}/) of the deployed service.
+### Prepare the STAC Browser Profile
+
+Prepare the STAC Browser image used by this Localcoda environment:
+
+```bash
+/tmp/assets/configure-stac-browser-image
+```{{exec}}
+
+The initial download can take a couple of minutes. Wait for the script to complete before continuing.
+

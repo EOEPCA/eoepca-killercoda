@@ -11,7 +11,7 @@
 
 5. Click onto **Start** at the bottom of the window.
 
-> You may need to wait for a few minutes while your server is being prepared.
+The first start normally takes two or three minutes. The JupyterHub progress page redirects automatically when it is ready.
 
 Once ready, you will be automatically redirected and you will now have access to a STAC Browser running in your own profile.
 This is an example of an application that can be spawned in the Application Hub using a predefined profile.
