@@ -8,7 +8,7 @@ curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx -
 
 We also need to install uuidgen:
 ```
-sudo apt-get install uuid-runtime
+sudo apt-get install -y uuid-runtime
 ```{{exec}}
 
 > If using Localcoda and its Docker runtime environment, also run this command:
