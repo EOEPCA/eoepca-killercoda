@@ -9,9 +9,9 @@ bash configure-app-hub.sh
 
 When prompted, provide the following configuration values.
 
-For the base domain name:
+Base domain name is already correctly set as `eoepca.local`{{}}:
 ```
-eoepca.local
+n
 ```{{exec}}
 
 For the storage class:
@@ -51,7 +51,7 @@ The configuration script generates two files:
 ```bash
 source ~/.eoepca/state
 sed -i "s#http://${KEYCLOAK_HOST}#https://${KEYCLOAK_HOST}#g" generated-values.yaml
-```
+```{{exec}}
 
 You can inspect the generated values:
 
