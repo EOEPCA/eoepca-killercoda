@@ -1,21 +1,26 @@
-
-We have learned in this tutorial how to use the EOEPCA Data Gateway Building Block through EODAG.
+We have used EODAG as the implementation of the EOEPCA Data Gateway and exercised the same gateway through three interfaces.
 
 You've explored:
+
 - Installing and configuring EODAG
 - Listing available providers and product types
-- Searching for EO products via CLI
-- Running EODAG as a STAC-compliant REST API server
-- Using the Python API for programmatic access
+- Discovering product types from a live provider
+- Searching and normalising EO product metadata with the CLI
+- Observing automatic provider fallback
+- Querying an explicitly selected provider through a STAC API
+- Using the Python API to inspect products and their data assets
 
 ### Key Takeaways
 
-- The Data Gateway provides a unified interface to 50+ EO data providers
-- EODAG abstracts away provider-specific protocols (STAC, OpenSearch, OData, etc.)
-- The STAC server capability allows integration with any STAC-compatible client
-- Other EOEPCA building blocks leverage the Data Gateway for data access
+- The gateway is a consistent client interface, not a central copy of provider data.
+- Product types give workflows stable dataset identifiers across different backends.
+- EODAG normalises provider-specific protocols and metadata into common searches and product objects.
+- Provider coverage, authentication, metadata, and assets still differ, so provider choice remains visible and controllable.
+- STAC provides an interoperable HTTP boundary, while the Python API is the natural choice for direct workflow integration.
+- Large product downloads should be planned deliberately; discovery and metadata searches are lightweight by comparison.
 
 For more information:
+
 - [EOEPCA Website](https://eoepca.org/)
 - [EOEPCA Git Repository](https://github.com/EOEPCA/)
 - [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/)
