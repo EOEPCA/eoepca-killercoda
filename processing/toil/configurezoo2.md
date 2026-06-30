@@ -1,26 +1,27 @@
-we are configuration the Toil WES processing engine, so we need to select it
+We are configuring the Toil WES processing engine, so select it now:
 
 ```
 toil
 ```{{exec}}
 
-the script is asking our Toil WES interface endpoint. From the previous Toil installation step, this is
+The script asks for the Toil WES endpoint. Use the service started in the previous step:
 
 ```
 http://toil-wes.hpc.local:8080/ga4gh/wes/v1/
 ```{{exec}}
 
-we did not implement any authentication in our Toil WES interface endopoint, as this is a test system, so we can provide standard credentials now (they will be ignore anyway)
+We did not implement authentication on our Toil WES endpoint because this is a test system. Provide the following placeholder credentials; the WES service will ignore them:
 
 ```
 test
 $2y$12$ci.4U63YX83CwkyUrjqxAucnmi2xXOIlEF6T/KdP9824f1Rf1iyNG
 ```{{exec}}
 
-we now have a set of configuration values for our building block deployment available, you can check them with
+The script has now generated the Helm values for our building-block deployment. Check the main integration settings without displaying the stored credentials:
 
 ```
-less generated-values.yaml
+grep -n -E 'templateUrl|WES_URL|STAGE(IN|OUT)_AWS_SERVICEURL|storageClass|hosturl' \
+  generated-values.yaml
 ```{{exec}}
 
-NOTE: Press `q`{{exec}} to exit when you are done inspecting the file, and we can move to the next step
+The values should reference the Toil WES endpoint, the MinIO stage-in and stage-out service, and the configured storage classes.

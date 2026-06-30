@@ -1,0 +1,170 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+containerd_version="${CONTAINERD_VERSION:-1.7.22-1}"
+github_host="raw.githubusercontent.com"
+
+log() {
+  printf '%s\n' "$*"
+}
+
+fail() {
+  printf 'ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
+restart_service() {
+  local service_name="$1"
+
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl restart "${service_name}"
+  elif command -v service >/dev/null 2>&1; then
+    service "${service_name}" restart
+  else
+    fail "Unable to restart ${service_name}: neither systemctl nor service is available."
+  fi
+}
+
+wait_for_docker() {
+  local attempt
+
+  for attempt in {1..30}; do
+    if docker info >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+
+  fail "Docker did not become ready after 30 seconds."
+}
+
+prepare_hosts_entry() {
+  local hostname="$1"
+  local resolved_ip
+  local hosts_tmp
+
+  log "Resolving ${hostname}..."
+
+  resolved_ip="$(
+    getent ahostsv4 "${hostname}" |
+      awk 'NR == 1 { print $1 }'
+  )"
+
+  if [[ -z "${resolved_ip}" ]]; then
+    fail "Unable to resolve ${hostname}."
+  fi
+
+  log "Pinning ${hostname} to ${resolved_ip} in /etc/hosts..."
+
+  hosts_tmp="$(mktemp)"
+  trap 'rm -f "${hosts_tmp}"' RETURN
+
+  # Remove existing entries containing the hostname.
+  #
+  # /etc/hosts is commonly a bind-mounted file in containers. Commands such
+  # as `sed -i` replace the file using rename(2), which fails with:
+  #
+  #   Device or resource busy
+  #
+  # Generate the new contents separately, then write through the existing
+  # mounted inode.
+  awk -v hostname="${hostname}" '
+    {
+      keep = 1
+
+      for (i = 2; i <= NF; i++) {
+        if ($i == hostname) {
+          keep = 0
+          break
+        }
+      }
+
+      if (keep) {
+        print
+      }
+    }
+  ' /etc/hosts >"${hosts_tmp}"
+
+  printf '%s %s\n' "${resolved_ip}" "${hostname}" >>"${hosts_tmp}"
+
+  if ! cat "${hosts_tmp}" >/etc/hosts; then
+    fail "Unable to update /etc/hosts. The file may be mounted read-only."
+  fi
+
+  rm -f "${hosts_tmp}"
+  trap - RETURN
+
+  getent hosts "${hostname}" || fail "The new /etc/hosts entry is not usable."
+}
+
+repair_docker_runtime() {
+  log "Testing nested Docker container execution..."
+
+  if docker run --rm alpine:latest true >/dev/null 2>&1; then
+    log "Docker runtime is already compatible."
+    return 0
+  fi
+
+  log "Nested Docker execution failed."
+  log "Installing containerd.io ${containerd_version}..."
+
+  apt-get update
+
+  if ! apt-cache madison containerd.io |
+    awk '{ print $3 }' |
+    grep -Fxq "${containerd_version}"; then
+    log "Available containerd.io versions:"
+    apt-cache madison containerd.io >&2 || true
+    fail "containerd.io version ${containerd_version} is not available."
+  fi
+
+  DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --allow-downgrades \
+    "containerd.io=${containerd_version}"
+
+  log "Restarting containerd..."
+  restart_service containerd
+
+  log "Restarting Docker..."
+  restart_service docker
+
+  wait_for_docker
+
+  log "containerd version:"
+  containerd --version
+
+  log "runc version:"
+  runc --version | head -n 1
+
+  log "Re-testing nested Docker execution..."
+  docker run --rm alpine:latest true
+
+  log "Nested Docker container execution is ready."
+}
+
+main() {
+  if [[ "${EUID}" -ne 0 ]]; then
+    fail "Run this helper with sudo."
+  fi
+
+  command -v docker >/dev/null 2>&1 ||
+    fail "Docker is not installed."
+
+  command -v apt-get >/dev/null 2>&1 ||
+    fail "This script requires an apt-based system."
+
+  log "Preparing nested Docker runtime..."
+
+  apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+
+  repair_docker_runtime
+  prepare_hosts_entry "${github_host}"
+
+  log "Runtime verification:"
+  docker run --rm alpine:latest true
+
+  log "Docker runtime preparation complete."
+}
+
+main "$@"
