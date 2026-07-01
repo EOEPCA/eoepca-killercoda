@@ -14,17 +14,10 @@ Navigate to the sample collection directory and run the ingestion script:
 
 ```
 cd collections/sentinel-2-iceland
-bash ../ingest.sh
+bash /tmp/assets/run-ingest-local
 cd ../..
 ```{{exec}}
 
-This script:
-1. Connects to a running eoAPI pod
-2. Installs the `pypgstac` ingestion tool in the raster pod
-3. Loads the collection metadata and items into pgSTAC
-
-The first run installs a few Debian and Python packages in the pod, so expect
-about a minute of package-manager output before ingestion completes.
 
 ### Verify the Collection
 

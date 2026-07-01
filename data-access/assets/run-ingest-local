@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -eq 0 ]]; then
+  collections_file=./collections.json
+  items_file=./items.json
+elif [[ $# -eq 2 ]]; then
+  collections_file="$1"
+  items_file="$2"
+else
+  echo "Usage: $0 [COLLECTIONS_FILE ITEMS_FILE]" >&2
+  exit 2
+fi
+
+for file in "$collections_file" "$items_file"; do
+  if [[ ! -f "$file" ]]; then
+    echo "Input file not found: $file" >&2
+    exit 1
+  fi
+done
+
+namespace="${EOAPI_NAMESPACE:-data-access}"
+pod=eoepca-local-ingest
+image=ghcr.io/stac-utils/pgstac-pypgstac:v0.9.8
+
+cleanup() {
+  kubectl delete pod "$pod" -n "$namespace" \
+    --ignore-not-found --wait=false >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+cleanup
+while kubectl get pod "$pod" -n "$namespace" >/dev/null 2>&1; do
+  sleep 1
+done
+
+echo "Starting local pgSTAC ingestion helper..."
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${pod}
+  namespace: ${namespace}
+spec:
+  restartPolicy: Never
+  containers:
+    - name: ingest
+      image: ${image}
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c", "sleep 600"]
+      env:
+        - name: PGADMIN_URI
+          valueFrom:
+            secretKeyRef:
+              name: eoapi-pguser-postgres
+              key: uri
+EOF
+
+kubectl wait pod "$pod" -n "$namespace" \
+  --for=condition=Ready --timeout=120s
+
+echo "Copying collection and item documents..."
+kubectl cp "$collections_file" "$namespace/$pod:/tmp/collections.json" -c ingest
+kubectl cp "$items_file" "$namespace/$pod:/tmp/items.json" -c ingest
+
+echo "Loading collections..."
+kubectl exec "$pod" -n "$namespace" -c ingest -- /bin/sh -c \
+  'pypgstac load collections /tmp/collections.json --dsn "$PGADMIN_URI" --method insert_ignore'
+
+echo "Loading items..."
+kubectl exec "$pod" -n "$namespace" -c ingest -- /bin/sh -c \
+  'pypgstac load items /tmp/items.json --dsn "$PGADMIN_URI" --method insert_ignore'
+
+echo "Ingestion complete. Removing helper pod..."
