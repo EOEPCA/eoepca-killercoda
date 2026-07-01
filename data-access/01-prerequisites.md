@@ -18,24 +18,24 @@ This will ask a few questions about the Kubernetes cluster configuration and che
 
 > Some configuration has already been established by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
 
-For our ingress controller, we will use nginx.
+Select nginx as the ingress controller that routes external requests to the Data Access services.
 ```
 nginx
 ```{{exec}}
 
 
-We accept the `eoepca.local`{{}} top-level domain for our EOEPCA services:
+Keep `eoepca.local`{{}} as the local domain shared by the EOEPCA services:
 ```
 n
 ```{{exec}}
 
-Storage class:
+Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutorial environment:
 ```
 local-path
 ```{{exec}}
 
 
-We do not need automatically generated certificates for our tutorial:
+Disable cert-manager because Localcoda provides the tutorial's external HTTPS proxy:
 ```
 no
 ```{{exec}}

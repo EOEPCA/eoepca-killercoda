@@ -29,50 +29,62 @@ The script will load the general EOEPCA configuration and move to the Data Acces
 
 > Some configuration has already been established via the `check-prerequisites`{{}} script, and also by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
 
-We accept the `eoepca.local`{{}} top-level domain for our EOEPCA services:
+Keep `eoepca.local`{{}} as the local domain used by the Data Access services:
 ```
 n
 ```{{exec}}
 
-We accept the basic `local-path`{{}} storage class provided in this sandbox:
+Keep `local-path`{{}} as the storage class used for persistent Data Access volumes:
 ```
 n
 ```{{exec}}
 
-We accept the pre-configured details for the MinIO S3 object storage:
+We accept the pre-configured MinIO hostname used to reach the tutorial's S3-compatible object storage:
 ```
-n
-n
-n
 n
 ```{{exec}}
 
-We will use the internal PostgreSQL (managed by the Crunchy Postgres Operator):
+We accept the pre-configured MinIO access key used to authenticate to object storage:
+```
+n
+```{{exec}}
+
+We accept the pre-configured MinIO secret key paired with that access key:
+```
+n
+```{{exec}}
+
+We accept the pre-configured S3 endpoint used by EOAPI to locate stored objects:
+```
+n
+```{{exec}}
+
+Choose the in-cluster PostgreSQL database managed by the Crunchy Postgres Operator:
 ```
 no
 ```{{exec}}
 
-Number of PostgreSQL replicas (1 is sufficient for demo):
+Run one PostgreSQL replica, which is sufficient for this tutorial:
 ```
 1
 ```{{exec}}
 
-PostgreSQL storage size:
+Allocate a 1 GiB persistent volume to PostgreSQL:
 ```
 1Gi
 ```{{exec}}
 
-For this demonstration, we will not be enabling IAM/Keycloak integration:
+Disable IAM and Keycloak integration to keep this tutorial deployment unauthenticated:
 ```
 no
 ```{{exec}}
 
-Enable STAC transactions extension (allows creating/updating collections):
+Enable STAC transactions so the tutorial can create and update collections:
 ```
 yes
 ```{{exec}}
 
-We will not enable the CloudEvents notifier for this demo:
+Disable the EOAPI CloudEvents notifier because this tutorial does not consume change events:
 ```
 no
 ```{{exec}}
