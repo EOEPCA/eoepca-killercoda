@@ -53,8 +53,8 @@ The available assets you can select are described in the following table. Please
 | `readwritemany` | local storage class supporting ReadWriteMany K8S persistent volumes provisioning |
 | `ignoreresrequests` | install gatekeeper with mutation hook to override all resource requests, setting them to 0 (disabled). This allows to avoid honoring resource requests which may not be available in the killercoda environment. |
 | `pythonvenv` | insall python virtual environment |
+| `pip-install-cached` | install pinned Python packages from a Localcoda-hosted wheelhouse |
 | `htcondor` | HPC batch system (HTCondor) |
 | `postgrespostgis` | Install a postgres+postgis database. Contents shall be a set of lines containing dbname, dbuser, dbpass, postgisenabled variables defining the details of the database to be created |
 | `k9s` | install k9s Kubernetes CLI |
 | `waitforpods` | wait for all the background service pods to be ready before allowing user to start the tutorials |
-

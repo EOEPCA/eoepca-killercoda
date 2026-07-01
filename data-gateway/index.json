@@ -33,6 +33,18 @@
     "finish": {
       "title": "Finish",
       "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "pip-install-cached",
+          "target": "/tmp/assets"
+        },
+        {
+          "file": "pythonvenv",
+          "target": "/tmp/assets"
+        }
+      ]
     }
   },
   "backend": {

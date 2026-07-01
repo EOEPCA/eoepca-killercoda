@@ -15,9 +15,11 @@ We can now enter the virtual environment and install Toil with HTCondor support 
 
 ```
 source ~/toil/venv/bin/activate
-python3 -m pip install \
+
+bash /tmp/assets/pip-install-cached \
+  toil-9.3.0-htcondor-py312-linux-x86_64 \
   'toil[cwl,htcondor,server,aws]==9.3.0' \
-  htcondor
+  'htcondor==24.12.21'
 ```{{exec}}
 
 The version is pinned because Toil 9.3.0 has been validated with the WES workflow and dependencies used by this workshop.

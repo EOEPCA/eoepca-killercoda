@@ -2,15 +2,15 @@ EODAG is distributed as a Python package. We will install it in a virtual enviro
 
 ### Prepare Python
 
-Install the small set of system tools used throughout the tutorial:
+Create and activate an isolated Python environment:
 
 ```
-apt-get update -qq
-apt-get install -y -qq python3 python3-pip python3-venv curl jq > /dev/null 2>&1
-
 python3 -m venv ~/venv
 source ~/venv/bin/activate
-pip install --upgrade pip
+
+bash /tmp/assets/pip-install-cached \
+  eodag-3.10.2-py312-linux-x86_64 \
+  --upgrade pip
 ```{{exec}}
 
 The shell prompt now starts with `(venv)`. Commands such as `python`, `pip`, and `eodag` will use the isolated environment under `~/venv`.
@@ -20,7 +20,9 @@ The shell prompt now starts with `(venv)`. Commands such as `python`, `pip`, and
 Install the tested EODAG version with its optional server dependencies. The `[server]` extra adds the packages required by the STAC API used later in the tutorial.
 
 ```
-pip install "eodag[server]==3.10.2"
+bash /tmp/assets/pip-install-cached \
+  eodag-3.10.2-py312-linux-x86_64 \
+  "eodag[server]==3.10.2"
 ```{{exec}}
 
 ### Verify the Installation

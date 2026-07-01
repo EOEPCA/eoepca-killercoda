@@ -6,7 +6,10 @@ Create a Python virtual environment and install the client and the libraries use
 cd ~
 python3 -m venv openeo-test
 source openeo-test/bin/activate
-pip install openeo==0.50.0 xarray==2025.1.1 netCDF4==1.7.4
+
+bash /tmp/assets/pip-install-cached \
+  openeo-0.50.0-xarray-2025.1.1-netcdf4-1.7.4-py312-linux-x86_64 \
+  openeo==0.50.0 xarray==2025.1.1 netCDF4==1.7.4
 ```{{exec}}
 
 The versions are pinned to keep the workshop reproducible and are the versions used by the examples below.

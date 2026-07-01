@@ -272,8 +272,10 @@ if [[ -e /tmp/assets/readwritemany ]]; then
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
   echo enabling python virtual environments... >> /tmp/killercoda_setup.log
-  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
-  apt-get install -y python3.12-venv
+  if ! python3 -c 'import venv, ensurepip' &>/dev/null; then
+    [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+    apt-get install -y python3.12-venv
+  fi
 fi
 if [[ -e /tmp/assets/htcondor ]]; then
   echo installing HPC batch system for ubuntu user... >> /tmp/killercoda_setup.log

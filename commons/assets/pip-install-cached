@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: $0 WHEELHOUSE PIP_ARGUMENT..." >&2
+  exit 2
+fi
+
+wheelhouse="$1"
+shift
+
+if [[ ! "$wheelhouse" =~ ^[A-Za-z0-9._-]+$ ]]; then
+  echo "Invalid wheelhouse name: $wheelhouse" >&2
+  exit 2
+fi
+
+registry_cache_url="${REGISTRY_CACHE_URL:-}"
+if [[ -z "$registry_cache_url" ]]; then
+  registry_cache_url="$(
+    awk '/https?:\/\/docker.io\./ {
+      url=$2
+      sub(/docker\.io\./, "", url)
+      print url
+      exit
+    }' /etc/rancher/k3s/registries.yaml
+  )"
+fi
+
+if [[ -z "$registry_cache_url" ]]; then
+  echo "Could not determine the Localcoda registry-cache URL" >&2
+  exit 1
+fi
+
+wheelhouse_url="${registry_cache_url%/}/wheelhouse/${wheelhouse}"
+pip_options=(--no-index "--find-links=${wheelhouse_url}")
+
+if [[ "$registry_cache_url" == http://* ]]; then
+  registry_cache_host="${registry_cache_url#http://}"
+  registry_cache_host="${registry_cache_host%%:*}"
+  pip_options+=("--trusted-host=${registry_cache_host}")
+fi
+
+exec python3 -m pip install "${pip_options[@]}" "$@"
