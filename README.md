@@ -1,5 +1,7 @@
 # EOEPCA Tutorials
 
+Please pick one of these, we have four instances running.
+
 https://lc.tutorials.eoepca.org/
 https://lc.tutorials-two.deploybox.co.uk/
 https://lc.tutorials-three.deploybox.co.uk/
