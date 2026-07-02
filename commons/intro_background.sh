@@ -53,10 +53,20 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   echo configuring kyverno to ignore resource requests...  >> /tmp/killercoda_setup.log
   helm repo add kyverno https://kyverno.github.io/kyverno/
   helm repo update kyverno
-  helm upgrade -i kyverno kyverno/kyverno \
-    --version 3.6.2 \
+  if ! helm upgrade -i kyverno kyverno/kyverno \
+    --version 3.3.9 \
     --namespace kyverno \
-    --create-namespace --wait
+    --create-namespace \
+    --set backgroundController.enabled=false \
+    --set cleanupController.enabled=false \
+    --set reportsController.enabled=false \
+    --wait --timeout=2m; then
+    echo "ERROR: Kyverno did not become ready. Check: kubectl get pods -n kyverno" >> /tmp/killercoda_setup.log
+    touch /tmp/killercoda_setup.failed
+    while ! killall tail; do sleep 1; done
+    exit 1
+  fi
+  echo "kyverno is ready." >> /tmp/killercoda_setup.log
   # Create the cluster policy to set minimal resource requests
   # Note that, rather than zero, we actually set minimal cpu/memory requests to avoid potential issues
   # with certain workloads that may not handle zero resource requests gracefully.
@@ -66,6 +76,7 @@ kind: ClusterPolicy
 metadata:
   name: remove-resource-requests
 spec:
+  background: false
   rules:
     - name: remove-resource-requests
       match:
