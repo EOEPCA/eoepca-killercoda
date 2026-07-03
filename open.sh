@@ -74,6 +74,6 @@ fi
 echo "Opening tutorial '$TUTORIAL' at:"
 echo "  $ACCESS_URL"
 
-xdg-open "$ACCESS_URL" >/dev/null 2>&1 &
+{ xdg-open "$ACCESS_URL" || open "$ACCESS_URL"; } >/dev/null 2>&1 &
 
 echo "Browser launched."
