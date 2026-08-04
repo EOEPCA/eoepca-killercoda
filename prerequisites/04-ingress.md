@@ -4,7 +4,7 @@ Most ingresses work in conjunction Load Balancer, this because the Kubernetes cl
 
 Back to the Ingress, EOEPCA can be deployed with two types of Ingress controllers, the [nginx ingress controller](https://docs.nginx.com/nginx-ingress-controller/) and the [APISIX](https://apisix.apache.org/) ingress controller.
 
-Note that most kubernetes clusters from cloud providers or from local installations (like [Rancher](https://www.rancher.com/)) will provide you already with an nginx ingree controller, while you will need to install APISIX, if required, manually.
+Note that most kubernetes clusters from cloud providers or from local installations (like [Rancher](https://www.rancher.com/)) will provide you already with an nginx ingress controller, while you will need to install APISIX, if required, manually.
 
 For EOEPCA, the nginx controller can be used for most building blocks without authorization, while authorization is provided via APISIX. For details refer to the [relevant section of the EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/prerequisites/ingress/overview/)
 
@@ -78,7 +78,7 @@ helm uninstall -n ingress-nginx ingress-nginx
 Then, to install APISIX in our sandbox, the installation can be performed with the following commands in our sandbox environent.
 
 ```
-helm repo add apisix https://charts.apiseven.com
+helm repo add apisix https://apache.github.io/apisix-helm-chart
 helm repo update apisix
 
 helm upgrade -i apisix apisix/apisix \
