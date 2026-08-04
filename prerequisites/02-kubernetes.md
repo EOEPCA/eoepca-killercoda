@@ -38,7 +38,7 @@ Now we can delete the pod:
 kubectl delete pod root-check
 ```{{exec}}
 
-Next, considering the Wildcard DNS, we have not way to set this up in our sandbox environment, but we can use the /etc/hosts and the internal Kubernetes CoreDNS service to bind some DNS names to our cluster. For example, with the code below, we can map the `test.eoepca.local`{{}} domain to the sandbox Kubernetes cluster IP `172.30.1.2`{{}}. Note that the need for CoreDNS setup below is to make this address accessible also from the internal Kubernetes cluster network
+Next, considering the Wildcard DNS, we have no way to set this up in our sandbox environment, but we can use the /etc/hosts and the internal Kubernetes CoreDNS service to bind some DNS names to our cluster. For example, with the code below, we can map the `test.eoepca.local`{{}} domain to the sandbox Kubernetes cluster IP `172.30.1.2`{{}}. Note that the need for CoreDNS setup below is to make this address accessible also from the internal Kubernetes cluster network
 
 ```
 WEBSITES="test.eoepca.local minio.eoepca.local console-minio.eoepca.local harbor.eoepca.local"
@@ -46,8 +46,8 @@ echo "172.30.1.2 $WEBSITES" >> /etc/hosts
 kubectl get -n kube-system configmap/coredns -o json \
   | jq --arg websites "$WEBSITES" '
       .data.Corefile |= sub(
-        "(?m)^    ready$";
-        "    ready\n    hosts {\n      172.30.1.2 \($websites)\n      fallthrough\n    }"
+        "(?m)^    hosts /etc/coredns/NodeHosts {$";
+        "    hosts /etc/coredns/NodeHosts {\n      172.30.1.2 \($websites)"
       )
     ' \
   | kubectl apply -f -
