@@ -139,7 +139,7 @@ if [[ -e /tmp/assets/apisix ]]; then
   # Install apisix
   echo "installing apisix ingress..." >> /tmp/killercoda_setup.log
   mkdir -p ~/.eoepca && echo 'export INGRESS_CLASS="apisix"' >> ~/.eoepca/state
-  helm repo add apisix https://charts.apiseven.com
+  helm repo add apisix https://apache.github.io/apisix-helm-chart/
   helm repo update apisix
   helm upgrade -i apisix apisix/apisix \
     --version 2.10.0 \
