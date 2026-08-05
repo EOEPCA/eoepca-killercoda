@@ -15,7 +15,7 @@ bash check-prerequisites.sh
 As you can see we got an error, because the `gomplate`{{}} software is not installed in our environment. To install it, we can follow the guide and run:
 
 ```
-curl -L -o gomplate https://github.com/hairyhenderson/gomplate/releases/download/v4.3.0/gomplate_linux-amd64
+curl -L -o gomplate https://github.com/hairyhenderson/gomplate/releases/download/v5.2.0/gomplate_linux-amd64
 chmod +x gomplate
 sudo mv gomplate /usr/local/bin/
 ```{{exec}}
