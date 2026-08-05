@@ -82,26 +82,26 @@ helm repo add apisix https://apache.github.io/apisix-helm-chart
 helm repo update apisix
 
 helm upgrade -i apisix apisix/apisix \
-  --version 2.10.0 \
+  --version 2.16.0 \
   --namespace ingress-apisix --create-namespace \
-  --set securityContext.runAsUser=0 \
   --set hostNetwork=true \
   --set service.http.containerPort=80 \
   --set apisix.ssl.containerPort=443 \
-  --set etcd.image.repository=bitnamilegacy/etcd \
   --set etcd.replicaCount=1 \
   --set etcd.persistence.storageClass="local-path" \
   --set apisix.enableIPv6=false \
   --set apisix.enableServerTokens=false \
   --set apisix.ssl.enabled=true \
-  --set ingress-controller.enabled=true
+  --set ingress-controller.enabled=true \
+  --set ingress-controller.webhook.enabled=true \
+  --set ingress-controller.gatewayProxy.createDefault=true
 ```{{exec}}
 
 Note that, as per nginx, this APISIX installation is tailored for this sandbox and not used for production. For production, you should follow the [APISIX installation documentation](https://apisix.apache.org/docs/apisix/installation-guide/)
 
 We wait until the all pods in the `ingress-apisix` namespace are ready:
 ```
-kubectl --namespace ingress-apisix wait pod --all --timeout=10m --for=condition=Ready
+kubectl --namespace ingress-apisix wait pod -l 'app.kubernetes.io/component!=etcd-pre-upgrade-job' --timeout=10m --for=condition=Ready
 ```{{exec}}
 
 And then we can check if our previous test ingress still works
