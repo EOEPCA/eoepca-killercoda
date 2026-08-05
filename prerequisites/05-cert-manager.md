@@ -1,8 +1,8 @@
-To make our trainings simple we have decided not to use encryption for the network traffic, therefore the Cert-Manager is not actually required for these tutorials. However, in production, HTTPS should be used and valid certificates generated and assigned to all the EOEPCA Building Blocks.
+To make our training simple we have decided not to use encryption for the network traffic, therefore the Cert-Manager is not actually required for these tutorials. However, in production, HTTPS should be used and valid certificates generated and assigned to all the EOEPCA Building Blocks.
 
-This is what [Cert-Manager](https://cert-manager.io/) does, and in this Basics training we will install it anyway to show how it can be deployed.
+This is what [Cert-Manager](https://cert-manager.io/) does, and in this tutorial we will install it anyway to show how it can be deployed.
 
-One important thing is that in this sandbox we will set it up with internal ClusterIssuer (a local CA) instead of the default (and recommended) LetsEncrypt since in our sandbox we have no possibility to use the latter (no access from the Internet to our cluster).
+One important thing is that in this sandbox we will set it up with an internal ClusterIssuer (a local CA) instead of the default (and recommended) LetsEncrypt since in our sandbox we have no possibility to use the latter (no access from the Internet to our cluster).
 
 Let's deploy the Cert-Manager then:
 ```
@@ -10,7 +10,7 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update jetstack
 helm upgrade -i cert-manager jetstack/cert-manager \
   --namespace cert-manager --create-namespace \
-  --version v1.16.1 \
+  --version v1.21.1 \
   --set crds.enabled=true
 ```{{exec}}
 
