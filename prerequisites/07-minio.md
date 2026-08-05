@@ -59,6 +59,9 @@ We must now create an Access Key for the user. Since we are working in a command
 First, we set the values of Access Key and Secret Key using the provided script:
 ```
 bash apply-secrets.sh
+```{{exec}}
+
+```
 eoepca
 eoepcatest
 ```{{exec}}
@@ -93,6 +96,9 @@ test instead.
 ```
 apt update && apt install -y s3cmd
 bash validation.sh
+```{{exec}}
+
+```
 n
 ```{{exec}}
 

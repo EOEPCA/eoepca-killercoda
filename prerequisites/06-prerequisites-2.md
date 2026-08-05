@@ -2,6 +2,9 @@ Now we re-check whether all the prerequisites are met. To do this, we run the `c
 ```
 cd /deployment-guide/scripts/infra-prereq
 bash check-prerequisites.sh
+```{{exec}}
+
+```
 no
 no
 no
