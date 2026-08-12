@@ -57,7 +57,7 @@ spec:
       name: ${OPA_CLIENT_ID}-keycloak-client
       key: client_secret
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}

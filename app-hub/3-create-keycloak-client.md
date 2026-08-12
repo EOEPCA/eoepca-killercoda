@@ -56,7 +56,7 @@ spec:
       name: ${APPHUB_CLIENT_ID:-application-hub}-keycloak-client
       key: client_secret
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}

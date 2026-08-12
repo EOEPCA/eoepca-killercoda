@@ -126,7 +126,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: keycloak.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: provider-keycloak
+  name: keycloak-provider-config
   namespace: iam-management
 spec:
   credentialsSecretRef:
@@ -156,7 +156,7 @@ spec:
     realmId: ${REALM}
     clientId: realm-management
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}

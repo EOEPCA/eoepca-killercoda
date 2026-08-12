@@ -49,7 +49,7 @@ spec:
           name: test-user-password
           key: password
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 done

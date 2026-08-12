@@ -162,7 +162,7 @@ spec:
       name: workspace-pipeline-keycloak-client
       key: client_secret
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}
@@ -278,7 +278,7 @@ spec:
       name: ${WORKSPACE_API_CLIENT_ID}-keycloak-client
       key: client_secret
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}
@@ -311,7 +311,7 @@ spec:
       name: ${WORKSPACE_API_CLIENT_ID}
     description: "Admin role for ${WORKSPACE_API_CLIENT_ID} client"
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}
@@ -335,7 +335,7 @@ spec:
       - name: ${WORKSPACE_API_CLIENT_ID}-admin
     exhaustive: false
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 ```{{exec}}

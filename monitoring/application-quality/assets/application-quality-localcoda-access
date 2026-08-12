@@ -129,7 +129,7 @@ $(for uri in "${REDIRECT_URIS[@]}"; do printf '      - "%s"\n' "$uri"; done)
       name: ${APP_QUALITY_CLIENT_ID}-keycloak-client
       key: client_secret
   providerConfigRef:
-    name: provider-keycloak
+    name: keycloak-provider-config
     kind: ProviderConfig
 EOF
 
