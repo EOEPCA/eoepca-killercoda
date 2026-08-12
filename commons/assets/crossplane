@@ -75,7 +75,7 @@ kind: Provider
 metadata:
   name: provider-kubernetes
 spec:
-  package: xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v1.0.0
+  package: xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v1.2.1
   runtimeConfigRef:
     name: provider-kubernetes
 ---
@@ -123,7 +123,7 @@ kind: Provider
 metadata:
   name: provider-minio
 spec:
-  package: xpkg.upbound.io/vshn/provider-minio:v0.4.4
+  package: xpkg.upbound.io/vshn/provider-minio:v0.4.5
 ---
 apiVersion: apiextensions.crossplane.io/v1alpha1
 kind: ManagedResourceActivationPolicy
@@ -137,6 +137,8 @@ spec:
     - clients.openidclient.keycloak.m.crossplane.io
     - groupmembershipprotocolmappers.openidgroup.keycloak.m.crossplane.io
     - roles.role.keycloak.m.crossplane.io
+    - users.user.keycloak.m.crossplane.io
+    - groups.user.keycloak.m.crossplane.io
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
@@ -172,7 +174,7 @@ kind: Provider
 metadata:
   name: provider-keycloak
 spec:
-  package: ghcr.io/crossplane-contrib/provider-keycloak:v2.7.2
+  package: ghcr.io/crossplane-contrib/provider-keycloak:v2.24.1
   runtimeConfigRef:
     name: provider-keycloak
 ---
@@ -218,7 +220,7 @@ kind: Provider
 metadata:
   name: provider-helm
 spec:
-  package: xpkg.upbound.io/crossplane-contrib/provider-helm:v1.0.0
+  package: xpkg.upbound.io/crossplane-contrib/provider-helm:v1.3.0
   runtimeConfigRef:
     name: provider-helm
 ---
@@ -239,19 +241,19 @@ kind: Function
 metadata:
   name: crossplane-contrib-function-environment-configs
 spec:
-  package: xpkg.upbound.io/crossplane-contrib/function-environment-configs:v0.4.0
+  package: xpkg.upbound.io/crossplane-contrib/function-environment-configs:v0.7.3
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: Function
 metadata:
   name: crossplane-contrib-function-python
 spec:
-  package: xpkg.crossplane.io/crossplane-contrib/function-python:v0.2.0
+  package: xpkg.crossplane.io/crossplane-contrib/function-python:v0.5.0
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: Function
 metadata:
   name: crossplane-contrib-function-auto-ready
 spec:
-  package: xpkg.crossplane.io/crossplane-contrib/function-auto-ready:v0.5.0
+  package: xpkg.crossplane.io/crossplane-contrib/function-auto-ready:v0.6.7
 ---
