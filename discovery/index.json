@@ -18,12 +18,16 @@
         "text": "02-configure.md"
       },
       {
-        "title": "Deploy Resource Catalogue", 
-        "text": "03-deploy.md"
+        "title": "Deploy Read-Only Resource Catalogue",
+        "text": "03-deploy-read-only.md"
       },
-      { 
-        "title": "Add STAC Collections and Items", 
-        "text": "04-add-stac.md" 
+      {
+        "title": "Deploy Writable Resource Catalogue",
+        "text": "04-deploy-write.md"
+      },
+      {
+        "title": "Add STAC Collections and Items",
+        "text": "05-add-stac.md"
       }
     ],
     "finish": {

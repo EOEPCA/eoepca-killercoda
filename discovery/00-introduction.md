@@ -4,6 +4,8 @@ The Resource Discovery service plays a key role in enabling users and services t
 
 In this scenario, you will learn how to deploy and interact with the EOEPCA Resource Discovery Building Block — a core component responsible for exposing Earth Observation datasets and services through metadata that complies with the [STAC (SpatioTemporal Asset Catalog)](https://stacspec.org/en) standard.
 
+This tutorial can take a little time to start, for example 5 minutes or more, whilst Kubernetes, APISIX, Keycloak and Crossplane are installed for you.
+
 ---
 
 ### What You'll Learn
@@ -35,4 +37,3 @@ Note that the registration shown here is a very simple single product registrati
 ### Assumptions
 
 Before we start, you should note that this tutorial assumes a generic knowledge of EOEPCA pre-requisites (Kubernetes, Object Storage, etc...) and some tools installed on your environment (gomplate, minio client, etc...). If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
-

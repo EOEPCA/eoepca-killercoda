@@ -6,9 +6,11 @@ bash configure-resource-discovery.sh
 
 The script will load the general EOEPCA configuration and move to the Resource Discovery building block specific configuration.
 
-We do not need to update domain and storage class, we will use what's already set, so we answer `no` to both questions:
+Aside from not updating the domain, we specify a storage class, disable authorization for the protected catalogue endpoint used for write access and disable TLS:
 
 ```
 no
+local-path
+yes
 no
 ```{{exec}}

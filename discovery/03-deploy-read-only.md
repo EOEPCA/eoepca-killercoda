@@ -1,6 +1,6 @@
-We can now deploy the Resource Discovery building block. 
+The Resource Discovery Building Block deploys two separate services for read access and for write access. We deploy the read-only service first.
 
-First we must add the software helm repository.
+We must add the software helm repository.
 
 ```
 helm repo add eoepca https://eoepca.github.io/helm-charts
@@ -12,7 +12,7 @@ Then we deploy the software via helm, using the configuration values generated i
 ```
 helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.0.0 \
+  --version 2.1.0 \
   --namespace resource-discovery \
   --create-namespace
 ```{{exec}}
@@ -23,7 +23,8 @@ And we create the ingress for our newly created Resource Discovery service to ma
 kubectl apply -f generated-ingress.yaml
 ```{{exec}}
 
-Now we wait for the Resource Discovery pods to start. This may take some time, especially in this demo environment. To automatically wait till all service to are ready you and the catalogue responds correctly you can run:
+
+Now we wait for the Resource Discovery pods to start. This may take some time, especially in this demo environment. To automatically wait until all service to are ready you and the catalogue responds correctly you can run:
 
 ```
 while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
