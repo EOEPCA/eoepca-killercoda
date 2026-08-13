@@ -54,7 +54,7 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
   helm repo add kyverno https://kyverno.github.io/kyverno/
   helm repo update kyverno
   if ! helm upgrade -i kyverno kyverno/kyverno \
-    --version 3.3.9 \
+    --version 3.8.2 \
     --namespace kyverno \
     --create-namespace \
     --set backgroundController.enabled=false \
@@ -119,7 +119,7 @@ if [[ -e /tmp/assets/gomplate.7z ]]; then
   echo "installing gomplate..." >> /tmp/killercoda_setup.log
   #Gomplate is a dependency of the deployment tool
   #Installing it from local instead then remote for speed
-  #curl -s -S -L -o /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/v4.3.0/gomplate_linux-amd64 && chmod +x /usr/local/bin/gomplate
+  #curl -s -S -L -o /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/v5.2.0/gomplate_linux-amd64 && chmod +x /usr/local/bin/gomplate
   which 7z &>/dev/null || { [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }; apt-get install -y 7zip; }
   which helm &>/dev/null || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
   mkdir -p /usr/local/bin/ && 7z x /tmp/assets/gomplate.7z -o/usr/local/bin/ && chmod +x /usr/local/bin/gomplate
@@ -142,19 +142,22 @@ if [[ -e /tmp/assets/apisix ]]; then
   helm repo add apisix https://apache.github.io/apisix-helm-chart/
   helm repo update apisix
   helm upgrade -i apisix apisix/apisix \
-    --version 2.10.0 \
+    --version 2.16.0 \
     --namespace ingress-apisix --create-namespace \
     --set securityContext.runAsUser=0 \
     --set hostNetwork=true \
     --set service.http.containerPort=80 \
     --set apisix.ssl.containerPort=443 \
-    --set etcd.image.repository=bitnamilegacy/etcd \
-    --set etcd.replicaCount=1 \
-    --set etcd.persistence.storageClass="local-path" \
+    --set etcd.enabled=false \
     --set apisix.enableIPv6=false \
     --set apisix.enableServerTokens=false \
     --set apisix.ssl.enabled=true \
-    --set ingress-controller.enabled=true
+    --set apisix.deployment.role=traditional \
+    --set apisix.deployment.role_traditional.config_provider=yaml \
+    --set ingress-controller.config.provider.type=apisix-standalone \
+    --set ingress-controller.enabled=true \
+    --set ingress-controller.webhook.enabled=true \
+    --set ingress-controller.gatewayProxy.createDefault=true
 fi
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
@@ -278,7 +281,7 @@ fi
 if [[ -e /tmp/assets/readwritemany ]]; then
   ### Prerequisites: readwritemany StorageClass
   echo enabling ReadWriteMany StorageClass..  >> /tmp/killercoda_setup.log
-  kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/docs/prerequisites/hostpath-provisioner.yaml
+  kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/release-2.1/docs/prerequisites/hostpath-provisioner.yaml
   mkdir -p ~/.eoepca && echo 'export SHARED_STORAGECLASS="standard"'>>~/.eoepca/state
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
@@ -333,7 +336,7 @@ if [[ -e /tmp/assets/crossplane ]]; then
   # Deploy Crossplane via helm chart
   helm upgrade --install crossplane crossplane \
     --repo https://charts.crossplane.io/stable \
-    --version 2.0.2 \
+    --version 2.3.4 \
     --namespace crossplane-system \
     --create-namespace \
     --set provider.defaultActivations={}
@@ -382,17 +385,22 @@ export OPA_CLIENT_SECRET="$(openssl rand -hex 16)"
 export KEYCLOAK_TEST_USER="eoepcauser"
 export KEYCLOAK_TEST_ADMIN="eoepcaadmin"
 export KEYCLOAK_TEST_PASSWORD="eoepcapassword"
+export IAM_KEYCLOAK_PROVIDER_CLIENT_SECRET="$(openssl rand -hex 16)"
+export IAM_OPA_SESSION_SECRET="$(openssl rand -hex 16)"
 EOF
   source ~/.eoepca/state
   source /tmp/assets/iam
   kubectl create namespace iam
+  kubectl create namespace iam-management
   # Secrets
   iam_create_secrets
   # Helm chart
   helm repo add eoepca https://eoepca.github.io/helm-charts
   helm repo update eoepca
-  iam_helm_values | helm upgrade -i iam eoepca/iam-bb \
-    --version 2.0.0 \
+  helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+  helm repo update eoepca-dev
+  iam_helm_values | helm upgrade -i iam eoepca-dev/iam-bb \
+    --version 2.1.0-dev12 \
     --namespace iam \
     --values - \
     --create-namespace
@@ -411,19 +419,6 @@ EOF
       echo "Waiting for Crossplane Keycloak CRD readiness..."
       sleep 5
     done
-    # Initialise Keycloak
-    echo "Initialising Keycloak" >> /tmp/killercoda_setup.log
-    # Create eoepca realm
-    iam_create_realm
-    # Create IAM management client
-    iam_create_management_client
-    iam_configure_management_client
-    # Crossplane provider setup
-    iam_setup_crossplane_provider
-    # Test users
-    iam_create_test_users
-    # OPA client
-    iam_create_opa_client
   ) &> /tmp/iam_post_setup.log
 fi
 if [[ -e /tmp/assets/waitforpods ]]; then
