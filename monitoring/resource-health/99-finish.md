@@ -22,4 +22,4 @@ For more information about EOEPCA and the Resource Health Building Block, and mo
 - [OpenTelemetry Documentation](https://opentelemetry.io/)
 - [OpenSearch Documentation](https://opensearch.org/docs/)
 
-And if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+And if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

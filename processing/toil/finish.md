@@ -16,4 +16,4 @@ For more information about EOEPCA, the Processing Building Block, and more advan
 - [Toil WES documentation](https://toil.readthedocs.io/en/master/running/server/wes.html)
 - [Toil documentation](https://toil.ucsc-cgl.org/)
 
-If you have questions about this tutorial, EOEPCA in general, or specific EOEPCA applications, contact [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com).
+If you have questions about this tutorial, EOEPCA in general, or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

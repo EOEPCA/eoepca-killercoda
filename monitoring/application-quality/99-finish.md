@@ -17,4 +17,4 @@ Explore more EOEPCA building blocks at [EOEPCA Tutorials on Killercoda](https://
 
 ### Contact
 
-Questions about this tutorial or EOEPCA in general? Contact the team at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+Questions about this tutorial or EOEPCA in general? You can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

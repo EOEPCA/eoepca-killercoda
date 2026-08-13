@@ -24,4 +24,4 @@ We have learned in this tutorial how to deploy and use the EOEPCA Datacube Acces
 - [odc-stac Documentation](https://odc-stac.readthedocs.io/)
 - [EOEPCA Tutorials](https://killercoda.com/eoepca/)
 
-If you have questions about this tutorial or EOEPCA, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+If you have questions about this tutorial or EOEPCA, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

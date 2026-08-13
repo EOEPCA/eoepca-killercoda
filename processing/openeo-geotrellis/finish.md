@@ -11,4 +11,4 @@ For more information about EOEPCA, the Processing Building Block, and advanced d
 - [EOEPCA Processing Building Block Documentation](https://eoepca.readthedocs.io/projects/processing/en/latest/design/processing-engine/openeo/)
 - [OpenEO](https://openeo.org/)
 
-For questions about this tutorial, EOEPCA, or specific EOEPCA applications, contact [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com).
+For questions about this tutorial, EOEPCA, or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

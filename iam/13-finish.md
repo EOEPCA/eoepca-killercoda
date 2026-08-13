@@ -9,4 +9,4 @@ For more information about EOEPCA and the EOEPCA Processing Building Block, and 
  - [General EOEPCA Documentation](https://eoepca.readthedocs.io/)
  - [EOEPCA IAM BB documentation](https://eoepca.readthedocs.io/projects/iam/en/latest/)
 
-and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

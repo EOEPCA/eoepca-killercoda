@@ -10,4 +10,4 @@ For more information about EOEPCA and the EOEPCA Registration Discovery Building
  - [EOEPCA Resource Registration Building Block Documentation](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/)
  - [Flowable](https://www.flowable.com/open-source)
  
-and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

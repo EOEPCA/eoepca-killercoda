@@ -28,4 +28,4 @@ For more information:
 - [EODAG GitHub Repository](https://github.com/CS-SI/eodag)
 - [STAC Specification](https://stacspec.org/en)
 
-If you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+If you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

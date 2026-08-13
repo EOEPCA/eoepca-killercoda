@@ -23,4 +23,4 @@ helm uninstall application-hub -n application-hub
 kubectl delete namespace application-hub
 ```
 
-If you have questions about this tutorial or EOEPCA in general, contact us at [Eoepca.SystemTeam@telespazio.com](mailto:Eoepca.SystemTeam@telespazio.com)
+If you have questions about this tutorial or EOEPCA in general, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).
