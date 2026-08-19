@@ -60,7 +60,7 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
     --set backgroundController.enabled=false \
     --set cleanupController.enabled=false \
     --set reportsController.enabled=false \
-    --wait --timeout=2m; then
+    --wait --timeout=5m; then
     echo "ERROR: Kyverno did not become ready. Check: kubectl get pods -n kyverno" >> /tmp/killercoda_setup.log
     touch /tmp/killercoda_setup.failed
     while ! killall tail; do sleep 1; done
