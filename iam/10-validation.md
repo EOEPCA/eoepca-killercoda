@@ -37,9 +37,13 @@ Check the access token, which will be used in the following steps.
 echo "${ACCESS_TOKEN:0:20}..."
 ```{{exec}}
 
+This token will be valid for 5 minutes. After this time you will need to repeat the step above to get a new one.
+
 ## 3. Open Policy Agent Validation
 
-Check the OPA endpoint with some policy decision requests.
+OPA can make authorization policy decisions using centrally configured rules. It cannot enforce these rules, only return a decision based on the data given to it, but APISIX can be configured to request a decision from it and enforce the result (see next section). The data given to it typically includes the access token used for a request.
+
+Here we check the OPA endpoint with some policy decision requests. Note that the endpoint is not normally called externally in this way (rather internally) and the access token is used only to get access to the endpoint - it is not part of the data evaluated by OPA which is only the body of the request.
 
 During deployment, OPA was configured with a git repository that provides its policies - https://github.com/EOEPCA/iam-policies.<br>
 Ref.

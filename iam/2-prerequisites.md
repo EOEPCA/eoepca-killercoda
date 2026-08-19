@@ -1,13 +1,13 @@
 ## Prerequisite and Initial Configuration
 
-Before deploying the IAM components, ensure your environment is ready. This scenario provides a Kubernetes cluster (v1.28+) with **kubectl** access, **Helm 3**, and an **APISIX** ingress controller already provisioned.
+Before deploying the IAM components, ensure your environment is ready. This scenario provides a Kubernetes cluster (v1.34+) with **kubectl** access, **Helm 3**, and an **APISIX** ingress controller already provisioned.
 
 ## Download Deployment Scripts
 
-First, we download and uncompress the **eoepca-2.0** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we download and uncompress the **eoepca-2.1** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 and navigate to the deployment scripts
@@ -36,6 +36,14 @@ The IAM BB requires APISIX as the ingress controller for policy enforcement, and
 We can check the specific prerequisites for installing the Workspace building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
+```{{exec}}
+
+You will need to provide the following answers to accept the pre-configured cluster hostname, use the default read-write storage and disable TLS certificates:
+
+```
+n
+local-path
+no
 ```{{exec}}
 
 All the prerequisites should be met.

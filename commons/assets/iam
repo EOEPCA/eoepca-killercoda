@@ -17,7 +17,7 @@ function iam_create_secrets() {
   {
     "client_id": "crossplane-keycloak-provider",
     "client_secret": "$IAM_KEYCLOAK_PROVIDER_CLIENT_SECRET",
-    "url": "${HTTP_SCHEME}://${KEYCLOAK_HOST}",
+    "url": "http://iam-keycloak-operator-service.iam.svc.cluster.local:8080",
     "base_path": "",
     "realm": "$REALM"
   }
@@ -28,7 +28,7 @@ EOF
     kubectl create secret generic keycloak-provider \
       --from-literal=client_id="crossplane-keycloak-provider" \
       --from-literal=client_secret="$IAM_KEYCLOAK_PROVIDER_CLIENT_SECRET" \
-      --from-literal=url="${HTTP_SCHEME}://${KEYCLOAK_HOST}" \
+      --from-literal=url="http://iam-keycloak-operator-service.iam.svc.cluster.local:8080" \
       --from-literal=base_path="" \
       --from-literal=realm="$REALM" \
       --from-literal=credentials="$KEYCLOAK_PROVIDER_CREDENTIALS" \
@@ -98,7 +98,7 @@ iam: &iam
     url: &kcurl ${HTTP_SCHEME}://${KEYCLOAK_HOST}
     # Deviating "internal" Keycloak URL to use for cluster-internal access
     # (defaults to official URL). Only used for Crossplane provider so far.
-    internalUrl: ""
+    internalUrl: "http://iam-keycloak-operator-service.iam.svc.cluster.local:8080"
     hosts:
       - auth.${INGRESS_HOST}
     paths:
@@ -199,7 +199,7 @@ iam: &iam
     image:
       registry: docker.io
       repository: openpolicyagent/opa
-      tag: 1.19.0
+      tag: 1.19.1
       pullPolicy: IfNotPresent
 
   apisix:
@@ -281,7 +281,7 @@ opal:
       config.yaml: |
         decision_logs:
           # Change this to true to get more information about authorization in the OPA pod's logs
-          console: false
+          console: true
       policy.rego: |
         package system.authz
         import rego.v1

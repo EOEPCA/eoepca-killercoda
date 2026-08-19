@@ -18,7 +18,7 @@ kubectl expose deployment nginx --port=80
 
 A Keycloak client is required for the ingress protection of the dummy nginx service - to paricipate in OIDC flows for delegated access.
 
-In order for the OIDC redirect URIs to work correctly, we need to create a dedicated client for the nginx service - which must use the external URLs that are exposed by this tutorial environment:
+In order for the OIDC redirect URIs to work correctly, we need to create a dedicated OIDC client for the nginx service - which must use the external URLs that are exposed by this tutorial environment:
 
 ```bash
 export DUMMY_HOST="$(port="$(grep nginx.eoepca.local /tmp/assets/killercodaproxy | awk '{print $1}')" ; sed "s#http://PORT#$port#" /etc/killercoda/host )"
@@ -126,7 +126,8 @@ spec:
         - name: openid-connect
           enable: true
           config:
-            discovery: "{{ getenv "OIDC_ISSUER_URL" }}/.well-known/openid-configuration"
+            discovery: http://iam-keycloak-operator-service.iam.svc.cluster.local:8080/realms/{{ getenv "REALM" }}/.well-known/openid-configuration
+            redirect_uri: http://{{ getenv "DUMMY_HOST" }}/.apisix/redirect
             realm: {{ getenv "REALM" }}
             client_id: {{ getenv "DUMMY_CLIENT_ID" }}
             client_secret: {{ getenv "DUMMY_CLIENT_SECRET" }}
@@ -135,11 +136,13 @@ spec:
             set_access_token_header: true
             access_token_in_authorization_header: true
             logout_path: /logout
+            session:
+              secret: {{ random.AlphaNum 24 }}
         # Authorization - required for access to API
         - name: opa
           enable: true
           config:
-            host: http://iam-opal-client.iam:8181
+            host: http://iam-opa.iam:8181
             policy: example/tutorial/protected
 EOF
 ```{{exec}}

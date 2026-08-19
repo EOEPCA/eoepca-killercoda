@@ -20,13 +20,8 @@ _Select the provided values to inject them into the terminal prompts_
 
 > NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
 
-* `INGRESS_HOST`{{}} already set: `no`{{exec}}
-* Storage Class for PERSISTENT `ReadWriteOnce`{{}} data: `local-path`{{exec}}
 * Keycloak realm: `eoepca`{{exec}}
     _Name of the realm to create in Keycloak_
-* Automated certificate issuance is not required: `no`{{exec}}
-* IAM Management client ID: `iam-management`{{exec}}
-    _ID for the OIDC client to be used for Keycloak management via Crossplane._
 * OPA client ID: `opa`{{exec}}
     _ID for the OIDC client to be used by the Open Policy Agent service._
 * Username for the tutorial Test User: `eoepcauser`{{exec}}

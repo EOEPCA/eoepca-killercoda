@@ -17,10 +17,12 @@ kubectl -n iam get secrets
 You should see secrets such as the following:
 
 ```
-NAME                  TYPE     DATA   AGE
-kc-postgres           Opaque   2      2s
-keycloak-admin        Opaque   1      2s
-opa-keycloak-client   Opaque   2      2s
+NAME                TYPE     DATA   AGE
+iam-keycloak        Opaque   1      8s
+keycloak-admin      Opaque   3      11s
+keycloak-provider   Opaque   6      10s
+opa-route           Opaque   3      9s
+postgresql          Opaque   3      11s
 ```
 
 These hold the credentials that were generated.

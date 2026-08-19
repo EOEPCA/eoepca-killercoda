@@ -25,20 +25,8 @@
         "text": "5-deployment.md"
       },
       {
-        "title": "Create EOEPCA Realm",
-        "text": "6-create-realm.md"
-      },
-      {
-        "title": "Configure Keycloak Management",
-        "text": "7-keycloak-management.md"
-      },
-      {
         "title": "Create Test Users",
         "text": "8-create-test-users.md"
-      },
-      {
-        "title": "Create OPA Client",
-        "text": "9-create-opa-client.md"
       },
       {
         "title": "Validation of Deployment",

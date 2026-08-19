@@ -1,12 +1,13 @@
-Now that you have configured the IAM environment and applied the necessary secrets, it's time to deploy the IAM components using Helm charts. This will set up Keycloak for identity management and OPA with OPAL for policy enforcement.
+Now that you have configured the IAM environment and applied the necessary secrets, it's time to deploy the IAM components using Helm charts. This will set up Keycloak for identity management and OPA with OPAL for policy enforcement. An additional Keycloak host (resulting in an extra ingress host) is added so that Keycloak is accessible both from your browser, from outside the tutorial environment, and from within the tutorial environment.
 
 ```bash
 helm repo add eoepca https://eoepca.github.io/helm-charts
 helm repo update eoepca
 helm upgrade -i iam eoepca/iam-bb \
-  --version 2.0.0 \
+  --version 2.1.0 \
   --namespace iam --create-namespace \
-  --values generated-values.yaml
+  --values generated-values.yaml \
+  --set iam.keycloak.hosts="{${KEYCLOAK_HOST},auth.eoepca.local}"
 ```{{exec}}
 
 Now you can check the status of the IAM deployment:
@@ -21,9 +22,11 @@ Wait for all IAM pods to be `Running`{{}}, which may take ~5 minutes to complete
 kubectl -n iam rollout status \
   deployment.apps/iam-opal-server \
   deployment.apps/iam-opal-pgsql \
-  statefulset.apps/iam-postgresql \
   deployment.apps/iam-opal-client \
-  statefulset.apps/iam-keycloak
+  deployment.apps/iam-opa \
+  statefulset.apps/iam-postgresql \
+  statefulset.apps/iam-keycloak-operator \
+  deployment.apps/iam-keycloak-operator-operator
 ```{{exec}}
 
 > DO NOT proceed until the above command completes, indicating that the IAM pods are now running.
@@ -48,16 +51,14 @@ At this point we can check access to the [Keycloak Web UI]({{TRAFFIC_HOST1_90}})
 grep KEYCLOAK_ADMIN_ ~/.eoepca/state
 ```{{exec}}
 
+## Check the EOEPCA Realm
 
-> If you are getting "HTTPS Required", please run:
+A realm called `eoepca` has been created by a background Job created by the Helm chart and can be checked by querying the OpenID configuration endpoint for the realm.
 
-```
-source ~/.eoepca/state
-kubectl exec -it -n iam iam-keycloak-0 -- /opt/bitnami/keycloak/bin/kcadm.sh update realms/master \
-  --server http://localhost:8080 \
-  --realm master \
-  --user admin \
-  --password ${KEYCLOAK_ADMIN_PASSWORD} \
-  -s sslRequired=NONE
+```bash
+curl -k http://auth.eoepca.local/realms/eoepca/.well-known/openid-configuration | jq
 ```{{exec}}
 
+If this does not return data for the realm (a long JSON document) then wait a little longer for the job to complete or inspect `kubectl get job -n iam eoepca-realm`.
+
+Note that a user called `eoepcaadmin` (or the username given to the configuration script) has been pre-created and in a real environment you should replace this with an individual admin account for each system administrator.
