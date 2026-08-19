@@ -1,4 +1,4 @@
-As specified in the [Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/prerequisites/prerequisites-overview/), the following prerequisites are required or recommended to deploy and run EOEPCA building blocks:
+As specified in the [Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/eoepca-2.1/prerequisites/prerequisites-overview/), the following prerequisites are required or recommended to deploy and run EOEPCA building blocks:
 
 1. **Kubernetes** \[Mandatory\]
 

@@ -23,7 +23,7 @@ Note that THIS WILL NOT WORK if your cluster has more than one node, so for basi
 
 To configure the HostPath provisioner and its assosicated `standard` storage class we cn run:
 ```
-kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/main/docs/prerequisites/hostpath-provisioner.yaml
+kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/release-2.1/docs/prerequisites/hostpath-provisioner.yaml
 ```{{exec}}
 
 We can check if the provisioner has been deployed:
