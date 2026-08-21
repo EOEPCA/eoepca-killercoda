@@ -54,26 +54,6 @@ EOF
     --namespace iam-management
 }
 
-function iam_admin_access_token() {
-  ACCESS_TOKEN=
-  while [ -z "$ACCESS_TOKEN" ]; do
-    ACCESS_TOKEN=$( \
-      curl -X POST "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/protocol/openid-connect/token" \
-        --silent --show-error \
-        -d "username=${KEYCLOAK_ADMIN_USER}" \
-        --data-urlencode "password=${KEYCLOAK_ADMIN_PASSWORD}" \
-        -d "grant_type=password" \
-        -d "client_id=admin-cli" \
-        | jq -r '.access_token' \
-    )
-    if [ $? -ne 0 -o -z "$ACCESS_TOKEN" -o "$ACCESS_TOKEN" = "null" ]; then
-      ACCESS_TOKEN=
-      echo "[IAM setup] Failed to get access token, retrying..."
-      sleep 10
-    fi
-  done
-  echo "Access Token: ${ACCESS_TOKEN:0:20}..."
-
 function iam_helm_values() {
   cat <<EOF
 fullnameOverride: iam
