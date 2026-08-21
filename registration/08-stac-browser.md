@@ -1,13 +1,5 @@
 The outcome of the harvesting is best visualised via [STAC Browser](https://github.com/radiantearth/stac-browser).
 
-### **Simple Data Server**
-
-We start a simple nginx server to offer the harvetsed data for retrieval via the asset URLs configured in the registered STAC items.
-
-```
-kubectl apply -f registration-harvester/generated-eodata-server.yaml
-```{{exec}}
-
 ### **Deploy STAC Browser**
 
 ```bash

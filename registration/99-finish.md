@@ -8,6 +8,6 @@ For more information about EOEPCA and the EOEPCA Registration Discovery Building
  - [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/)
  - [General EOEPCA Documentation](https://eoepca.readthedocs.io/)
  - [EOEPCA Resource Registration Building Block Documentation](https://eoepca.readthedocs.io/projects/resource-registration/en/latest/)
- - [Flowable](https://www.flowable.com/open-source)
+ - [Operaton](https://docs.operaton.org/)
  
 and if you have questions about this tutorial, EOEPCA in general or specific EOEPCA applications, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

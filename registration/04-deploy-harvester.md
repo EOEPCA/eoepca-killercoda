@@ -1,14 +1,14 @@
 If you have enabled Landsat or Sentinel 2 harvesting, or if you wish to create your own harvester, you will need to deploy the harvester components.
 
-## Flowable
+## Operaton
 
-First, deploy the Flowable workflow engine:
+First, deploy the Operaton BPM workflow engine:
 
 ```
-helm repo add flowable https://flowable.github.io/helm/
-helm repo update flowable
-helm upgrade -i registration-harvester-api-engine flowable/flowable \
-  --version 7.0.0 \
+helm repo add operaton https://dlr-terrabyte.github.io/operaton-helm/
+helm repo update operaton
+helm upgrade -i registration-harvester-bpm-engine operaton/operaton \
+  --version 1.0.6 \
   --namespace resource-registration \
   --create-namespace \
   --values registration-harvester/generated-values.yaml
@@ -50,7 +50,15 @@ spec:
 EOF
 ```{{exec}}
 
-## Landsat and Sentinel Harvesters
+To serve this over HTTP this tutorial uses nginx:
+
+```bash
+kubectl apply -f registration-harvester/generated-eodata-server.yaml
+```{{exec}}
+
+The data will become visible from outside the tutorial environment under [this URL]({{TRAFFIC_HOST1_84}}) and within it from `http://eodata.eoepca.local/`.
+
+## Landsat, Sentinel and STAC Harvesters
 
 To harvest Landsat data a special Landsat Harvester Worker needs to be running. It can be installed using Helm
 
@@ -72,10 +80,19 @@ helm upgrade -i registration-harvester-worker-sentinel eoepca/registration-harve
   --values registration-harvester/harvester-values/values-sentinel.yaml
 ```{{exec}}
 
+and for STAC
+
+```
+helm upgrade -i registration-harvester-worker-stac eoepca-dev/registration-harvester \
+  --version 2.0.0 \
+  --namespace resource-registration \
+  --create-namespace \
+  --values registration-harvester/harvester-values/values-stac.yaml
+```{{exec}}
 
 ## Validation
 
-Flowable and the Landsat and Sentinel Harvesters may take several minutes to start.
+Operaton and the Landsat and Sentinel Harvesters may take several minutes to start.
 
 We can validate the deployment and check that startup has completed with the provided script `validation.sh`{{}}
 

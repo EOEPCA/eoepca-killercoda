@@ -1,1 +1,1 @@
-resource-catalogue.eoepca.local registration-api.eoepca.local registration-harvester-api.eoepca.local eodata.eoepca.local stac-browser.eoepca.local
+resource-catalogue.eoepca.local resource-catalogue-protected.eoepca.local registration-api.eoepca.local registration-harvester-api.eoepca.local eodata.eoepca.local stac-browser.eoepca.local auth.eoepca.local registration-harvester-bpm-engine.eoepca.local

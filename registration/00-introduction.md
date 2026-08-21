@@ -33,7 +33,7 @@ Before we start, you should note that this tutorial assumes a generic knowledge 
 Before proceeding, wait for the prerequisite services to be ready:
 
 ```
-while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=10s &>/dev/null; do
+while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=10s -l 'app!=keycloak-realm-import' &>/dev/null; do
   not_ready=$(kubectl get pods -A --no-headers | awk '$3 !~ /1\/1/ {print "  " $1 "/" $2}')
   echo -e "\nWaiting for Readiness - PODS not ready ($(date -u)): \n$not_ready"
 done

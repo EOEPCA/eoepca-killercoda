@@ -11,7 +11,7 @@ curl -X POST "http://registration-api.eoepca.local/processes/register/execution"
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/landsat/landsat-ot-c2-l2.json"},
-        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://resource-catalogue.eoepca.local/stac"}
+        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://resource-catalogue-protected.eoepca.local/stac"}
     }
 }
 EOF
@@ -26,7 +26,7 @@ curl -X POST "http://registration-api.eoepca.local/processes/register/execution"
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/sentinel/sentinel-2-c1-l2a.json"},
-        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://resource-catalogue.eoepca.local/stac"}
+        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://resource-catalogue-protected.eoepca.local/stac"}
     }
 }
 EOF

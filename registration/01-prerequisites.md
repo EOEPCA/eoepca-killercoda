@@ -1,41 +1,56 @@
 We will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us in configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.0** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we download and uncompress the **eoepca-2.1** version of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
 ```{{exec}}
 
 
 ## Resource Discovery BB
 
-For this tutoral the Resource Discovery BB is installed to provide a registration target for the Resource Registration BB. So first we deploy the Resource Discovery catalogue service - follow the Resource Discovery tutorial for a full description.
+For this tutoral the Resource Discovery BB is installed to provide a registration target for the Resource Registration BB. So first we deploy the Resource Discovery catalogue service - follow the Resource Discovery tutorial for a full description. We need both the read-only and protected (writable) Resource Discovery services as the Resource Registration BB will use the writable endpoint to submit changes to the catalogue.
 
-The Resource Registration BB relies upon the APISIX ingress controller for its OIDC integration with Keycloak. Thus, the Resource Discovery BB is deployed here configure for ingress via APISIX.
+The Resource Registration BB relies upon the APISIX ingress controller for its OIDC integration with Keycloak. Thus, the Resource Discovery BB is deployed here configured for ingress via APISIX.
 
 ```
 cd deployment-guide/scripts/resource-discovery
-bash check-prerequisites.sh
 
 echo "n
 local-path
-no" | bash configure-resource-discovery.sh
+no" | bash check-prerequisites.sh
+
+echo "yes" | bash configure-resource-discovery.sh
 
 helm repo add eoepca https://eoepca.github.io/helm-charts
 helm repo update eoepca
 
+# Read-only service
 helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.0.0 \
+  --version 2.1.0 \
   --namespace resource-discovery \
   --create-namespace
 
 kubectl apply -f generated-ingress.yaml
+
+# Read-write service
+kubectl apply -f generated-iam.yaml
+kubectl apply -f generated-db-secret.yaml
+
+helm upgrade -i resource-catalogue-protected eoepca/rm-resource-catalogue \
+  --values generated-protected-values.yaml \
+  --version 2.1.0 \
+  --namespace resource-discovery \
+  --create-namespace
+
+kubectl apply -f generated-protected-ingress.yaml
 ```{{exec}}
 
 The Resource Discovery BB may take several minutes to start. You can begin installing the Resource Registration BB whilst this happens, but if you wish to wait then run this
 
 ```
+kubectl wait --for=condition=Available -n resource-discovery deployment/resource-catalogue-service deployment/resource-catalogue-protected-service
 while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue.eoepca.local/stac"` != 200 ]]; do sleep 1; done
 bash validation.sh
 ```{{exec}}
@@ -48,7 +63,7 @@ The Resource Registration deployment scripts are available in the `resource-regi
 cd ~/deployment-guide/scripts/resource-registration
 ```{{exec}}
 
-The Resource Registration BB requires some shared pre-requisites with the Resource Registration BB, such as Kubernetes cluster and ingress controller, which have already been installed.
+The Resource Registration BB requires some shared pre-requisites with the Resource Registration BB, such as Kubernetes cluster, ingress controller, Crossplane and IAM BB, which have already been installed.
 
 Next we need to check the specific Resource Discovery BB prerequisites are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```

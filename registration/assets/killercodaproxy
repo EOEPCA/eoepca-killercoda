@@ -3,3 +3,6 @@
 83 registration-harvester-api.eoepca.local 'NONE'
 84 eodata.eoepca.local 'NONE'
 85 stac-browser.eoepca.local 'application/json text/html "application/vnd.oai.openapi+json;version=3.0"'
+86 resource-catalogue-protected.eoepca.local 'application/json text/html "application/vnd.oai.openapi+json;version=3.0"'
+87 auth.eoepca.local 'NONE'
+88 registration-harvester-bpm-engine.eoepca.local 'NONE'
