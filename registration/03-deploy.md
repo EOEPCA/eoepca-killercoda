@@ -3,8 +3,11 @@ We can now deploy the Resource Registration building block's API service.
 We deploy the software via helm, using the configuration values generated in the previous step.
 
 ```
-helm upgrade -i registration-api eoepca/registration-api \
-  --version 2.1.0 \
+helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+helm repo update eoepca-dev
+
+helm upgrade -i registration-api eoepca-dev/registration-api \
+  --version 2.1.0-dev2 \
   --namespace resource-registration \
   --create-namespace \
   --values registration-api/generated-values.yaml

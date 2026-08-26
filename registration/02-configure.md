@@ -19,7 +19,7 @@ bash configure-resource-registration.sh
 
 The script will load the general EOEPCA configuration and move to the Resource Registration building block specific configuration.
 
-We do not need to update the storage class, we will use what's already set, so we answer `no` to the first questions. We use eoepca/eoepca as the username and password for the Operaton workflow engine used for harvesting.
+We do not need to update the storage class, we will use what's already set, so we answer `no` to the first question. We use eoepca/eoepca as the username and password for the Operaton workflow engine used for harvesting.
 
 ```
 n
@@ -37,7 +37,7 @@ yes
 resource-registration
 ```{{exec}}
 
-We must also store the Operaton username and password into a secret.
+Next we run `apply-secrets.sh`, which stores the Operaton username and password into a secret and then interactively asks about optional harvester credentials:
 
 ```
 bash apply-secrets.sh
@@ -47,8 +47,8 @@ If you wish to set up harvesting of a small sample of Landsat data you'll need c
 
 * Register for a free account at USGS (click on 'Login' in the link above and create a new account)
 * Create an application token from your profile page at <https://ers.cr.usgs.gov/>, specifying the M2M API scope
-* At the prompt displayed now, say `y` to enable Landsat harvesting and enter these credentials when asked.
+* At the first prompt from `apply-secrets.sh`, say `y` to enable Landsat harvesting and enter these credentials when asked.
 
 If you do not wish to set up Landsat harvesting say `n`. You can rerun the tutorial from here to set it up later.
 
-Next, you will be asked if you wish to set up harvesting for a small sample of Sentinel 2 data. You will need credentials (username and password) from the Copernicus Data Space Ecosystem. Say `n` if you do not wish to set this up.
+The script then asks, at a second prompt, if you wish to set up harvesting for a small sample of Sentinel 2 data. You will need credentials (username and password) from the Copernicus Data Space Ecosystem. Say `n` if you do not wish to set this up.

@@ -1,15 +1,15 @@
 We will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us in configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.1** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
 
 
 ## Resource Discovery BB
 
-For this tutoral the Resource Discovery BB is installed to provide a registration target for the Resource Registration BB. So first we deploy the Resource Discovery catalogue service - follow the Resource Discovery tutorial for a full description. We need both the read-only and protected (writable) Resource Discovery services as the Resource Registration BB will use the writable endpoint to submit changes to the catalogue.
+For this tutorial the Resource Discovery BB is installed to provide a registration target for the Resource Registration BB. So first we deploy the Resource Discovery catalogue service - follow the Resource Discovery tutorial for a full description. We need both the read-only and protected (writable) Resource Discovery services as the Resource Registration BB will use the writable endpoint to submit changes to the catalogue.
 
 The Resource Registration BB relies upon the APISIX ingress controller for its OIDC integration with Keycloak. Thus, the Resource Discovery BB is deployed here configured for ingress via APISIX.
 
@@ -22,13 +22,15 @@ no" | bash check-prerequisites.sh
 
 echo "yes" | bash configure-resource-discovery.sh
 
-helm repo add eoepca https://eoepca.github.io/helm-charts
-helm repo update eoepca
+# Resource Discovery 2.1.0 has not yet been promoted to the stable `eoepca` chart
+# repository, so for now we use `eoepca-dev`, which carries the latest pre-release chart.
+helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+helm repo update eoepca-dev
 
 # Read-only service
-helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
+helm upgrade -i resource-discovery eoepca-dev/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.1.0 \
+  --version 2.1.0-dev2 \
   --namespace resource-discovery \
   --create-namespace
 
@@ -38,9 +40,9 @@ kubectl apply -f generated-ingress.yaml
 kubectl apply -f generated-iam.yaml
 kubectl apply -f generated-db-secret.yaml
 
-helm upgrade -i resource-catalogue-protected eoepca/rm-resource-catalogue \
+helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
   --values generated-protected-values.yaml \
-  --version 2.1.0 \
+  --version 2.1.0-dev2 \
   --namespace resource-discovery \
   --create-namespace
 
@@ -63,9 +65,9 @@ The Resource Registration deployment scripts are available in the `resource-regi
 cd ~/deployment-guide/scripts/resource-registration
 ```{{exec}}
 
-The Resource Registration BB requires some shared pre-requisites with the Resource Registration BB, such as Kubernetes cluster, ingress controller, Crossplane and IAM BB, which have already been installed.
+The Resource Registration BB requires some shared pre-requisites with the Resource Discovery BB, such as Kubernetes cluster, ingress controller, Crossplane and IAM BB, which have already been installed.
 
-Next we need to check the specific Resource Discovery BB prerequisites are met. The Deployment Guide scripts provide a dedicated script for this task:
+Next we need to check the specific Resource Registration BB prerequisites are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
 ```{{exec}}

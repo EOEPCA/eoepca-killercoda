@@ -15,6 +15,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: stac-browser
+  namespace: resource-registration
 spec:
   replicas: 1
   selector:
@@ -40,6 +41,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: stac-browser
+  namespace: resource-registration
 spec:
   selector:
     app: stac-browser
@@ -53,6 +55,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: stac-browser
+  namespace: resource-registration
 spec:
   ingressClassName: apisix
   rules:
@@ -72,7 +75,7 @@ EOF
 ### **Wait for Readiness**
 
 ```bash
-kubectl rollout status -w deploy/stac-browser
+kubectl rollout status -w deploy/stac-browser -n resource-registration
 ```{{exec}}
 
 ### **Open STAC Browser**

@@ -63,7 +63,7 @@ The data will become visible from outside the tutorial environment under [this U
 To harvest Landsat data a special Landsat Harvester Worker needs to be running. It can be installed using Helm
 
 ```
-helm upgrade -i registration-harvester-worker-landsat eoepca/registration-harvester \
+helm upgrade -i registration-harvester-worker-landsat eoepca-dev/registration-harvester \
   --version 2.0.0 \
   --namespace resource-registration \
   --create-namespace \
@@ -73,7 +73,7 @@ helm upgrade -i registration-harvester-worker-landsat eoepca/registration-harves
 Similarly for Sentinel
 
 ```
-helm upgrade -i registration-harvester-worker-sentinel eoepca/registration-harvester \
+helm upgrade -i registration-harvester-worker-sentinel eoepca-dev/registration-harvester \
   --version 2.0.0 \
   --namespace resource-registration \
   --create-namespace \
