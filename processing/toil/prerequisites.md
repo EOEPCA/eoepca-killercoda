@@ -1,11 +1,12 @@
 As usual in this tutorial, we will use the [EOEPCA deployment-guide scripts](https://github.com/EOEPCA/deployment-guide) to help us configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.0** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers:
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl --fail --location --show-error https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1
+     | tar xz --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
-curl --fail --location --show-error \
-  https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 \
-  | tar xz --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
 
 We also need to install uuidgen:

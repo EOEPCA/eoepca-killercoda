@@ -1,10 +1,13 @@
 
 As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us in configuring and deploying our application.
 
-First, we download the EOEPCA Deployment Guide:
+First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide:
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
+     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 cd deployment-guide/scripts/data-access
 ```{{exec}}
 

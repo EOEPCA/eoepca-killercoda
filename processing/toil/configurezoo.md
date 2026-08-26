@@ -32,11 +32,9 @@ no
 
 We now move to the Processing Building Block configuration.
 
-Keep the existing domain, persistent storage class, and shared ReadWriteMany storage class:
+Keep the existing shared ReadWriteMany storage class (the domain and persistent storage class questions were already answered above, as part of the shared EOEPCA configuration - they are not asked again here):
 
 ```
-no
-no
 no
 ```{{exec}}
 

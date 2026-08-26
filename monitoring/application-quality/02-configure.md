@@ -12,21 +12,13 @@ cd ../application-quality
 bash configure-application-quality.sh
 ```{{exec}}
 
-When prompted, provide the following values.
+When prompted, provide the following values. The shared domain/storage/TLS questions were
+already answered in the prerequisites step, so this script only asks about settings specific
+to Application Quality.
 
-Base domain name: (already set)
+Shared storage class for RWX data: (already set)
 ```
 n
-```{{exec}}
-
-Storage class for persistent data:
-```
-local-path
-```{{exec}}
-
-No cert manager
-```
-no
 ```{{exec}}
 
 Internal cluster issuer: (already set)
@@ -42,6 +34,16 @@ yes
 Client ID for Application Quality:
 ```
 application-quality
+```{{exec}}
+
+Enable optional Grafana dashboards? We don't need these for this tutorial:
+```
+no
+```{{exec}}
+
+Enable optional SonarQube deployment? We don't need this for this tutorial:
+```
+no
 ```{{exec}}
 
 The script generates Helm values with OIDC configuration. Now apply the Localcoda access settings and create the Keycloak client for Application Quality:

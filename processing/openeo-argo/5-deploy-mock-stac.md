@@ -4,23 +4,25 @@ OpenEO needs a STAC API from which it can discover input data. Deploy the EOEPCA
 
 ### Configure and deploy
 
-Keep the shared workshop domain and storage class:
+The shared domain, storage class and TLS settings were already configured in the earlier
+prerequisites step. We only need to answer the one question specific to Resource Discovery -
+whether to enable the IAM-protected, writable catalogue endpoint. This tutorial doesn't need
+authenticated writes, so we answer `no`:
 
 ```bash
 cd ~/deployment-guide/scripts/resource-discovery
 bash configure-resource-discovery.sh <<EOF
 no
-no
 EOF
 ```{{exec}}
 
 ```bash
-helm repo add eoepca https://eoepca.github.io/helm-charts
-helm repo update eoepca
+helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+helm repo update eoepca-dev
 
-helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
+helm upgrade -i resource-discovery eoepca-dev/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.0.0 \
+  --version 2.1.0-dev2 \
   --namespace resource-discovery \
   --create-namespace \
   --set db.volume_access_modes=ReadWriteOnce

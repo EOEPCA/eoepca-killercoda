@@ -1,9 +1,12 @@
 As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/latest/) scripts to help us in configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.0** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers:
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
+     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
 
 The Workspace deployment scripts are available in the `workspace` directory:
@@ -16,7 +19,8 @@ The EOEPCA Deployment Guide uses scripts to facilitate the deployment. The scrip
 The tutorial startup scripts have already pre-configured a number of aspects of the deployment to fit with the constraints of the tutorial environment, including:
 * use of `http` instead of `https`
 * `eoepca.local` as the 'platform' domain
-* use of the Storage Classes `local-path` (ReadWriteOnce) and `standard` (ReadWriteMany)
+* APISIX as the ingress class
+* use of the Storage Class `standard` (ReadWriteMany)
 * configuration of Keycloak and Minio services
 
 ```bash
@@ -28,6 +32,26 @@ In general EOEPCA Building Blocks will require as a minimum prerequisite a Kuber
 We can check the specific prerequisites for installing the Workspace building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
+```{{exec}}
+
+This is the first Deployment Guide script run in this tutorial, so it also asks a few
+questions to establish the remaining shared EOEPCA configuration - specifically the
+persistent (ReadWriteOnce) storage class and whether to use cert-manager. The ingress class
+and domain questions are skipped because they've already been set for you, as shown above.
+
+Keep `eoepca.local`{{}} as the local domain shared by the EOEPCA services:
+```
+n
+```{{exec}}
+
+Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutorial environment:
+```
+local-path
+```{{exec}}
+
+Disable cert-manager because Localcoda provides the tutorial's external HTTPS proxy:
+```
+no
 ```{{exec}}
 
 All the prerequisites should be met.

@@ -7,9 +7,10 @@ First, we need to deploy the Resource Discovery BB which will serve as our STAC 
 bash configure-resource-discovery.sh
 ```{{exec}}
 
-Accept the defaults:
+The shared domain, storage class and TLS settings were already configured in the earlier
+prerequisites step. The only remaining question is whether to enable the IAM-protected,
+writable catalogue endpoint - we don't need authenticated writes for this tutorial:
 ```
-no
 no
 ```{{exec}}
 
@@ -18,14 +19,14 @@ no
 Add the helm repository and deploy:
 
 ```
-helm repo add eoepca https://eoepca.github.io/helm-charts
-helm repo update eoepca
+helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+helm repo update eoepca-dev
 ```{{exec}}
 
 ```
-helm upgrade -i resource-discovery eoepca/rm-resource-catalogue \
+helm upgrade -i resource-discovery eoepca-dev/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.0.0 \
+  --version 2.1.0-dev2 \
   --namespace resource-discovery \
   --create-namespace \
   --set db.volume_access_modes=ReadWriteOnce

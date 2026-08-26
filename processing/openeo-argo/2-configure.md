@@ -1,12 +1,15 @@
 ## Configure OpenEO ArgoWorkflows
 
-Generate the OpenEO values and ingress manifests. Keep the shared domain and storage class, disable production OIDC, and point OpenEO at the Resource Discovery STAC API that we will deploy later:
+Generate the OpenEO values and ingress manifests. Use the shared job workspace storage class,
+point at a placeholder OIDC issuer for the in-cluster mock provider we'll fix up next, and
+point OpenEO at the Resource Discovery STAC API that we will deploy later:
 
 ```bash
 bash configure-openeo-argo.sh <<EOF
-n
-n
-no
+standard
+http://dummy-oidc.local/realms/eoepca
+eoepca
+
 http://resource-catalogue.eoepca.local/stac
 EOF
 ```{{exec}}

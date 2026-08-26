@@ -54,11 +54,6 @@ We accept the pre-configured MinIO secret key paired with that access key:
 n
 ```{{exec}}
 
-We accept the pre-configured S3 endpoint used by EOAPI to locate stored objects:
-```
-n
-```{{exec}}
-
 Choose the in-cluster PostgreSQL database managed by the Crunchy Postgres Operator:
 ```
 no
@@ -79,12 +74,22 @@ Disable IAM and Keycloak integration to keep this tutorial deployment unauthenti
 no
 ```{{exec}}
 
+Without IAM, the script instead protects the openEO API with HTTP basic auth. Accept the default username:
+```
+openeo
+```{{exec}}
+
 Enable STAC transactions so the tutorial can create and update collections:
 ```
 yes
 ```{{exec}}
 
 Disable the EOAPI CloudEvents notifier because this tutorial does not consume change events:
+```
+no
+```{{exec}}
+
+Disable the scheduled pgSTAC-to-geoparquet export, since this tutorial does not need it:
 ```
 no
 ```{{exec}}

@@ -4,10 +4,13 @@ Before deploying the IAM components, ensure your environment is ready. This scen
 
 ## Download Deployment Scripts
 
-First, we download and uncompress the **eoepca-2.1** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers:
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
+     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
 
 and navigate to the deployment scripts

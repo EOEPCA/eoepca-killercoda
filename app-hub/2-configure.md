@@ -7,22 +7,9 @@ Run the configuration script to generate the necessary Helm values:
 bash configure-app-hub.sh
 ```{{exec}}
 
-When prompted, provide the following configuration values.
-
-Base domain name is already correctly set as `eoepca.local`{{}}:
-```
-n
-```{{exec}}
-
-For the storage class:
-```
-local-path
-```{{exec}}
-
-We dont need to enable TLS for local development, so for the TLS option, enter:
-```
-no
-```{{exec}}
+When prompted, provide the following configuration values. The shared domain/storage/TLS
+questions were already answered while checking prerequisites in the previous step, so this
+script only asks about the Application Hub itself.
 
 For the node selector key:
 ```
@@ -32,6 +19,11 @@ kubernetes.io/os
 For the node selector value:
 ```
 linux
+```{{exec}}
+
+For the public Application Hub host:
+```
+app-hub.eoepca.local
 ```{{exec}}
 
 For the OAuth client ID:

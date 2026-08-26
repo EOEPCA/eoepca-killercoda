@@ -14,16 +14,9 @@ First, we check the prerequisites. At this point all of them should be met:
 bash check-prerequisites.sh
 ```{{exec}}
 
-Now we configure MinIO,
+Now we configure MinIO. This generates a random MinIO password and the S3 endpoint values automatically, so there are no questions to answer here:
 ```
 bash configure-minio.sh
-```{{exec}}
-
-we answer `no`{{}} to all questions since these values are already set correctly
-```
-no
-no
-no
 ```{{exec}}
 
 We add the repository:
