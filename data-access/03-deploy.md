@@ -13,7 +13,7 @@ The Data Access BB uses PostgreSQL with PostGIS and pgSTAC extensions. We'll dep
 
 ```
 helm upgrade --install pgo oci://registry.developers.crunchydata.com/crunchydata/pgo \
-  --version 5.6.0 \
+  --version 5.8.8 \
   --namespace data-access \
   --create-namespace \
   --values postgres/generated-values.yaml \
@@ -28,9 +28,12 @@ Now we deploy the core eoAPI services:
 helm repo add eoapi https://devseed.com/eoapi-k8s/
 helm repo update eoapi
 helm upgrade -i eoapi eoapi/eoapi \
-  --version 0.7.12 \
+  --version 0.15.2 \
   --namespace data-access \
+  --create-namespace \
   --values eoapi/generated-values.yaml \
+  --set stac.autoscaling.minReplicas=1 \
+  --set-string browser.catalogUrl="${EOAPI_PUBLIC_URL}/stac" \
   --timeout 10m
 ```{{exec}}
 
@@ -53,7 +56,7 @@ EOAPI_PUBLIC_URL=$(
 helm repo add stac-manager https://stac-manager.ds.io/
 helm repo update stac-manager
 helm upgrade -i stac-manager stac-manager/stac-manager \
-  --version 0.0.11 \
+  --version 1.0.3 \
   --namespace data-access \
   --values stac-manager/generated-values.yaml \
   --set service.port=8080 \
@@ -61,17 +64,25 @@ helm upgrade -i stac-manager stac-manager/stac-manager \
   --set-string stacApi="${EOAPI_PUBLIC_URL}/stac"
 ```{{exec}}
 
-### Deploy EOAPI Maps Plugin
 
-The Maps Plugin adds OGC API Maps support:
+### Deploy titiler-openeo
+
+titiler-openeo provides real-time processing and visualization over an OpenEO interface.
+
+```bash
+helm pull oci://ghcr.io/developmentseed/charts/titiler-openeo --version 2.0.0
+helm upgrade -i titiler-openeo oci://ghcr.io/developmentseed/charts/titiler-openeo \
+  --version 2.0.0 \
+  --namespace data-access \
+  --values titiler-openeo/generated-values.yaml
+```{{exec}}
+
+### Create Ingress
+
+We must add ingresses for the aboce services:
 
 ```
-helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev/
-helm repo update eoepca-dev
-helm upgrade -i eoapi-maps-plugin eoepca-dev/eoapi-maps-plugin \
-  --version 0.0.21 \
-  --namespace data-access \
-  --values eoapi-maps-plugin/generated-values.yaml
+kubectl apply -f eoapi/generated-nginx-ingress.yaml
 ```{{exec}}
 
 ### Wait for Services
@@ -108,7 +119,7 @@ bash validation.sh nomonitoring
 Finally, verify every ingress route used in this tutorial, including the STAC Manager:
 
 ```
-for path in stac/ raster/ vector/ multidim/ maps manager/ browser; do
+for path in / stac/ raster/ vector/ multidim/ manager/ browser/ openeo/; do
   curl -fsS -o /dev/null \
     -w "${path} -> HTTP %{http_code}\n" \
     "${EOAPI_PUBLIC_URL}/${path}"
@@ -120,5 +131,6 @@ Once deployed, the Data Access services should be accessible:
 - Raster API: [Access here]({{TRAFFIC_HOST1_82}}/raster/)
 - Vector API: [Access here]({{TRAFFIC_HOST1_82}}/vector/)
 - Multidimensional API: [Access here]({{TRAFFIC_HOST1_82}}/multidim/)
-- OGC API Maps: [Access here]({{TRAFFIC_HOST1_82}}/maps)
+- TiTiler OpenEO: [Access here]({{TRAFFIC_HOST1_82}}/openeo/)
+- STAC Browser: [Access here]({{TRAFFIC_HOST1_82}}/browser/)
 - STAC Manager: [Access here]({{TRAFFIC_HOST1_82}}/manager/)

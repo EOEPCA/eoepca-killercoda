@@ -44,7 +44,7 @@ This shows the collection covers Iceland with a bounding box from approximately 
 Let's see how many items are in the collection:
 
 ```
-curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=1" | jq '.numberMatched'
+curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=1000&fields=id" | jq '.numberReturned'
 ```{{exec}}
 
 The sample contains 226 items.

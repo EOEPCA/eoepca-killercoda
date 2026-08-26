@@ -1,8 +1,6 @@
 Welcome to the **[EOEPCA Data Access](https://eoepca.readthedocs.io/projects/data-access/en/latest/)** building block tutorial!
 
-The Data Access Building Block provides feature-rich and reliable interfaces to geospatial data assets stored in the platform, addressing both human and machine users. It enables discovery, visualisation, and retrieval of Earth Observation data through standard OGC APIs.
-
-In this scenario, you will learn how to deploy and interact with the EOEPCA Data Access Building Block — a core component for serving satellite imagery and geospatial data via STAC and OGC APIs.
+The **Data Access** Building Block provides standard OGC/STAC interfaces to geospatial data assets stored in the platform. This tutorial provides step-by-step instructions to deploy the Data Access BB in a Kubernetes cluster.
 
 ---
 
@@ -38,6 +36,7 @@ The Data Access BB includes:
 - **Raster API** — Dynamic tile generation via TiTiler for imagery visualisation
 - **Vector API** — OGC API Features for vector data access
 - **Multidim API** — Access to multidimensional datasets (Zarr, NetCDF)
+- **TiTiler OpenEO** — An OpenEO endpoint for on-the-fly processing and visualization
 - **STAC Manager** — Web interface for catalogue administration
 - **PostgreSQL + pgSTAC** — Database backend for metadata storage
 
