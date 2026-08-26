@@ -368,15 +368,24 @@ if [[ -e /tmp/assets/iam ]]; then
     sed "s#PORT#$port#" /etc/killercoda/host \
       | sed -E 's#^https?://##; s#/$##'
   }
+  keycloak_external_scheme() {
+    port="$(
+      awk '$2 == "auth.eoepca.local" { print $1; exit }' /tmp/assets/killercodaproxy
+    )"
+    sed "s#PORT#$port#" /etc/killercoda/host | sed -E 's#^(https?)://.*#\1#'
+  }
   source ~/.eoepca/state
   export REALM="eoepca"
   export KEYCLOAK_HOST="$(keycloak_host)"
+  # Real Killercoda/Instruqt TLS-terminate at their own edge even when the cluster
+  # ingress is http-only, but Localcoda's tutorial host is plain http - so derive
+  # the externally-reachable scheme from /etc/killercoda/host itself rather than
+  # assuming either one.
+  export KEYCLOAK_EXTERNAL_SCHEME="$(keycloak_external_scheme)"
   mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
 export REALM="${REALM}"
 export KEYCLOAK_HOST="${KEYCLOAK_HOST}"
-
-# TODO: UPDATE THIS DEPENDING ON WHETHER LOCALCODA IS RUNNING LOCALLY OR EXTERNALLY. NEW ENVIRONMENT VARIABLE NEEDED TO PASS TO INTRO_BACKGROUND
-export OIDC_ISSUER_URL="https://${KEYCLOAK_HOST}/realms/${REALM}"
+export OIDC_ISSUER_URL="${KEYCLOAK_EXTERNAL_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}"
 export KEYCLOAK_ADMIN_USER="admin"
 export KEYCLOAK_ADMIN_PASSWORD="eoepcatest"
 export KEYCLOAK_POSTGRES_PASSWORD="eoepcatest"

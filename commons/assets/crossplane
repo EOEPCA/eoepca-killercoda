@@ -145,6 +145,10 @@ spec:
     # kind ... ensure CRDs are installed first" since Crossplane v2 only installs
     # CRDs for explicitly-activated resource types.
     - protocolmappers.client.keycloak.m.crossplane.io
+    # Needed by OpenEO ArgoWorkflows' Keycloak client (its iam-template.yaml applies
+    # a `kind: ClientDefaultScopes` to grant the profile/email/roles/basic default
+    # scopes) - same "CRDs are installed first" failure otherwise.
+    - clientdefaultscopes.openidclient.keycloak.m.crossplane.io
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig

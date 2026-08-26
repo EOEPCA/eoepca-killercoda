@@ -1,3 +1,0 @@
-FROM eoepcaci/openeo-argoworkflows:executor-2025.5.1-patched-v3
-USER root
-COPY io_fixed.py /opt/openeo_argoworkflows_executor/extra_processes/process_implementations/io.py

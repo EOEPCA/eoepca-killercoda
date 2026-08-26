@@ -22,12 +22,12 @@
         "text": "3-deploy-openeo-argo.md"
       },
       {
-        "title": "Ingress and Demo Auth",
+        "title": "Ingress and Authentication",
         "text": "4-deploy-ingress.md"
       },
       {
-        "title": "Resource Discovery and Data",
-        "text": "5-deploy-mock-stac.md"
+        "title": "Resource Discovery and Sample Data",
+        "text": "5-deploy-resource-discovery.md"
       },
       {
         "title": "Explore the OpenEO API",

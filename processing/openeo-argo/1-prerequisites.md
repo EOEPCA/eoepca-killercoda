@@ -11,21 +11,22 @@ git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-gu
 cd deployment-guide/scripts/processing/openeo-argo
 ```{{exec}}
 
-The Localcoda setup has already stored the HTTP scheme and workshop domain in `~/.eoepca/state`. Complete the remaining first-time settings and run the prerequisite checks:
+The Localcoda setup has already deployed the shared IAM (Keycloak/Crossplane) and APISIX ingress used by this tutorial, and stored the HTTP scheme and workshop domain in `~/.eoepca/state`. Run the prerequisite checks, which also complete the remaining one-time shared settings:
 
 ```bash
 bash check-prerequisites.sh <<EOF
-nginx
 n
 local-path
 no
 EOF
 ```{{exec}}
 
-These answers select the NGINX ingress class, keep `eoepca.local`, use the k3s `local-path` storage class, and disable cert-manager for this HTTP-only workshop.
+These answers keep the domain `eoepca.local` (already set), use the k3s `local-path` StorageClass for regular persistent volumes, and disable cert-manager for this HTTP-only workshop. The script should finish with `All prerequisites are met`, including a check that the `standard` StorageClass supports `ReadWriteMany`, which the shared job workspace needs.
 
 Confirm the saved shared settings:
 
 ```bash
 cat ~/.eoepca/state
 ```{{exec}}
+
+If you want to learn more about these settings, follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Prerequisites</a> tutorial.
