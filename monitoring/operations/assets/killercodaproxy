@@ -1,0 +1,2 @@
+81 monitoring.eoepca.local 'text/html application/javascript application/json'
+82 alerting.eoepca.local 'text/html application/javascript application/json'

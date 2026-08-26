@@ -1,9 +1,12 @@
 Most of the EOEPCA deployment explained in the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/eoepca-2.1/) is assisted by the Deployment Guide scripts available on te [EOEPCA Deployment Guide Github](https://github.com/EOEPCA/deployment-guide/).
 
-Thus, we can download and uncompress the **eoepca-2.1** version of the EOEPCA Deployment Guide, to which this tutorial refers. This contains the deployment scripts we will use for our EOEPCA deployment
+Thus, we can clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers. This contains the deployment scripts we will use for our EOEPCA deployment
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
+     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
 
 In the Deployment Guide scripts there is a special script for checking if the Kubernetes and infrastructure prerequisites are met. Let's run it now:

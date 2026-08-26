@@ -36,8 +36,6 @@ Keep the existing domain, persistent storage class, and shared ReadWriteMany sto
 
 ```
 no
-no
-no
 ```{{exec}}
 
 The local S3 endpoint, access key, secret key, and region were also configured by the prerequisites. Keep all four values:

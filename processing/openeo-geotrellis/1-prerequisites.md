@@ -1,9 +1,12 @@
 ## Prerequisites and Initial Setup
 
-First, download the `eoepca-2.0` release branch of the Deployment Guide. The archive is extracted into `/root/deployment-guide`, and the second command moves us to the OpenEO deployment scripts used throughout this tutorial.
+First, clone the **release-2.1** branch of the Deployment Guide. The repository is cloned into `/root/deployment-guide`, and the second command moves us to the OpenEO deployment scripts used throughout this tutorial.
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
+     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```bash
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 cd deployment-guide/scripts/processing/openeo
 ```{{exec}}
 

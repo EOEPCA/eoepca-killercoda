@@ -64,8 +64,7 @@ Disable IAM and Keycloak integration to keep this tutorial deployment unauthenti
 no
 ```{{exec}}
 
-
-We use the default username for the openEO API:
+Without IAM, the script instead protects the openEO API with HTTP basic auth. Accept the default username:
 ```
 openeo
 ```{{exec}}
@@ -80,7 +79,7 @@ Disable the EOAPI CloudEvents notifier because this tutorial does not consume ch
 no
 ```{{exec}}
 
-Disable scheduled export of GeoParquet:
+Disable the scheduled pgSTAC-to-geoparquet export, since this tutorial does not need it:
 ```
 no
 ```{{exec}}

@@ -1,11 +1,13 @@
 ## Prerequisites and Initial Setup
 
-Download the EOEPCA Deployment Guide release used by this workshop, then enter the OpenEO ArgoWorkflows scripts directory:
+Clone the **release-2.1** branch of the EOEPCA Deployment Guide used by this workshop, then enter the OpenEO ArgoWorkflows scripts directory:
 
+<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
+     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
+     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```bash
 cd ~
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.0 \
-  | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 cd deployment-guide/scripts/processing/openeo-argo
 ```{{exec}}
 

@@ -6,24 +6,20 @@ Deployment Guide script:
 bash configure-resource-health.sh
 ```{{exec}}
 
-The script will load the general EOEPCA configuration and move to the Resource Health building block specific configuration.
+The shared domain/storage/TLS questions were already answered in the previous step. This
+script only asks about settings specific to Resource Health.
 
 The internal cluster issuer is already configured. Keep the existing value:
 ```
 n
 ```{{exec}}
 
-The `local-path` storage class is also already configured. Keep it:
-```
-n
-```{{exec}}
-
-Keep the existing domain:
+OIDC protection for Resource Health currently requires APISIX, and this tutorial uses nginx, so disable it:
 ```
 no
 ```{{exec}}
 
-Do not enable OIDC authentication for this demonstration:
+Disable email alerting for this demonstration:
 ```
 no
 ```{{exec}}
