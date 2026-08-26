@@ -30,10 +30,10 @@ source ~/.eoepca/state
 DEVICE=$(curl -s -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/auth/device" \
   -d "client_id=resource-catalogue")
 
-echo "$DEVICE" | jq -r '"Open \(.verification_uri_complete) and log in as stac-admin"'
+echo "$DEVICE" | jq -r '"Open \(.verification_uri_complete) and log in as eoepcauser"'
 ```{{exec}}
 
-Open the printed URL, log in as a user assigned to the `resource-catalogue-admin` group (`eoepcauser` has been added for you), then exchange the device code for a token:
+Open the printed URL and log in as a user assigned to the `resource-catalogue-admin` group (`eoepcauser` / `eoepcapassword` has been added for you). Keycloak will then ask you to grant access to `resource-catalogue` - click **Yes** to confirm. Once done, exchange the device code for a token:
 
 ```bash
 DEVICE_CODE=$(echo "$DEVICE" | jq -r '.device_code')

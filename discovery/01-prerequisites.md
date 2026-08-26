@@ -1,12 +1,12 @@
 As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.readthedocs.io/projects/deploy/en/eoepca-2.1/) scripts to help us in configuring and deploying our application.
 
-First, we download and uncompress the **eoepca-2.1** version of the EOEPCA Deployment Guide, to which this tutorial refers:
+First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers:
 
 ```
-curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx --transform 's|^EOEPCA[^/]*|deployment-guide|'
+git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
 
-The Rescource Discovery deployment scripts are available in the `resource-discovery` directory:
+The Resource Discovery deployment scripts are available in the `resource-discovery` directory:
 ```
 cd deployment-guide/scripts/resource-discovery
 ```{{exec}}
@@ -22,7 +22,26 @@ Next we need to check the specific Resource Discovery BB prerequisites for insta
 bash check-prerequisites.sh
 ```{{exec}}
 
-The pre-requisites should already be met. You can see the running components with
+This is the first Deployment Guide script run in this tutorial, so it will also ask a few questions to establish the shared EOEPCA configuration (domain, storage class, TLS) used by every building block. The ingress class question is skipped because APISIX has already been selected for you by the tutorial environment.
+
+> Some configuration has already been established by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
+
+Keep `eoepca.local`{{}} as the local domain shared by the EOEPCA services:
+```
+n
+```{{exec}}
+
+Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutorial environment:
+```
+local-path
+```{{exec}}
+
+Disable cert-manager because Localcoda provides the tutorial's external HTTPS proxy:
+```
+no
+```{{exec}}
+
+The pre-requisites should now be met. You can see the running components with
 
 ```
 kubectl get pods -A

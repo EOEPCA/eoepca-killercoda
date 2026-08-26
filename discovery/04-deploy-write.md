@@ -30,9 +30,9 @@ kubectl apply -f generated-db-secret.yaml
 Next, we deploy the software using the same Helm chart as for the read-only instance but with slightly different configuration:
 
 ```
-helm upgrade -i resource-catalogue-protected eoepca/rm-resource-catalogue \
+helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
   --values generated-protected-values.yaml \
-  --version 2.1.0 \
+  --version 2.1.0-dev2 \
   --namespace resource-discovery \
   --create-namespace
 ```{{exec}}
@@ -53,7 +53,7 @@ while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue-prot
 
 Once deployed, the Resource Discovery STAC API should be accessible at `http://resource-catalogue-protected.eoepca.local`{{}}
 
-We can validate it with the provided script `validation.sh`{{}}
+We can now validate both the read-only and the writable catalogue with the provided script `validation.sh`{{}}
 
 ```
 bash validation.sh
