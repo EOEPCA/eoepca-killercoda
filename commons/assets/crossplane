@@ -140,6 +140,11 @@ spec:
     - roles.role.keycloak.m.crossplane.io
     - users.user.keycloak.m.crossplane.io
     - groups.user.keycloak.m.crossplane.io
+    # Needed by Workspace's workspace-api Keycloak client (audience + groups claim
+    # mappers) - without this, `kind: ProtocolMapper` fails with "no matches for
+    # kind ... ensure CRDs are installed first" since Crossplane v2 only installs
+    # CRDs for explicitly-activated resource types.
+    - protocolmappers.client.keycloak.m.crossplane.io
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
