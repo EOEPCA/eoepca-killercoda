@@ -23,7 +23,7 @@ Host URL for the S3-compatible object store: (already set)
 n
 ```{{exec}}
 
-Bucket name for Loki chunk storage — this is a fresh question, since the tutorial environment only pre-seeds the shared MinIO connection details, not a bucket name. A `logging` bucket has already been created for you, so use that:
+Bucket name for Loki chunk storage. This is a fresh question, since the tutorial environment only pre-seeds the shared MinIO connection details, not a bucket name. A `logging` bucket has already been created for you, so use that:
 ```
 logging
 ```{{exec}}
@@ -43,7 +43,7 @@ Log retention period in hours:
 168
 ```{{exec}}
 
-Enable IAM/Keycloak integration? This tutorial deploys Operations in its simpler default mode — local admin login for Grafana, no authentication for Keep:
+Enable IAM/Keycloak integration? This tutorial deploys Operations in its simpler default mode: local admin login for Grafana, no authentication for Keep:
 ```
 no
 ```{{exec}}

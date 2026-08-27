@@ -1,12 +1,12 @@
 We can now deploy the Operations building block.
 
-First, create the namespace and apply the secrets it needs — the Loki S3 credentials and the Keep auth placeholder:
+First, create the namespace and apply the secrets it needs: the Loki S3 credentials and the Keep auth placeholder:
 
 ```
 bash apply-secrets.sh
 ```{{exec}}
 
-### Deploy kube-prometheus-stack
+## Deploy kube-prometheus-stack
 
 The core monitoring stack is deployed first so that its CRDs (`ServiceMonitor`, `PrometheusRule`, `AlertmanagerConfig`) are available for the components that follow. This is the biggest image pull in this tutorial, so it can take a few minutes:
 
@@ -21,7 +21,7 @@ helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack
   --wait --timeout 5m
 ```{{exec}}
 
-### Deploy Loki
+## Deploy Loki
 
 ```
 helm repo add grafana https://grafana.github.io/helm-charts
@@ -34,9 +34,9 @@ helm upgrade -i loki grafana/loki \
   --wait --timeout 5m
 ```{{exec}}
 
-> The deployment guide's own `values-template.yaml` assumes a real S3 endpoint behind TLS, as it would be in a production deployment. The tutorial's local MinIO is plain HTTP, so this step adds `--set loki.storage.s3.insecure=true` on top of the generated values to match — a tutorial-only override, not a guide fix.
+> The deployment guide's own `values-template.yaml` assumes a real S3 endpoint behind TLS, as it would be in a production deployment. The tutorial's local MinIO is plain HTTP, so this step adds `--set loki.storage.s3.insecure=true` on top of the generated values to match. This is a tutorial-only override, not a guide fix.
 
-### Deploy Alloy
+## Deploy Alloy
 
 Alloy is deployed as raw manifests rather than via Helm, since its configuration is tightly coupled to the cluster's log paths and the Loki endpoint:
 
@@ -44,7 +44,7 @@ Alloy is deployed as raw manifests rather than via Helm, since its configuration
 kubectl apply -k alloy/
 ```{{exec}}
 
-### Deploy Keep
+## Deploy Keep
 
 Keep is the alert triage UI. Without IAM enabled, it runs unauthenticated:
 
@@ -60,7 +60,7 @@ helm upgrade -i keep keephq/keep \
   --wait --timeout 5m
 ```{{exec}}
 
-### Apply the alerting configuration
+## Apply the alerting configuration
 
 This deploys the Alertmanager-to-Keep relay, the `AlertmanagerConfig` routing rules, and the baseline `PrometheusRule`s (STAC alerts are skipped, since we didn't enable them):
 
@@ -70,7 +70,7 @@ kubectl apply -f alerting/generated-alertmanagerconfig.yaml
 kubectl apply -f rules/baseline-alerts.yaml
 ```{{exec}}
 
-### Apply the Grafana dashboards
+## Apply the Grafana dashboards
 
 Dashboards are delivered as labelled ConfigMaps which Grafana's sidecar discovers and loads automatically:
 
@@ -78,7 +78,7 @@ Dashboards are delivered as labelled ConfigMaps which Grafana's sidecar discover
 kubectl apply -k dashboards/
 ```{{exec}}
 
-### Configure the ingress routes
+## Configure the ingress routes
 
 ```
 source ~/.eoepca/state
@@ -86,7 +86,7 @@ kubectl apply -f ingress/generated-monitoring-ingress.yaml
 kubectl apply -f ingress/generated-alerting-ingress.yaml
 ```{{exec}}
 
-### Check the deployment
+## Check the deployment
 
 Wait for the workloads to become ready:
 

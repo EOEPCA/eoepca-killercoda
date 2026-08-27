@@ -1,31 +1,29 @@
 ## Configure OpenEO ArgoWorkflows
 
-Generate the OpenEO values and ingress manifests. Use the shared job workspace storage class,
-point at a placeholder OIDC issuer for the in-cluster mock provider we'll fix up next, and
-point OpenEO at the Resource Discovery STAC API that we will deploy later:
+Run the configuration script:
 
 ```bash
 bash configure-openeo-argo.sh <<EOF
-standard
-http://dummy-oidc.local/realms/eoepca
+n
+n
 eoepca
 
 http://resource-catalogue.eoepca.local/stac
 EOF
 ```{{exec}}
 
-For this workshop, a small in-cluster OIDC provider will validate the demo user's token. Replace the placeholder issuer hostname with its Kubernetes service name:
+Run each answer only when its corresponding prompt appears:
 
-```bash
-sed -i \
-  's|dummy-oidc.local|dummy-oidc-local.openeo.svc.cluster.local|g' \
-  generated-values.yaml
-```{{exec}}
+1. `SHARED_STORAGECLASS` is already `standard` - keep it: `n`
+2. `OIDC_ISSUER_URL` is already set to this cluster's Keycloak - keep it: `n`
+3. `OIDC_ORGANISATION`, the realm identifier used in the bearer token format: `eoepca`
+4. `OIDC_POLICIES` - optional, leave empty
+5. `STAC_CATALOG_ENDPOINT` - we'll deploy the EOEPCA Resource Discovery Building Block as this backend's STAC source in the next step: `http://resource-catalogue.eoepca.local/stac`
 
 Review the important generated values:
 
 ```bash
 grep -E \
-  'apiDns:|oidcUrl:|stacCatalogueUrl:|workspaceRoot:|executorImage:' \
+  'apiDns:|oidcUrl:|oidcOrganisation:|stacCatalogueUrl:|workspaceRoot:' \
   generated-values.yaml
 ```{{exec}}

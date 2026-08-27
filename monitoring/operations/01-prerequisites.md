@@ -11,7 +11,7 @@ The Operations deployment scripts are available in the `operations` directory:
 cd deployment-guide/scripts/operations
 ```{{exec}}
 
-Operations depends only on a Kubernetes cluster, an ingress controller and an S3-compatible object store to hold Loki's log chunks — it does not require the IAM Building Block. The Deployment Guide scripts provide a dedicated script to check these prerequisites are met:
+Operations depends only on a Kubernetes cluster, an ingress controller and an S3-compatible object store to hold Loki's log chunks. It does not require the IAM Building Block. The Deployment Guide scripts provide a dedicated script to check these prerequisites are met:
 ```
 bash check-prerequisites.sh
 ```{{exec}}
@@ -41,4 +41,4 @@ The pre-requisites should now be met. You can see the running components with
 kubectl get pods -A
 ```{{exec}}
 
-APISIX has already been deployed for you, and a local MinIO instance is running to provide S3-compatible storage — Operations will use it as the backing store for Loki's log chunks.
+APISIX has already been deployed for you, and a local MinIO instance is running to provide S3-compatible storage. Operations will use it as the backing store for Loki's log chunks.

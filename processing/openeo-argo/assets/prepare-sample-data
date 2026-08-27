@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Crops two small Sentinel-2 bands from a public AWS bucket and re-hosts them on the
+# in-cluster MinIO, so the executor can read them without needing AWS credentials.
+
+BUCKET="${OPENEO_SAMPLE_BUCKET:-eoepca}"
+PREFIX="${OPENEO_SAMPLE_PREFIX:-openeo-samples}"
+SRC_TILE="https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/31/U/FT/2026/6/S2B_31UFT_20260613_0_L2A"
+WORK_DIR="${OPENEO_SAMPLE_WORK_DIR:-/tmp/openeo-sample-data}"
+POD_NAME="openeo-sample-crop"
+
+if mc stat "minio-local/${BUCKET}/${PREFIX}/B04.tif" &>/dev/null \
+  && mc stat "minio-local/${BUCKET}/${PREFIX}/B08.tif" &>/dev/null; then
+  echo "Sample Sentinel-2 crop already present in MinIO: ${BUCKET}/${PREFIX}/"
+  exit 0
+fi
+
+mkdir -p "${WORK_DIR}"
+kubectl delete pod "${POD_NAME}" --ignore-not-found --wait=true >/dev/null 2>&1 || true
+
+echo "Starting a GDAL pod to crop the sample bands..."
+kubectl run "${POD_NAME}" --image=ghcr.io/osgeo/gdal:alpine-small-3.9.2 --restart=Never --command -- sleep 600
+kubectl wait --for=condition=Ready "pod/${POD_NAME}" --timeout=90s
+
+for band in B04 B08; do
+  echo "Cropping ${band}.tif..."
+  kubectl exec "${POD_NAME}" -- gdal_translate \
+    -projwin 4.998 52.050 5.052 52.000 -projwin_srs EPSG:4326 \
+    -of COG "/vsicurl/${SRC_TILE}/${band}.tif" "/tmp/${band}.tif"
+  kubectl cp "default/${POD_NAME}:/tmp/${band}.tif" "${WORK_DIR}/${band}.tif"
+done
+
+kubectl delete pod "${POD_NAME}" --wait=false >/dev/null 2>&1 || true
+
+mc cp "${WORK_DIR}/B04.tif" "minio-local/${BUCKET}/${PREFIX}/B04.tif"
+mc cp "${WORK_DIR}/B08.tif" "minio-local/${BUCKET}/${PREFIX}/B08.tif"
+
+# Buckets are private by default; the executor reads these with no credentials.
+mc anonymous set download "minio-local/${BUCKET}"
+
+echo "Sample Sentinel-2 crop uploaded to MinIO: ${BUCKET}/${PREFIX}/{B04,B08}.tif"

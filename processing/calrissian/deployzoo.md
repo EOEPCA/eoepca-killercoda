@@ -15,7 +15,7 @@ then we deploy the software via helm, using the configuration values generated i
 
 ```
 helm upgrade -i zoo-project-dru zoo-project/zoo-project-dru \
-  --version 0.8.3 \
+  --version 0.10.3 \
   --values generated-values.yaml \
   --namespace processing \
   --create-namespace

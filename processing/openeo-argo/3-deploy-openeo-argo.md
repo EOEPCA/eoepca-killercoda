@@ -1,58 +1,58 @@
 ## Deploy OpenEO ArgoWorkflows
 
-### Prepare the Helm chart
+### Add the Helm repositories
 
-Add the dependency repositories:
+The chart and its dependencies (Argo Workflows, Dask Gateway, PostgreSQL, Redis) are all published to public Helm repositories:
 
 ```bash
+helm repo add eodc https://eodcgmbh.github.io/charts/
+helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo add dask https://helm.dask.org
-helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 ```{{exec}}
 
-Clone the chart revision validated for this workshop and download its dependencies:
+### Apply secrets
+
+The chart expects a pre-existing Secret holding the PostgreSQL admin password rather than generating one itself:
 
 ```bash
-cd /tmp
-git clone https://github.com/jzvolensky/charts
-cd charts
-git checkout 301f1a7
-cd eodc/openeo-argo
-helm dependency build
-```{{exec}}
-
-### Prepare the executor image
-
-The published executor mishandles STAC assets that provide `eo:bands` but no `raster:bands`. Build a thin local image containing the corrected loader and import it into k3s:
-
-```bash
-bash /tmp/assets/prepare-openeo-executor-image
+bash apply-secrets.sh
 ```{{exec}}
 
 ### Deploy
 
-```bash
-cd ~/deployment-guide/scripts/processing/openeo-argo
+This installs the API/queue-worker deployment along with its bundled PostgreSQL, Redis, Argo Workflows and Dask Gateway dependencies into the `openeo` namespace:
 
-helm upgrade -i openeo /tmp/charts/eodc/openeo-argo \
+```bash
+helm upgrade -i openeo eodc/openeo-argo \
+  --version 2026.7.1 \
   --namespace openeo \
   --create-namespace \
   --values generated-values.yaml \
-  --set global.env.executorImage=docker.io/eoepca/openeo-argoworkflows:executor-localcoda \
-  --timeout 15m
+  --dependency-update \
+  --timeout 10m
 ```{{exec}}
 
-The chart revision currently attaches HTTP probes to the queue worker, although that worker does not serve HTTP. Remove those two invalid probes:
+Check the pods:
 
 ```bash
-kubectl patch deployment openeo-openeo-argo -n openeo --type=json -p='[
-  {"op":"remove","path":"/spec/template/spec/containers/1/livenessProbe"},
-  {"op":"remove","path":"/spec/template/spec/containers/1/readinessProbe"}
-]'
+kubectl get pods -n openeo
 ```{{exec}}
 
-Wait for the main deployment and summarize all OpenEO pods:
+The chart creates the API's Argo Workflows service-account token via a `post-upgrade` hook, which doesn't run on a first-ever install (Helm only fires `post-install` hooks then). If the `openeo-openeo-argo` pod is stuck in `CreateContainerConfigError` with `secret "openeo-argo-access-sa.service-account-token" not found`, just re-run the same `helm upgrade` command again and the hook will fire:
+
+```bash
+helm upgrade -i openeo eodc/openeo-argo \
+  --version 2026.7.1 \
+  --namespace openeo \
+  --create-namespace \
+  --values generated-values.yaml \
+  --dependency-update \
+  --timeout 10m
+```{{exec}}
+
+Wait for the main deployment and summarize all OpenEO pods. The `openeo-openeo-argo` pod should reach `2/2 Running` (the API container and its queue worker):
 
 ```bash
 kubectl rollout status deployment/openeo-openeo-argo \
@@ -60,4 +60,4 @@ kubectl rollout status deployment/openeo-openeo-argo \
 kubectl get pods -n openeo
 ```{{exec}}
 
-The `openeo-openeo-argo` pod should show `2/2 Running`. PostgreSQL, Redis, Argo Workflows, and Dask Gateway should also be running.
+PostgreSQL, Redis, Argo Workflows and Dask Gateway should also all be running.
