@@ -6,23 +6,21 @@ Search for up to five Sentinel-2 Level-1C products over a one-degree bounding bo
 
 ```
 eodag search \
-  --productType S2_MSI_L1C \
+  --collection S2_MSI_L1C \
   --box 1 43 2 44 \
   --start 2024-01-01 \
   --end 2024-01-15 \
-  --items 5 \
+  --limit 5 \
   --storage sentinel2_results.geojson
 ```{{exec}}
 
 The parameters are:
 
-- `--productType`: The collection/product type to search
+- `--collection`: The collection to search
 - `--box`: Bounding box as `min_lon min_lat max_lon max_lat`
 - `--start` / `--end`: Temporal range
-- `--items`: Maximum number of products requested for this page
+- `--limit`: Maximum number of products requested for this page
 - `--storage`: Output GeoJSON file
-
-The EODAG 3.10 CLI does not have a provider option for `search`. It tries compatible providers in priority order and falls back when one is unavailable. The Python and STAC examples later show how to select `earth_search` explicitly.
 
 ### Inspect the Normalised Results
 
@@ -35,15 +33,15 @@ jq '{
   first_product: (
     .features[0] | {
       id,
-      provider: .properties.eodag_provider,
-      datetime: .properties.startTimeFromAscendingNode,
-      cloud_cover: .properties.cloudCover
+      provider: .properties."eodag:provider",
+      datetime: .properties.start_datetime,
+      cloud_cover: .properties."eo:cloud_cover"
     }
   )
 }' sentinel2_results.geojson
 ```{{exec}}
 
-`eodag_provider` records which backend answered the request. Other fields have been mapped into EODAG's common metadata model, so downstream code does not need to understand the provider's original response format.
+`eodag:provider` records which backend answered the request. Other fields have been mapped into EODAG's common metadata model, so downstream code does not need to understand the provider's original response format.
 
 ### Search with Cloud Cover Filter
 
@@ -51,19 +49,19 @@ Optical scenes are commonly filtered by cloud cover. Add a maximum of 20 percent
 
 ```
 eodag search \
-  --productType S2_MSI_L1C \
+  --collection S2_MSI_L1C \
   --box 1 43 2 44 \
   --start 2024-06-01 \
   --end 2024-06-30 \
-  --cloudCover 20 \
-  --items 5 \
+  --cloud-cover 20 \
+  --limit 5 \
   --storage low_cloud_results.geojson
 ```{{exec}}
 
 ```
 jq -r '
   "Returned \(.features | length) products; cloud cover values: "
-  + ([.features[].properties.cloudCover] | join(", "))
+  + ([.features[].properties."eo:cloud_cover"] | join(", "))
 ' low_cloud_results.geojson
 ```{{exec}}
 
@@ -75,11 +73,11 @@ The same interface works for a different mission. Search for Landsat Collection 
 
 ```
 eodag search \
-  --productType LANDSAT_C2L1 \
+  --collection LANDSAT_C2L1 \
   --box -122.5 37.5 -122 38 \
   --start 2024-01-01 \
   --end 2024-03-31 \
-  --items 5 \
+  --limit 5 \
   --storage landsat_results.geojson
 ```{{exec}}
 
@@ -88,7 +86,7 @@ Confirm the result count and the provider selected by EODAG:
 ```
 jq '{
   returned: (.features | length),
-  provider: .features[0].properties.eodag_provider,
+  provider: .features[0].properties."eodag:provider",
   first_id: .features[0].id
 }' landsat_results.geojson
 ```{{exec}}
@@ -103,7 +101,7 @@ This deliberately narrow query returns all matches without creating a large requ
 
 ```
 eodag search \
-  --productType S2_MSI_L1C \
+  --collection S2_MSI_L1C \
   --box 1 43 2 44 \
   --start 2024-01-01 \
   --end 2024-01-05 \
@@ -117,11 +115,11 @@ jq '.features | length' all_results.geojson
 
 ### Observe Provider Fallback
 
-Verbose logs reveal the provider-selection process. The `grep` keeps the workshop output focused on provider attempts and the final result:
+Verbose logs reveal the provider-selection process. The `grep` keeps the tutorial output focused on provider attempts and the final result:
 
 ```
 eodag -vv search \
-  --productType S2_MSI_L1C \
+  --collection S2_MSI_L1C \
   --box 1 43 2 44 \
   --start 2024-01-01 \
   --end 2024-01-05 \

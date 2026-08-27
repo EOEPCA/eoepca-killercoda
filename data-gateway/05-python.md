@@ -20,12 +20,12 @@ dag = EODataAccessGateway()
 
 ### List Available Providers
 
-`available_providers()` reports the providers that remain usable with the current configuration. Providers that require missing search credentials are excluded.
+`providers` reports the providers that remain usable with the current configuration. Providers that require missing search credentials are excluded.
 
 ```python
-providers = dag.available_providers()
+providers = dag.providers
 print(f"Found {len(providers)} providers")
-print(providers[:10])
+print(providers)
 ```{{exec}}
 
 ### Search for Sentinel-2 Products
@@ -34,7 +34,7 @@ The Python API can select a provider explicitly. This request asks Earth Search 
 
 ```python
 results = dag.search(
-    productType="S2_MSI_L1C",
+    collection="S2_MSI_L1C",
     geom={"lonmin": 1, "latmin": 43, "lonmax": 2, "latmax": 44},
     start="2024-01-01",
     end="2024-01-10",
@@ -53,8 +53,8 @@ Select the first result and read commonly used metadata. EODAG maps provider-nat
 ```python
 product = results[0]
 print(f"ID: {product.properties.get('id')}")
-print(f"Date: {product.properties.get('startTimeFromAscendingNode')}")
-print(f"Cloud cover: {product.properties.get('cloudCover'):.1f}%")
+print(f"Date: {product.properties.get('datetime')}")
+print(f"Cloud cover: {product.properties.get('eo:cloud_cover'):.1f}%")
 print(f"Provider: {product.provider}")
 ```{{exec}}
 
@@ -76,6 +76,7 @@ Print a few asset names and URLs. Sentinel-2 assets such as `B02`, `B03`, and `B
 ```python
 for name, asset in list(geojson.get("assets", {}).items())[:5]:
     print(f"{name}: {asset.get('href')}")
+
 ```{{exec}}
 
 ### Search with a WKT Polygon
@@ -85,7 +86,7 @@ The `geom` argument also accepts Well-Known Text (WKT), which is useful when geo
 ```python
 wkt = "POLYGON((1 43, 2 43, 2 44, 1 44, 1 43))"
 results = dag.search(
-    productType="S2_MSI_L1C",
+    collection="S2_MSI_L1C",
     geom=wkt,
     start="2024-01-01",
     end="2024-01-05",
@@ -93,7 +94,7 @@ results = dag.search(
     items_per_page=3
 )
 for r in results:
-    print(f"{r.properties.get('id')}: {r.properties.get('startTimeFromAscendingNode')}")
+    print(f"{r.properties.get('id')}: {r.properties.get('datetime')}")
 ```{{exec}}
 
 ### Filter by Cloud Cover
@@ -102,12 +103,12 @@ Provider-specific queries are expressed with the same common arguments used by t
 
 ```python
 results = dag.search(
-    productType="S2_MSI_L1C",
+    collection="S2_MSI_L1C",
     geom={"lonmin": 1, "latmin": 43, "lonmax": 2, "latmax": 44},
     start="2024-06-01",
     end="2024-06-30",
-    provider="earth_search",
-    cloudCover=20,
+    provider="cop_dataspace",
+    cloud_cover=20,
     items_per_page=5
 )
 print(f"Found {len(results)} products with <=20% cloud cover")
@@ -118,9 +119,9 @@ print(f"Found {len(results)} products with <=20% cloud cover")
 Applications can inspect provider capabilities before constructing a search:
 
 ```python
-product_types = dag.list_product_types(provider="earth_search")
-for pt in product_types[:5]:
-    print(f"- {pt.get('ID')}: {pt.get('title', 'No title')}")
+collections = dag.list_collections(provider="earth_search")
+for collection in collections[:5]:
+    print(f"- {collection.id}: {collection.title}")
 ```{{exec}}
 
 ### Exit Python

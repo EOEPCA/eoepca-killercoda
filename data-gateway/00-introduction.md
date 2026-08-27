@@ -14,7 +14,7 @@ Unlike the other building blocks in this workshop, there is no Helm deployment i
 
 Imagine that a processing workflow needs Sentinel-2 imagery. The same mission may be available from Copernicus Data Space, Earth Search, CREODIAS, or another catalogue, but each provider can expose different APIs, authentication methods, metadata fields, and download mechanisms.
 
-EODAG places a common search and product model in front of those differences. The workflow asks for a product type, area, and time interval; EODAG translates that request for the selected provider and normalises the results.
+EODAG places a common search and product model in front of those differences. The workflow asks for a collection, area, and time interval; EODAG translates that request for the selected provider and normalises the results.
 
 This does not copy every provider's data into EOEPCA. The gateway remains a client of the upstream catalogues and data stores.
 
@@ -24,13 +24,13 @@ This does not copy every provider's data into EOEPCA. The gateway remains a clie
 
 - **Provider**: An upstream catalogue or data service, such as Earth Search or Copernicus Data Space.
 - **Product type**: EODAG's provider-independent identifier for a dataset, such as `S2_MSI_L1C`.
-- **Collection**: The STAC term for a group of related items. EODAG exposes product types as STAC collections.
+- **Collection**: The STAC term for a group of related items. EODAG exposes datasets as STAC collections.
 - **Product/item**: One concrete EO acquisition returned by a search.
-- **Asset**: A file or service associated with a product, such as a spectral band, thumbnail, or metadata document.
+- **Asset**: A file or service associated with a collection, such as a spectral band, thumbnail, or metadata document.
 - **STAC**: The SpatioTemporal Asset Catalog specification used to describe and search geospatial assets.
 
 ---
 
 ### What We Will Validate
 
-All searches in this tutorial use public catalogue endpoints and historical date ranges, so no provider credentials or large downloads are required. We will inspect product metadata and asset links, but deliberately avoid downloading a complete satellite scene during the workshop.
+All searches in this tutorial use public catalogue endpoints and historical date ranges, so no provider credentials or large downloads are required. We will inspect product metadata and asset links, but deliberately avoid downloading a complete satellite scene during the tutorial.

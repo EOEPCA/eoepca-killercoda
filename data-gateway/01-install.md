@@ -7,10 +7,6 @@ Create and activate an isolated Python environment:
 ```
 python3 -m venv ~/venv
 source ~/venv/bin/activate
-
-bash /tmp/assets/pip-install-cached \
-  eodag-3.10.2-py312-linux-x86_64 \
-  --upgrade pip
 ```{{exec}}
 
 The shell prompt now starts with `(venv)`. Commands such as `python`, `pip`, and `eodag` will use the isolated environment under `~/venv`.
@@ -20,9 +16,7 @@ The shell prompt now starts with `(venv)`. Commands such as `python`, `pip`, and
 Install the tested EODAG version with its optional server dependencies. The `[server]` extra adds the packages required by the STAC API used later in the tutorial.
 
 ```
-bash /tmp/assets/pip-install-cached \
-  eodag-3.10.2-py312-linux-x86_64 \
-  "eodag[server]==3.10.2"
+pip3 install 'eodag==4.7.1'
 ```{{exec}}
 
 ### Verify the Installation
@@ -33,7 +27,7 @@ Ask the installed command to report its version:
 eodag version
 ```{{exec}}
 
-The expected version is `3.10.2`.
+The expected version is `4.7.1`.
 
 Now display the command-line help:
 
@@ -46,7 +40,6 @@ The commands we will use are:
 - `list` — inspect the product types already known to EODAG;
 - `discover` — ask a provider for additional product-type definitions;
 - `search` — search provider catalogues and serialise the results as GeoJSON;
-- `serve-rest` — expose EODAG through a local STAC API.
 
 EODAG also provides `download`. We will inspect download and asset links in this workshop, but not transfer a complete EO product because those files can be several gigabytes.
 

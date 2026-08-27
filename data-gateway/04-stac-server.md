@@ -1,31 +1,16 @@
 The CLI is convenient for a person at a terminal, but applications often need an HTTP interface. EODAG can expose its providers through a STAC API, allowing standard STAC clients to search the same gateway.
 
-> **Note**: The `serve-rest` command is deprecated since EODAG v3.9.0 and will be removed in a future version. For production use, see [stac-fastapi-eodag](https://github.com/CS-SI/stac-fastapi-eodag). However, it remains functional for learning and testing purposes.
+> **Note**: This used to be part of eodag and is now stac-fastapi-eodag
 
 ### Start the STAC Server
 
-Start the server in the background, save its process ID, and perform a bounded readiness check. Initialisation can take more than three seconds while EODAG loads its provider definitions.
+To install and start the server run:
 
 ```
-eodag serve-rest --world --port 5000 > /tmp/eodag-stac.log 2>&1 &
-export EODAG_SERVER_PID=$!
-
-for attempt in $(seq 1 20); do
-  if curl -fsS http://localhost:5000/ > /dev/null 2>&1; then
-    echo "EODAG STAC API is ready"
-    break
-  fi
-  sleep 1
-done
-
-curl -fsS http://localhost:5000/ > /dev/null ||
-  { echo "Server did not become ready; inspect /tmp/eodag-stac.log"; false; }
+pip install stac-fastapi.eodag uvicorn
+python -m stac_fastapi.eodag.app > /tmp/eodac-stac.log 2>&1 &
+EODAG_SERVER_PID=$!
 ```{{exec}}
-
-The options mean:
-
-- `--world`: Bind to all network interfaces (0.0.0.0)
-- `--port`: Port to listen on
 
 Redirecting the server log keeps it separate from our client commands. If startup fails, inspect it with `cat /tmp/eodag-stac.log`.
 
@@ -34,7 +19,7 @@ Redirecting the server log keeps it separate from our client commands. If startu
 The root resource identifies the catalogue and advertises links to related API resources:
 
 ```
-curl -fsS http://localhost:5000/ |
+curl -fsS http://localhost:8000/ |
   jq '{type, id, title, description, link_relations: [.links[].rel]}'
 ```{{exec}}
 
@@ -43,14 +28,14 @@ curl -fsS http://localhost:5000/ |
 EODAG exposes product types as STAC collections. Asking for every provider produces a large response, so select the public Earth Search provider:
 
 ```
-curl -fsS "http://localhost:5000/collections?provider=earth_search" |
+curl -fsS "http://localhost:8000/collections?provider=earth_search" |
   jq '{
     returned: (.collections | length),
     collections: [.collections[] | {id, title}]
   }'
 ```{{exec}}
 
-The collection IDs are EODAG's common product-type IDs. This is why `S2_MSI_L1C` can be used consistently by the CLI, STAC API, and Python API.
+The collection IDs are EODAG's common collection IDs. This is why `S2_MSI_L1C` can be used consistently by the CLI, STAC API, and Python API.
 
 ### Search via STAC API
 
@@ -58,7 +43,7 @@ Use the STAC Item Search endpoint with the same collection, bounding box, time i
 
 ```
 curl -fsS \
-  "http://localhost:5000/search?provider=earth_search&collections=S2_MSI_L1C&bbox=1,43,2,44&datetime=2024-01-01/2024-01-15&limit=5" |
+  "http://localhost:8000/search?provider=earth_search&collections=S2_MSI_L1C&bbox=1,43,2,44&start_datetime=2024-01-01/2024-01-15&limit=5" |
   jq '{
     type,
     returned: .numberReturned,
