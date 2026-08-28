@@ -1,7 +1,11 @@
 
 ## Deploy the Application Hub
 
-With the Keycloak client in place, we can now deploy the Application Hub using Helm.
+With the Keycloak client in place, apply the secret the Helm release needs:
+
+```bash
+bash apply-secrets.sh
+```{{exec}}
 
 Add the EOEPCA Helm repository:
 
@@ -16,7 +20,7 @@ Deploy the Application Hub:
 helm upgrade -i application-hub eoepca/application-hub \
   --version 2.1.0 \
   --values generated-values.yaml \
-  --namespace application-hub \
+  --namespace app-hub \
   --create-namespace
 ```{{exec}}
 
@@ -29,24 +33,13 @@ kubectl apply -f generated-ingress.yaml
 Wait for the Application Hub pods to be ready:
 
 ```bash
-kubectl wait --for=condition=Ready --all=true -n application-hub pod --timeout=5m
+kubectl wait --for=condition=Ready --all=true -n app-hub pod --timeout=5m
 ```{{exec}}
 
 Check the deployment status:
 
 ```bash
-kubectl get pods -n application-hub
+kubectl get pods -n app-hub
 ```{{exec}}
 
 You should see the JupyterHub hub, proxy, and related components in `Running` state.
-
-### Prepare the STAC Browser Profile
-
-Prepare the STAC Browser image used by this Localcoda environment:
-
-```bash
-/tmp/assets/configure-stac-browser-image
-```{{exec}}
-
-The initial download can take a couple of minutes. Wait for the script to complete before continuing.
-

@@ -7,11 +7,11 @@
 
 3. Here, you have the opportunity to select your desired **Server Options**.
 
-4. For this demonstration, click onto the first option **IGA - Stac Browser Earth-Search AWS**.
+4. For this demonstration, click onto the **IGA - Streamlit demo** option.
 
 5. Click onto **Start** at the bottom of the window.
 
 The first start normally takes two or three minutes. The JupyterHub progress page redirects automatically when it is ready.
 
-Once ready, you will be automatically redirected and you will now have access to a STAC Browser running in your own profile.
+Once ready, you will be automatically redirected and you will now have access to a Streamlit dashboard running in your own profile.
 This is an example of an application that can be spawned in the Application Hub using a predefined profile.

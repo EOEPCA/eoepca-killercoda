@@ -3,42 +3,10 @@
 
 The Application Hub has a default admin user named `eric` configured in its profiles. We need to create this user in Keycloak.
 
-Create the admin user using the Crossplane User CRD:
+`configure-app-hub.sh` already rendered `generated-demo-user.yaml`, which creates this user declaratively via the Crossplane Keycloak provider's User CRD. Apply it:
 
 ```bash
-source ~/.eoepca/state
-username="eric"
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ${username}-user-password
-  namespace: iam-management
-stringData:
-  password: ${KEYCLOAK_TEST_PASSWORD:-eoepca}
----
-apiVersion: user.keycloak.m.crossplane.io/v1alpha1
-kind: User
-metadata:
-  name: ${username}
-  namespace: iam-management
-spec:
-  forProvider:
-    realmId: eoepca
-    username: ${username}
-    email: ${username}@eoepca.org
-    emailVerified: true
-    firstName: ${username}
-    lastName: Testuser
-    initialPassword:
-      - temporary: false
-        valueSecretRef:
-          name: ${username}-user-password
-          key: password
-  providerConfigRef:
-    name: keycloak-provider-config
-    kind: ProviderConfig
-EOF
+kubectl apply -f generated-demo-user.yaml
 ```{{exec}}
 
 You can now log in to the Application Hub as Admin with:

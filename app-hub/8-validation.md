@@ -15,4 +15,4 @@ Check the spawned profile:
 kubectl get pods -n ws-eric
 ```{{exec}}
 
-The STAC Browser pod should show `1/1` containers ready and `Running` status.
+The Streamlit demo pod should show `1/1` containers ready and `Running` status.

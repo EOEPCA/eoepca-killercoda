@@ -19,8 +19,10 @@ For more information about the Application Hub and advanced configuration:
 To remove the Application Hub:
 
 ```bash
-helm uninstall application-hub -n application-hub
-kubectl delete namespace application-hub
+helm uninstall application-hub -n app-hub
+kubectl delete -f generated-iam.yaml --ignore-not-found
+kubectl delete -f generated-demo-user.yaml --ignore-not-found
+kubectl delete namespace app-hub
 ```
 
 If you have questions about this tutorial or EOEPCA in general, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).
