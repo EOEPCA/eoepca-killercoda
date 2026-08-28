@@ -70,15 +70,6 @@ The API creates a Kubernetes CronJob with the same UUID:
 kubectl get cronjob "$CHECK_ID" -n resource-health
 ```{{exec}}
 
-The current `healthcheck_runner:2.0.0` image needs an older setuptools release
-for its OpenTelemetry launcher. Add this temporary compatibility command to the
-generated CronJob:
-
-```bash
-kubectl set env cronjob/"$CHECK_ID" -n resource-health \
-  RH_RUNNER_RUN_BEFORE="uv pip install 'setuptools<81'"
-```{{exec}}
-
 ### Run the check now
 
 Rather than waiting for the five-minute schedule, create a one-off Job from the
@@ -161,8 +152,6 @@ WEB_RESPONSE=$(curl -sS -X POST \
 
 echo "$WEB_RESPONSE" | jq
 WEB_CHECK_ID=$(echo "$WEB_RESPONSE" | jq -r '.data.id')
-kubectl set env cronjob/"$WEB_CHECK_ID" -n resource-health \
-  RH_RUNNER_RUN_BEFORE="uv pip install 'setuptools<81'"
 ```{{exec}}
 
 List the registered checks and their schedules:
