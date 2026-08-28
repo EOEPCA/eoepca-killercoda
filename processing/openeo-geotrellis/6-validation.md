@@ -1,12 +1,6 @@
 Now validate the deployment directly through the OpenEO HTTP API.
 
-Because OIDC is disabled, the workshop backend accepts a demo username and a password formed by appending `123` to that username. OpenEO transports these basic credentials inside a bearer token:
-
-```bash
-# Basic auth: password = username + "123"
-export BASIC_AUTH=$(echo -n "testuser:testuser123" | base64)
-echo "Auth token: ${BASIC_AUTH}"
-```{{exec}}
+Because OIDC is disabled, the workshop backend accepts a demo username and a password formed by appending `123` to that username. Basic auth in OpenEO is a two-step handshake: exchange your real HTTP Basic credentials for an access token at `/credentials/basic`, then use that token (not the raw base64 credentials) as the bearer token on every other call:
 
 Save the internal backend URL so the remaining commands are easier to read:
 
@@ -21,10 +15,19 @@ curl -fsS "${OPENEO_URL}/openeo/1.2/" \
   | jq '{title, backend_version, api_version}'
 ```{{exec}}
 
+Exchange the demo credentials for an access token:
+
+```bash
+ACCESS_TOKEN=$(curl -fsS -u "testuser:testuser123" \
+  "${OPENEO_URL}/openeo/1.2/credentials/basic" | jq -r '.access_token')
+export BASIC_AUTH="basic//${ACCESS_TOKEN}"
+echo "Auth token: ${BASIC_AUTH}"
+```{{exec}}
+
 Check that basic authentication is working:
 
 ```bash
-curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+curl -fsS -H "Authorization: Bearer ${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/me" | jq .
 ```{{exec}}
 
@@ -35,7 +38,7 @@ We are now ready to run some example OpenEO API calls.
 Add `15` and `27.5`. The expected response is `42.5`:
 ```bash
 curl -fsS -X POST "${OPENEO_URL}/openeo/1.2/result" \
-  -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+  -H "Authorization: Bearer ${BASIC_AUTH}" \
   -H "Content-Type: application/json" \
   -d '{
     "process": {
@@ -54,7 +57,7 @@ echo ""
 Select the value at zero-based index `2`. The expected response is `30`:
 ```bash
 curl -fsS -X POST "${OPENEO_URL}/openeo/1.2/result" \
-  -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+  -H "Authorization: Bearer ${BASIC_AUTH}" \
   -H "Content-Type: application/json" \
   -d '{
     "process": {
@@ -77,13 +80,13 @@ echo ""
 
 List the available collection IDs:
 ```bash
-curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+curl -fsS -H "Authorization: Bearer ${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/collections" | jq '.collections[].id'
 ```{{exec}}
 
 Summarise the test collection and its available bands:
 ```bash
-curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+curl -fsS -H "Authorization: Bearer ${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/collections/TestCollection-LonLat16x16" \
   | jq '{
       id,
@@ -96,18 +99,18 @@ curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
 
 Count the supported processes:
 ```bash
-curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+curl -fsS -H "Authorization: Bearer ${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/processes" | jq '.processes | length'
 ```{{exec}}
 
 Show a short sample of process names rather than printing the complete catalogue:
 ```bash
-curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+curl -fsS -H "Authorization: Bearer ${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/processes" | jq -r '.processes[:20][].id'
 ```{{exec}}
 
 List the supported input and output file formats:
 ```bash
-curl -fsS -H "Authorization: Bearer basic/openeo/${BASIC_AUTH}" \
+curl -fsS -H "Authorization: Bearer ${BASIC_AUTH}" \
   "${OPENEO_URL}/openeo/1.2/file_formats" | jq '{input: .input | keys, output: .output | keys}'
 ```{{exec}}

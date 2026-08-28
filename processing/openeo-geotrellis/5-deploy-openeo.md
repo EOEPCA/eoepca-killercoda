@@ -13,7 +13,7 @@ Install the OpenEO Spark application. The two overrides select the locally patch
 ```bash
 helm upgrade -i openeo-geotrellis-openeo sparkapplication \
     --repo https://artifactory.vgt.vito.be/artifactory/helm-charts \
-    --version 1.0.2 \
+    --version 1.2.0 \
     --namespace openeo-geotrellis \
     --create-namespace \
     --values openeo-geotrellis/generated-values.yaml \
@@ -27,12 +27,26 @@ This Helm chart creates a `SparkApplication` custom resource, so Helm can return
 kubectl apply -f openeo-geotrellis/generated-ingress.yaml
 ```{{exec}}
 
-First wait for the Spark Operator to create the driver pod:
+openEO Geotrellis submits each batch (async) job as its own `SparkApplication`, run under a dedicated `batch-jobs` service account. Create the one-time RBAC for this (a static manifest, nothing to generate):
 
 ```bash
-kubectl wait --for=create --timeout=600s \
-    pod -l spark-role=driver \
-    -n openeo-geotrellis
+kubectl apply -f openeo-geotrellis/batch-jobs-rbac.yaml
+```{{exec}}
+
+First wait for the Spark Operator to create the driver pod (a bounded poll, since older `kubectl` versions don't support `wait --for=create`):
+
+```bash
+for attempt in $(seq 1 60); do
+  if [ -n "$(kubectl get pod -l spark-role=driver -n openeo-geotrellis --no-headers 2>/dev/null)" ]; then
+    echo "Driver pod created."
+    break
+  fi
+  if [ "${attempt}" -eq 60 ]; then
+    echo "Driver pod was not created in time." >&2
+    exit 1
+  fi
+  sleep 5
+done
 ```{{exec}}
 
 Then wait for the driver container to become Kubernetes-ready:

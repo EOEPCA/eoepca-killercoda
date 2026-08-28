@@ -7,13 +7,15 @@ set -euo pipefail
 # the image. Fetch the image without unpacking, rewrite that small layer with
 # root-owned tar headers, and register the patched image locally for CRI.
 
-IMAGE_REPO="${OPENEO_GEOTRELLIS_IMAGE_REPO:-vito-docker.artifactory.vgt.vito.be/openeo-geotrellis-kube}"
-SOURCE_TAG="${OPENEO_GEOTRELLIS_SOURCE_TAG:-20251217-3348}"
+IMAGE_REPO="${OPENEO_GEOTRELLIS_IMAGE_REPO:-vito-docker.artifactory.vgt.vito.be/openeo-geotrellis-kube-python311}"
+SOURCE_TAG="${OPENEO_GEOTRELLIS_SOURCE_TAG:-20260428-666}"
 PATCHED_TAG="${OPENEO_GEOTRELLIS_PATCHED_TAG:-localcoda}"
-BAD_DIFF_ID="${OPENEO_GEOTRELLIS_BAD_DIFF_ID:-sha256:98c4808a579380f51d7ae39f1694f0bbbfe587662a4ccb85c47fb3ec0016ca2c}"
+BAD_DIFF_ID="${OPENEO_GEOTRELLIS_BAD_DIFF_ID:-sha256:84f3bb909ec6e34bd8b1acef0f9fa63e93a21ed8ae7fcd5b4aaecac3289f9d43}"
 
 SOURCE_IMAGE="${IMAGE_REPO}:${SOURCE_TAG}"
 PATCHED_IMAGE="${IMAGE_REPO}:${PATCHED_TAG}"
+REGISTRY_HOST="${IMAGE_REPO%%/*}"
+REPO_PATH="${IMAGE_REPO#*/}"
 WORK_DIR="${OPENEO_GEOTRELLIS_PATCH_WORK_DIR:-/tmp/openeo-geotrellis-image-fix}"
 FETCH_LOG="${WORK_DIR}/fetch.log"
 IMPORT_LOG="${WORK_DIR}/import.log"
@@ -36,7 +38,7 @@ fi
 
 TOKEN="$(
   curl -fsSL \
-    "https://artifactory.vgt.vito.be/artifactory/api/docker/vito-docker/v2/token?service=artifactory.vgt.vito.be&scope=repository:openeo-geotrellis-kube:pull" \
+    "https://artifactory.vgt.vito.be/artifactory/api/docker/vito-docker/v2/token?service=artifactory.vgt.vito.be&scope=repository:${REPO_PATH}:pull" \
     | jq -r .token
 )"
 
@@ -44,13 +46,13 @@ MANIFEST="$(
   curl -fsSL \
     -H "Authorization: Bearer ${TOKEN}" \
     -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
-    "https://vito-docker.artifactory.vgt.vito.be/v2/openeo-geotrellis-kube/manifests/${SOURCE_TAG}"
+    "https://${REGISTRY_HOST}/v2/${REPO_PATH}/manifests/${SOURCE_TAG}"
 )"
 
 CONFIG_DIGEST="$(jq -r .config.digest <<<"${MANIFEST}")"
 curl -fsSL \
   -H "Authorization: Bearer ${TOKEN}" \
-  "https://vito-docker.artifactory.vgt.vito.be/v2/openeo-geotrellis-kube/blobs/${CONFIG_DIGEST}" \
+  "https://${REGISTRY_HOST}/v2/${REPO_PATH}/blobs/${CONFIG_DIGEST}" \
   -o "${WORK_DIR}/config.orig.json"
 
 LAYER_INDEX="$(
@@ -69,7 +71,7 @@ fi
 BAD_LAYER="$(jq -r --argjson i "${LAYER_INDEX}" '.layers[$i].digest' <<<"${MANIFEST}")"
 curl -fsSL \
   -H "Authorization: Bearer ${TOKEN}" \
-  "https://vito-docker.artifactory.vgt.vito.be/v2/openeo-geotrellis-kube/blobs/${BAD_LAYER}" \
+  "https://${REGISTRY_HOST}/v2/${REPO_PATH}/blobs/${BAD_LAYER}" \
   -o "${WORK_DIR}/bad-layer.tar.gz"
 
 mkdir -p "${WORK_DIR}/root" "${WORK_DIR}/oci/blobs/sha256"

@@ -5,7 +5,7 @@ Install the operator using its generated values. Helm waits up to five minutes f
 ```bash
 helm upgrade -i openeo-geotrellis-sparkoperator spark-operator \
     --repo https://artifactory.vgt.vito.be/artifactory/helm-charts \
-    --version 2.0.2 \
+    --version 2.3.0 \
     --namespace openeo-geotrellis \
     --create-namespace \
     --values sparkoperator/generated-values.yaml \
