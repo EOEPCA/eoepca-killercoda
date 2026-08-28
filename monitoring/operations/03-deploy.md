@@ -18,6 +18,8 @@ helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack
   --namespace operations \
   --create-namespace \
   --values kube-prometheus-stack/generated-values.yaml \
+  --set prometheus-node-exporter.hostRootFsMount.enabled=false \
+  --set "prometheus-node-exporter.extraArgs[0]=--collector.netclass.netlink" \
   --wait --timeout 5m
 ```{{exec}}
 

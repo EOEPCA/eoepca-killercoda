@@ -9,49 +9,74 @@ kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.da
 kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```{{exec}}
 
-Open Grafana and log in with those credentials:
-
 [Open Grafana]({{TRAFFIC_HOST1_81}})
 
 ## Verify the datasources
 
-Navigate to `Connections → Data sources` and confirm both **Prometheus** (default) and **Loki** are configured, then test each one from the UI.
+`Connections → Data sources`: confirm **Prometheus** (default) and **Loki** are configured, and test each.
+
+## Explore metrics
+
+**Explore** tab → **Prometheus**:
+
+```promql
+up{namespace="operations"}
+```
+
+One result per scrape target in the namespace, all `1` — Prometheus is scraping the whole stack.
 
 ## Explore logs
 
-Open the **Explore** tab, select the **Loki** datasource, and run a query for the Operations namespace itself:
+**Explore** tab → **Loki**:
 
 ```logql
 {namespace="operations"}
 ```
 
-You should see log lines from the Operations BB's own components. That confirms the Alloy → Loki pipeline is working end to end.
+Log lines from the Operations BB's own components — the Alloy → Loki pipeline is working.
 
 ## Load a curated dashboard
 
-Navigate to `Dashboards → Browse` and open the **Kubernetes / Cluster View** dashboard. It should populate with live data from the cluster within a few refreshes.
+`Dashboards → Browse` → **Kubernetes / Cluster View**. It populates with live cluster data.
 
-The **APISIX Endpoint SLOs** dashboard (built from STAC-specific recording rules, despite the name on the underlying file) is also listed, but its panels stay empty here. It only has data once Data Access is deployed with STAC alerts enabled.
+The **APISIX Endpoint SLOs** dashboard is also listed but stays empty here — it only has data once Data Access is deployed with STAC alerts enabled.
 
-## Trigger a test alert
+## The pipeline in action
 
-The baseline rules include a `Watchdog` alert, which fires continuously as a pipeline health check. Confirm it has reached Keep:
+The baseline rules include a `Watchdog` alert, firing continuously as a health check — proof the real Prometheus → Alertmanager → Keep pipeline is delivering on its own, with no one triggering it:
 
 ```
 curl -s "http://alerting.eoepca.local/v2/alerts" -H "Accept: application/json" -H "X-API-KEY: anything" | grep -o '"name":"Watchdog"'
 ```{{exec}}
 
-> Even with `AUTH_TYPE=NO_AUTH`, Keep's API still requires an `X-API-KEY` header to be present, it just doesn't validate its value. A request with no key at all is rejected with `401 Missing API Key`.
+## Trigger and triage an alert
 
-You can also open Keep directly and see the same alert in the UI:
-
-[Open Keep]({{TRAFFIC_HOST1_82}})
-
-## Verify Alertmanager routing
-
-Confirm Alertmanager's configuration has loaded the receiver defined by our `AlertmanagerConfig`, which is what forwards alerts to Keep via the relay. Prometheus Operator namespaces receivers from `AlertmanagerConfig` CRDs as `<namespace>/<object-name>/<receiver-name>`, so our `keep` receiver in the `keep` object shows up as `operations/keep/keep`:
+Now simulate one yourself, as if it came from a monitored service:
 
 ```
-kubectl -n operations exec alertmanager-kube-prometheus-stack-alertmanager-0 -- \
-  wget -qO- http://localhost:9093/api/v2/status | grep -o 'operations/keep/keep'
+curl -s -X POST "http://alerting.eoepca.local/v2/alerts/event?fingerprint=tutorial-demo-alert" \
+  -H "X-API-KEY: anything" -H "Content-Type: application/json" \
+  -d '{"name":"DataAccessLatencyHigh","status":"firing","severity":"warning","lastReceived":"'"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"'"}'
+```{{exec}}
+
+Confirm it's firing in Keep:
+
+```
+curl -s "http://alerting.eoepca.local/v2/alerts/tutorial-demo-alert" -H "X-API-KEY: anything" | grep -o '"status":"firing"'
+```{{exec}}
+
+> Even with `AUTH_TYPE=NO_AUTH`, Keep still requires an `X-API-KEY` header — it just doesn't check its value.
+
+[Open Keep]({{TRAFFIC_HOST1_82}}) — the alert is in the list.
+
+Acknowledge it, same as a user would from the UI:
+
+```
+curl -s -X POST "http://alerting.eoepca.local/v2/alerts/enrich" \
+  -H "X-API-KEY: anything" -H "Content-Type: application/json" \
+  -d '{"fingerprint":"tutorial-demo-alert","enrichments":{"status":"acknowledged"}}'
+```{{exec}}
+
+```
+curl -s "http://alerting.eoepca.local/v2/alerts/tutorial-demo-alert" -H "X-API-KEY: anything" | grep -o '"status":"acknowledged"'
 ```{{exec}}
