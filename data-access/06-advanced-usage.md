@@ -87,13 +87,13 @@ EOAPI_PUBLIC_URL=$(
 )
 
 curl -s "http://eoapi.eoepca.local/raster/collections/sentinel-2-iceland/WebMercatorQuad/tilejson.json?assets=visual" |
-  jq --arg base "${EOAPI_PUBLIC_URL}/raster" '
+  jq --arg base "${EOAPI_PUBLIC_URL}" '
     .tiles |= map(sub("^https?://[^/]+"; $base))
     | {name, bounds, minzoom, maxzoom, tiles}
   '
 ```{{exec}}
 
-The command rewrites the service's internal tile hostname and adds the `/raster` ingress prefix. The resulting `tiles` URL can be used from your workstation in QGIS or web mapping libraries such as Leaflet and OpenLayers.
+The command rewrites the service's internal tile hostname to the proxy URL - the `/raster` ingress prefix is already part of the path returned by the service, so it doesn't need to be added again. The resulting `tiles` URL can be used from your workstation in QGIS or web mapping libraries such as Leaflet and OpenLayers.
 
 > The first uncached mosaic tile can take a minute or more to render while the
 > source imagery is fetched. If the Localcoda proxy times out on that first

@@ -25,10 +25,10 @@ helm upgrade --install pgo oci://registry.developers.crunchydata.com/crunchydata
 Now we deploy the core eoAPI services:
 
 ```
-helm repo add eoapi https://devseed.com/eoapi-k8s/
+helm repo add eoapi https://developmentseed.org/eoapi-k8s/
 helm repo update eoapi
 helm upgrade -i eoapi eoapi/eoapi \
-  --version 0.15.2 \
+  --version 0.13.1 \
   --namespace data-access \
   --create-namespace \
   --values eoapi/generated-values.yaml \
@@ -67,19 +67,20 @@ helm upgrade -i stac-manager stac-manager/stac-manager \
 
 ### Deploy titiler-openeo
 
-titiler-openeo provides real-time processing and visualization over an OpenEO interface.
+titiler-openeo provides real-time processing and visualization over an OpenEO interface. It's
+only published as a git-sourced Helm chart (no packaged chart repo), so it's installed directly
+from a pinned tag:
 
 ```bash
-helm pull oci://ghcr.io/developmentseed/charts/titiler-openeo --version 2.0.0
-helm upgrade -i titiler-openeo oci://ghcr.io/developmentseed/charts/titiler-openeo \
-  --version 2.0.0 \
+git clone --depth 1 --branch titiler-openeo-v0.12.0 https://github.com/sentinel-hub/titiler-openeo /tmp/titiler-openeo
+helm upgrade -i titiler-openeo /tmp/titiler-openeo/deployment/k8s/charts \
   --namespace data-access \
   --values titiler-openeo/generated-values.yaml
 ```{{exec}}
 
 ### Create Ingress
 
-We must add ingresses for the aboce services:
+We must add ingresses for the above services:
 
 ```
 kubectl apply -f eoapi/generated-nginx-ingress.yaml
