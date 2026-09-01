@@ -13,7 +13,7 @@ Deploy the software using the values generated in the previous step:
 
 ```
 helm upgrade --install zoo-project-dru zoo-project/zoo-project-dru \
-  --version 0.9.1 \
+  --version 0.10.3 \
   --values generated-values.yaml \
   --namespace processing \
   --create-namespace

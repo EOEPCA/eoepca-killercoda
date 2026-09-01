@@ -32,7 +32,7 @@ no
 
 We now move to the Processing Building Block configuration.
 
-Keep the existing shared ReadWriteMany storage class (the domain and persistent storage class questions were already answered above, as part of the shared EOEPCA configuration - they are not asked again here):
+The shared ReadWriteMany storage class was also already configured by the prerequisites. Keep it:
 
 ```
 no
@@ -53,15 +53,13 @@ For this tutorial, store results directly in object storage rather than using th
 false
 ```{{exec}}
 
-Use the same S3 service for stage-in and stage-out:
+The script asks whether your inputs are stored in a different S3 store from your outputs. Here they are the same local MinIO, so answer no:
 
 ```
 no
 ```{{exec}}
 
-The script now asks whether to enable OpenID Connect authentication. This is strongly recommended for a shared processing API, because otherwise every user able to reach it can deploy and run processing applications.
-
-For this isolated tutorial, disable it:
+The script now asks whether to enable OpenID Connect authentication. This protection is only available with the APISIX Ingress Controller - since this tutorial uses nginx, disable it:
 
 ```
 false

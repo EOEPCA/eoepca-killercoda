@@ -4,7 +4,7 @@ EOEPCA provides different data processing solutions tailored to different use ca
 
 This is anyway not a given, and a lot will depend on the different use-cases and preferences of the user communities. EOEPCA allows in any case to deploy, at the same time and sharing the same infrastructure resources, both [OGC Process API](https://ogcapi.ogc.org/processes/) and [OpenEO API](https://api.openeo.org/) interfaces.
 
-For the OGC Process API interface, different "execution engines" are available, allowing to submit data processing jobs to different backends. At the time, [Argo workflows](./argo), K8S jobs (via Calrissian) or HPC jobs (via [Toil](./toil)) are supported.
+For the OGC Process API interface, different "execution engines" are available, allowing to submit data processing jobs to different backends. At the time, K8S jobs (via [Calrissian](./calrissian)) or HPC jobs (via Toil) are supported.
 
 This tutorial will focus on deploying an [OGC Process API](https://ogcapi.ogc.org/processes/) interface, via the [Zoo software](https://zoo-project.org/), submitting data processing jobs to a Toil Workflow Execution Service HPC cluster via [Toil](https://toil.readthedocs.io/en/master/running/server/wes.html) cookiecutter Zoo template.
 

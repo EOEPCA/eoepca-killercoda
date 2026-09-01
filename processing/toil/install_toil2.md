@@ -2,13 +2,13 @@ To test Toil is correctly installed, we will use an [OGC Best Practice for Earth
 
 We will go into more detail about such applications later in the tutorial. In the meantime, we will test that Toil works correctly by running an example application.
 
-Download the example application from the same **eoepca-2.0** Deployment Guide release used by this tutorial:
+Download the example application from the same **release-2.1** Deployment Guide branch used by this tutorial:
 
 ```
 cd ~
 curl --fail --location --show-error \
   --output convert-url-app.cwl \
-  https://raw.githubusercontent.com/EOEPCA/deployment-guide/eoepca-2.0/scripts/processing/oapip/examples/convert-url-app.cwl
+  https://raw.githubusercontent.com/EOEPCA/deployment-guide/release-2.1/scripts/processing/oapip/examples/convert-url-app.cwl
 ```{{exec}}
 
 To execute a Toil job, ensure that the Toil environment is enabled and create an ID for the job:
