@@ -92,7 +92,7 @@ helm upgrade -i registration-harvester-worker-stac eoepca-dev/registration-harve
 
 ## Validation
 
-Operaton and the Landsat and Sentinel Harvesters may take several minutes to start.
+Operaton and the harvester workers may take several minutes to start.
 
 We can validate the deployment and check that startup has completed with the provided script `validation.sh`{{}}
 
