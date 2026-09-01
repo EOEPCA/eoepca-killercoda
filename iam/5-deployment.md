@@ -1,10 +1,13 @@
 Now that you have configured the IAM environment and applied the necessary secrets, it's time to deploy the IAM components using Helm charts. This will set up Keycloak for identity management and OPA with OPAL for policy enforcement. An additional Keycloak host (resulting in an extra ingress host) is added so that Keycloak is accessible both from your browser, from outside the tutorial environment, and from within the tutorial environment.
 
+> The release-2.1 IAM chart is not published as a stable release yet - it's currently only
+> available as a pre-release from the `eoepca-dev` chart repository.
+
 ```bash
-helm repo add eoepca https://eoepca.github.io/helm-charts
-helm repo update eoepca
-helm upgrade -i iam eoepca/iam-bb \
-  --version 2.1.0 \
+helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
+helm repo update eoepca-dev
+helm upgrade -i iam eoepca-dev/iam-bb \
+  --version 2.1.0-dev13 \
   --namespace iam --create-namespace \
   --values generated-values.yaml \
   --set iam.keycloak.hosts="{${KEYCLOAK_HOST},auth.eoepca.local}"
