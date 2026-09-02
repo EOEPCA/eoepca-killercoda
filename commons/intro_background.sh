@@ -330,6 +330,11 @@ if [[ -e /tmp/assets/k9s ]]; then
   sudo apt install -y ./k9s_linux_amd64.deb
   rm k9s_linux_amd64.deb
 fi
+if [[ -e /tmp/assets/gettext ]]; then
+  echo installing gettext for envsubst command >> /tmp/killercoda_setup.log
+  [[ -e /tmp/apt-is-updated ]] || { apt-get update -y; touch /tmp/apt-is-updated; }
+  sudo apt install -y gettext
+fi
 if [[ -e /tmp/assets/crossplane ]]; then
   # Deploy Crossplane
   echo installing crossplane...  >> /tmp/killercoda_setup.log
@@ -417,7 +422,7 @@ EOF
   (
     # Wait for IAM to be ready
     echo "waiting IAM to be ready (this may take a while)..." >> /tmp/killercoda_setup.log
-    while ! kubectl wait --for=condition=Ready --all=true -n iam pod --timeout=1m &>/dev/null; do sleep 1; done
+    while ! kubectl wait --for=condition=Ready --all=true -n iam pod -l 'app!=keycloak-realm-import' --timeout=1m &>/dev/null; do sleep 1; done
     until curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/.well-known/openid-configuration" >/dev/null; do
       echo "Waiting for Keycloak master Realm readiness..."
       sleep 5
