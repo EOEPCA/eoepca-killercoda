@@ -23,24 +23,24 @@ In this scenario, you will learn how to deploy and interact with the EOEPCA Work
 The Workspace BB comprises the following key components:
 
 * **Workspace API and UI**<br>
-  Orchestrate storage, runtime, and tooling resources via a unified REST API by managing the underlying Kubernetes Custom Resources (CRs).
+  A REST API and web UI for creating and deleting workspaces, backed by two Kubernetes Custom Resources it manages per workspace (below).
 
 * **Storage Controller (provider-storage)**<br>
   A Kubernetes Custom Resource responsible for creating and managing S3-compatible buckets (e.g., MinIO, AWS S3, or OTC OBS).
 
 * **Datalab Controller (provider-datalab)**<br>
-  A Kubernetes Custom Resource used to deploy persistent VSCode-based environments with direct object-storage access — either directly on Kubernetes or within a vCluster — preconfigured with essential services and tools.
+  A Kubernetes Custom Resource used to deploy persistent VSCode-based environments with direct object-storage access, either directly on Kubernetes or within a vCluster.
 
 * **Identity & Access (Keycloak)**<br>
   Manages user and team identities, enabling role-based access control and granting permissions to specific Datalabs and storage resources.
 
 ## **Crossplane**
 
-The Workspace BB relies upon Crossplane to manage the creation and lifecycle of the resources that deliver these capabilities. This requires the deployment of:
+The Workspace BB uses Crossplane to create and manage these resources, which requires deploying:
 
-* **Dependencies**, including CSI-RClone for storage mounting and the Educates framework for workspace environments.
-* **Pipelines**, which manage the templating and provisioning of workspace resources, including storage, datalab configurations, and environment settings.
-* **Provider Configurations**, that support the usage of specific Crossplane Providers such as MinIO, Kubernetes, Keycloak, and Helm.
+* **Dependencies** - CSI-RClone for storage mounting and the Educates framework for workspace environments.
+* **Pipelines** - template and provision each workspace's storage, Datalab configuration, and environment settings.
+* **Provider Configurations** - the Crossplane Providers this BB uses: MinIO, Kubernetes, Keycloak, and Helm.
 
 ---
 
@@ -53,7 +53,7 @@ Before we start, you should note that this tutorial assumes a generic knowledge 
 Before proceeding, wait for the prerequisite services to be ready:
 
 ```
-while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=10s &>/dev/null; do
+while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=10s -l 'app!=keycloak-realm-import' &>/dev/null; do
   not_ready=$(kubectl get pods -A --no-headers | awk '$3 !~ /1\/1/ {print "  " $1 "/" $2}')
   echo -e "\nWaiting for Readiness - PODS not ready ($(date -u)): \n$not_ready"
 done
