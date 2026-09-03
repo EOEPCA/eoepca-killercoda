@@ -59,7 +59,6 @@ helm upgrade -i stac-manager stac-manager/stac-manager \
   --version 1.0.3 \
   --namespace data-access \
   --values stac-manager/generated-values.yaml \
-  --set service.port=8080 \
   --set-string publicUrl="${EOAPI_PUBLIC_URL}/manager" \
   --set-string stacApi="${EOAPI_PUBLIC_URL}/stac"
 ```{{exec}}

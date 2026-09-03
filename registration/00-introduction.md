@@ -10,9 +10,8 @@ In this scenario, you will learn how to deploy and interact with the EOEPCA Reso
 
 - Deploy the Resource Registration building block on Kubernetes
 - Trigger ingest of an externally-hosted STAC Collection
-- Harvest a small subset of Landsat and Sentinel data
-
-> NOTE. In the Killercoda environment you should skip all of the Landsat-related steps due to resource constraints.
+- Harvest data directly from a real, public STAC catalogue - no provider credentials needed
+- (Optional) Harvest a small subset of Landsat and Sentinel data, if you have accounts with USGS and/or the Copernicus Data Space Ecosystem
 
 ---
 

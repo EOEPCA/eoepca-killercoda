@@ -20,7 +20,7 @@ And we create the ingress for our newly created Resource Registration API servic
 kubectl apply -f registration-api/generated-ingress.yaml
 ```{{exec}}
 
-Finally, we must register the registration service as a Keycloak client so that it can authenticated and be authorized by the Resource Discovery BB:
+Finally, we must register the harvester as a Keycloak client - even though the target STAC API doesn't itself require authentication, the generic STAC-catalog harvester used later needs a working IAM client to start up correctly:
 
 ```
 source ~/.eoepca/state
