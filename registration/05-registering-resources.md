@@ -1,8 +1,8 @@
-We can use the registration API to harvest a STAC Collection from an external URL. This example registers the STAC Collection landsat-ot-c2-l2  into the EOEPCA Resource Catalogue instance - representing the Landsat 8-9 OLI/TIRS Collection 2 Level-2. This collection is used in later steps as a target for harvesting the example Landsat data.
+We can use the registration API to harvest a STAC Collection from an external URL. This example registers the STAC Collection landsat-ot-c2-l2 into the Data Access BB's STAC API - representing the Landsat 8-9 OLI/TIRS Collection 2 Level-2. This collection is used later as a target if you choose to do the optional Landsat harvesting step.
 
-The target of this registration request is the STAC endpoint of the Resource Catalogue service deployed as part of the Resource Discovery Building Block.
+The target of this registration request is the STAC endpoint of the Data Access Building Block deployed earlier.
 
-Note that, as this tutorial does not deploy the IAM BB and Crossplane, no authentication is required. See the full EOEPCA Deployment Guide to see an example of Resource Registration API access with a bearer token.
+Note that, as this tutorial's Registration API and Data Access BB are both deployed without IAM protection, no authentication is required for this request. See the full EOEPCA Deployment Guide to see an example of Resource Registration API access with a bearer token.
 
 ```
 curl -X POST "http://registration-api.eoepca.local/processes/register/execution" \
@@ -11,13 +11,13 @@ curl -X POST "http://registration-api.eoepca.local/processes/register/execution"
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/landsat/landsat-ot-c2-l2.json"},
-        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://resource-catalogue-protected.eoepca.local/stac"}
+        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://eoapi.eoepca.local/stac"}
     }
 }
 EOF
 ```{{exec}}
 
-If Sentinel harvesting is enabled, we also need the Sentinel 2 L2A Collection 1 STAC collection to harvest into:
+Similarly, we register the Sentinel 2 L2A Collection 1 STAC collection, used later if you choose to do the optional Sentinel harvesting step:
 
 ```
 curl -X POST "http://registration-api.eoepca.local/processes/register/execution" \
@@ -26,7 +26,7 @@ curl -X POST "http://registration-api.eoepca.local/processes/register/execution"
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/sentinel/sentinel-2-c1-l2a.json"},
-        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://resource-catalogue-protected.eoepca.local/stac"}
+        "target": {"rel": "https://api.stacspec.org/v1.0.0/core", "href": "http://eoapi.eoepca.local/stac"}
     }
 }
 EOF
@@ -40,22 +40,16 @@ curl http://registration-api.eoepca.local/jobs | jq
 
 The jobs status can also be viewed through the [web UI of the Registration API]({{TRAFFIC_HOST1_82}}/jobs).
 
-You should be able to see the ingested collections in the Resource Discovery BB's OGC Records API
+You should be able to see the ingested collections in the Data Access BB's STAC API
 
 ```
-curl http://resource-catalogue.eoepca.local/collections/landsat-ot-c2-l2 | jq
-```{{exec}}
-
-and also at its STAC API
-
-```
-curl http://resource-catalogue.eoepca.local/stac/collections/landsat-ot-c2-l2 | jq
+curl http://eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2 | jq
 ```{{exec}}
 
 and for Sentinel 2
 
 ```
-curl http://resource-catalogue.eoepca.local/stac/collections/sentinel-2-c1-l2a | jq
+curl http://eoapi.eoepca.local/stac/collections/sentinel-2-c1-l2a | jq
 ```{{exec}}
 
-Alternatively, the registered collections can be seen in the [web UI of the Resource Discovery]({{TRAFFIC_HOST1_81}}/collections): [**Landsat**]({{TRAFFIC_HOST1_81}}/collections/landsat-ot-c2-l2), [**Sentinel**]({{TRAFFIC_HOST1_81}}/collections/sentinel-2-c1-l2a)
+Alternatively, the registered collections can be seen in the [Data Access BB's STAC Browser]({{TRAFFIC_HOST1_89}}/browser/): [**Landsat**]({{TRAFFIC_HOST1_89}}/browser/#/external/eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2), [**Sentinel**]({{TRAFFIC_HOST1_89}}/browser/#/external/eoapi.eoepca.local/stac/collections/sentinel-2-c1-l2a)

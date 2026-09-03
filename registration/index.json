@@ -14,6 +14,10 @@
         "text": "01-prerequisites.md"
       },
       {
+        "title": "Deploy Data Access",
+        "text": "01b-deploy-data-access.md"
+      },
+      {
         "title": "Configure Resource Registration",
         "text": "02-configure.md"
       },
@@ -30,16 +34,20 @@
         "text": "05-registering-resources.md"
       },
       {
-        "title": "Harvesting Landsat (Optional)",
-        "text": "06-harvesting-landsat.md"
+        "title": "Harvesting a Real STAC Catalog",
+        "text": "06-harvesting-stac-catalog.md"
       },
       {
-        "title": "Harvesting Sentinel (Optional)",
-        "text": "07-harvesting-sentinel.md"
+        "title": "Harvesting Landsat (Optional, needs USGS account)",
+        "text": "07-harvesting-landsat.md"
+      },
+      {
+        "title": "Harvesting Sentinel (Optional, needs CDSE account)",
+        "text": "08-harvesting-sentinel.md"
       },
       {
         "title": "STAC Browser Visualisation",
-        "text": "08-stac-browser.md"
+        "text": "09-stac-browser.md"
       }
     ],
     "finish": {

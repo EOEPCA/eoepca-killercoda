@@ -1,4 +1,4 @@
-If you have enabled Landsat or Sentinel 2 harvesting, or if you wish to create your own harvester, you will need to deploy the harvester components.
+The harvester consists of the Operaton BPM workflow engine, a shared `eodata` volume, and one worker per data source. We deploy Operaton, the volume and the STAC worker here - the Landsat and Sentinel workers are optional and deployed as part of their own dedicated steps later, since they need provider credentials most attendees won't have to hand.
 
 ## Operaton
 
@@ -58,29 +58,9 @@ kubectl apply -f registration-harvester/generated-eodata-server.yaml
 
 The data will become visible from outside the tutorial environment under [this URL]({{TRAFFIC_HOST1_84}}) and within it from `http://eodata.eoepca.local/`.
 
-## Landsat, Sentinel and STAC Harvesters
+## STAC Harvester
 
-To harvest Landsat data a special Landsat Harvester Worker needs to be running. It can be installed using Helm
-
-```
-helm upgrade -i registration-harvester-worker-landsat eoepca-dev/registration-harvester \
-  --version 2.0.0 \
-  --namespace resource-registration \
-  --create-namespace \
-  --values registration-harvester/harvester-values/values-landsat.yaml
-```{{exec}}
-
-Similarly for Sentinel
-
-```
-helm upgrade -i registration-harvester-worker-sentinel eoepca-dev/registration-harvester \
-  --version 2.0.0 \
-  --namespace resource-registration \
-  --create-namespace \
-  --values registration-harvester/harvester-values/values-sentinel.yaml
-```{{exec}}
-
-and for STAC
+The generic STAC-catalog harvester, used in the next step to harvest from a real public STAC API, can be installed using Helm:
 
 ```
 helm upgrade -i registration-harvester-worker-stac eoepca-dev/registration-harvester \
@@ -92,7 +72,7 @@ helm upgrade -i registration-harvester-worker-stac eoepca-dev/registration-harve
 
 ## Validation
 
-Operaton and the harvester workers may take several minutes to start.
+Operaton and the harvester worker may take several minutes to start.
 
 We can validate the deployment and check that startup has completed with the provided script `validation.sh`{{}}
 
@@ -100,9 +80,10 @@ We can validate the deployment and check that startup has completed with the pro
 bash validation.sh
 ```{{exec}}
 
-Again, we can also check the status of the Kubernetes resources directly (there will be more of them now)
+> `validation.sh` always checks for the Landsat and Sentinel workers and a total of 6 pods - since this tutorial only deploys the STAC worker by default, expect it to report 3 failures (pod count, Landsat service, Sentinel service) here. Everything else passing confirms the deployment is healthy.
+
+Again, we can also check the status of the Kubernetes resources directly
 
 ```
 kubectl get all -n resource-registration
 ```{{exec}}
-

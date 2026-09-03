@@ -29,7 +29,16 @@ eoepca
 
 For the **'base URL through which harvested 'eodata' assets will be accessed'** we use the **EODATA_EXT_URL** proxy URL computed above.<br>Paste this to answer the question.
 
-To simplify demonstration we opt not to put the resource registration behind authentication. However, we must enable the BB's ability to authenticate as a client to STAC APIs as the Resource Discovery BB requires this.
+The script then asks whether to enable harvesting a small sample of Landsat data (requires USGS M2M credentials) and, separately, Sentinel 2 data (requires Copernicus Data Space Ecosystem credentials). Both require an account with the respective data provider, and for Landsat, USGS M2M access also requires a separate Data Access Request that can take several days to be approved - so most attendees should say `no` to both here and use the STAC Catalog harvesting step later, which needs no credentials at all. If you already have working credentials for either provider, see the dedicated **Harvesting Landsat** / **Harvesting Sentinel** steps near the end of this tutorial for the full setup - you can always come back and rerun this configuration step later to enable them.
+
+This tutorial continues without either set of credentials configured:
+
+```
+no
+no
+```{{exec}}
+
+To simplify demonstration we opt not to put the resource registration behind authentication. This tutorial's Data Access BB itself is deployed without IAM too, so the STAC API it registers into does not require authentication either - but the generic STAC-catalog harvester used later still needs an IAM client to be configured for it to start up correctly, so we still enable client support:
 
 ```
 no
@@ -37,18 +46,8 @@ yes
 resource-registration
 ```{{exec}}
 
-Next we run `apply-secrets.sh`, which stores the Operaton username and password into a secret and then interactively asks about optional harvester credentials:
+Finally we run `apply-secrets.sh`, which stores the Operaton username/password and the IAM client credentials into Kubernetes secrets:
 
 ```
 bash apply-secrets.sh
 ```{{exec}}
-
-If you wish to set up harvesting of a small sample of Landsat data you'll need credentials for the [USGS Machine-to-Machine (M2M)](https://m2m.cr.usgs.gov/) API:
-
-* Register for a free account at USGS (click on 'Login' in the link above and create a new account)
-* Create an application token from your profile page at <https://ers.cr.usgs.gov/>, specifying the M2M API scope
-* At the first prompt from `apply-secrets.sh`, say `y` to enable Landsat harvesting and enter these credentials when asked.
-
-If you do not wish to set up Landsat harvesting say `n`. You can rerun the tutorial from here to set it up later.
-
-The script then asks, at a second prompt, if you wish to set up harvesting for a small sample of Sentinel 2 data. You will need credentials (username and password) from the Copernicus Data Space Ecosystem. Say `n` if you do not wish to set this up.
