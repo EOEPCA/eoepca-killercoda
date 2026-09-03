@@ -341,7 +341,7 @@ if [[ -e /tmp/assets/crossplane ]]; then
   # Deploy Crossplane via helm chart
   helm upgrade --install crossplane crossplane \
     --repo https://charts.crossplane.io/stable \
-    --version 2.3.4 \
+    --version 2.4.0 \
     --namespace crossplane-system \
     --create-namespace \
     --set provider.defaultActivations={}
@@ -434,6 +434,10 @@ EOF
       sleep 5
     done
   ) &> /tmp/iam_post_setup.log
+fi
+if [[ -e /tmp/assets/rshared-root ]]; then
+  #This is needed for rclone CSI and likely to be needed for other CSIs.
+  sudo mount --make-rshared /
 fi
 if [[ -e /tmp/assets/waitforpods ]]; then
   echo "waiting for all service pods to be ready (this may take some time)..." >> /tmp/killercoda_setup.log
