@@ -30,7 +30,15 @@ SECRET=$( \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     | jq -r '.storage.credentials.secret'
 )
+S3_KEYNAME=$( \
+  curl -X GET "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/workspaces/ws-${KEYCLOAK_TEST_USER}" \
+    --silent --show-error \
+    -H "Accept: application/json" \
+    -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+    | jq -r '.storage.credentials.access'
+)
 echo "S3 Secret: ${SECRET}"
+echo "S3 Key Name: ${S3_KEYNAME}"
 ```{{exec}}
 
 ## Use the MinIO Client `mc`
@@ -38,7 +46,7 @@ echo "S3 Secret: ${SECRET}"
 Using the retrieved secret, configure the MinIO client alias `mystorage` to access the user's workspace object storage...
 
 ```bash
-mc alias set mystorage http://minio.eoepca.local:9000 eoepcauser "$SECRET"
+mc alias set mystorage http://minio.eoepca.local:9000 "$S3_KEYNAME" "$SECRET"
 ```{{exec}}
 
 ## Check the workspace bucket
