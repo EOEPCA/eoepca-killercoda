@@ -1,0 +1,34 @@
+{
+  "title": "EOEPCA End-to-End Datacube Access",
+  "description": "Scaffolding for the notebook-driven end-to-end datacube workflow - see README.md for status.",
+  "details": {
+    "intro": {
+      "text": "00-introduction.md",
+      "title": "Introduction",
+      "foreground": "intro_foreground.sh",
+      "background": "intro_background.sh"
+    },
+    "steps": [
+      {
+        "title": "Deploy the Building Blocks",
+        "text": "01-setup.md"
+      },
+      {
+        "title": "Explore the Environment",
+        "text": "02-explore.md"
+      }
+    ],
+    "finish": {
+      "title": "Finish",
+      "text": "99-finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "*", "target": "/tmp/assets"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
