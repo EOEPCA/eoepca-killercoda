@@ -16,11 +16,8 @@ kubectl get workflows -n openeo \
 Show the newest workflow and its executor pod:
 
 ```bash
-WORKFLOW=$(
-  kubectl get workflows -n openeo \
-    --sort-by=.metadata.creationTimestamp \
-    -o jsonpath='{.items[-1:].metadata.name}'
-)
+WORKFLOW=$(kubectl get workflows -n openeo \
+  --sort-by=.metadata.creationTimestamp -o name | tail -n1 | cut -d/ -f2)
 
 kubectl describe workflow "${WORKFLOW}" -n openeo | tail -40
 kubectl get pods -n openeo \

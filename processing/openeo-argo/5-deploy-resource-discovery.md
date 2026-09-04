@@ -61,13 +61,19 @@ This runs entirely inside the cluster and is safe to re-run.
 
 ### Register the collection and item
 
-Get a token for the writable catalogue using the [Device Authorization Grant](https://oauth.net/2/device-flow/):
+Get a token for the writable catalogue using the [Device Authorization Grant](https://oauth.net/2/device-flow/). The client requires PKCE:
 
 ```bash
 source ~/.eoepca/state
 
+VERIFIER=$(openssl rand -hex 32)
+# code_challenge = base64url(sha256(verifier)), per RFC 7636
+CHALLENGE=$(printf '%s' "$VERIFIER" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+
 DEVICE=$(curl -s -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/auth/device" \
-  -d "client_id=resource-catalogue")
+  --data-urlencode "client_id=resource-catalogue" \
+  --data-urlencode "code_challenge=${CHALLENGE}" \
+  --data-urlencode "code_challenge_method=S256")
 
 echo "$DEVICE" | jq -r '"Open \(.verification_uri_complete) and log in as eoepcauser"'
 ```{{exec}}
@@ -79,6 +85,7 @@ DEVICE_CODE=$(echo "$DEVICE" | jq -r '.device_code')
 
 ACCESS_TOKEN=$(curl -s -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/token" \
   -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
+  -d "code_verifier=${VERIFIER}" \
   -d "device_code=${DEVICE_CODE}" \
   -d "client_id=resource-catalogue" | jq -r '.access_token')
 ```{{exec}}

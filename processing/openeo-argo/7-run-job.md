@@ -47,15 +47,43 @@ curl -fsS -X POST "${OPENEO_URL}/jobs/${JOB_ID}/results" \
 echo
 ```{{exec}}
 
-Argo creates an executor pod, and Dask creates a temporary scheduler and worker to do the computation. Watch the workflow until it finishes:
+Argo creates an executor pod, and Dask creates a temporary scheduler and worker to do the computation. The executor pod is labelled with the OpenEO job ID, so watch the workflow it belongs to (rather than just the most recently created one, which may be a leftover from an earlier job) until it finishes:
 
 ```bash
 while true; do
-  PHASE=$(kubectl get workflows -n openeo --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].status.phase}')
+  POD=$(kubectl get pods -n openeo -l "OPENEO_JOB_ID=${JOB_ID},workflows.argoproj.io/workflow" -o name)
+
+  if [[ -z "$POD" ]]; then
+    echo "Workflow phase: Pending (executor pod not created yet)"
+    sleep 15
+    continue
+  fi
+
+  WORKFLOW=$(kubectl get "$POD" -n openeo -o jsonpath='{.metadata.labels.workflows\.argoproj\.io/workflow}')
+  PHASE=$(kubectl get workflow "$WORKFLOW" -n openeo -o jsonpath='{.status.phase}')
   echo "Workflow phase: ${PHASE:-Pending}"
-  [[ "$PHASE" == "Succeeded" || "$PHASE" == "Failed" || "$PHASE" == "Error" ]] && break
+
+  if [[ "$PHASE" == "Succeeded" || "$PHASE" == "Failed" || "$PHASE" == "Error" ]]; then
+    break
+  fi
+
   sleep 15
 done
+```{{exec}}
+
+The access token from step 6 has a short lifetime and may have expired while the job ran. Get a fresh one:
+
+```bash
+source ~/.eoepca/state
+
+ACCESS_TOKEN=$(curl -s -X POST \
+    "${OIDC_ISSUER_URL}/protocol/openid-connect/token" \
+    -d "grant_type=password" \
+    -d "username=${KEYCLOAK_TEST_USER}" \
+    -d "password=${KEYCLOAK_TEST_PASSWORD}" \
+    -d "client_id=openeo-argo" \
+    -d "scope=openid" | jq -r '.access_token')
+export AUTH_TOKEN="oidc/${OIDC_ORGANISATION}/${ACCESS_TOKEN}"
 ```{{exec}}
 
 The job's results endpoint confirms the output was published:
