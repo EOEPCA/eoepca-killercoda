@@ -8,9 +8,8 @@ The full formatted listing is several thousand lines, so save it to a file and p
 
 ```
 eodag list --no-fetch > /tmp/eodag-collections.txt
-printf "Known collections: "
-grep -c '^\* ' /tmp/eodag-collections.txt
-sed -n '1,25p' /tmp/eodag-collections.txt
+grep -c '^\*' /tmp/eodag-collections.txt
+head -30 /tmp/eodag-collections.txt
 ```{{exec}}
 
 `--no-fetch` is important here: it uses EODAG's local definitions and does not contact every remote provider. Each entry includes a collection ID, descriptive metadata, and the providers that implement it.
@@ -72,13 +71,8 @@ eodag discover -p earth_search --storage /tmp/earth_search_collections.json
 Count the provider-native collections returned and display a sample:
 
 ```
-printf "Discovered Earth Search collections: "
-jq '.earth_search.collections_config | length' /tmp/earth_search_products.json
-jq -r '
-  .earth_search.collections_config
-  | to_entries[:8][]
-  | "- \(.key): \(.value.title)"
-' /tmp/earth_search_collections.json
+jq '.earth_search.collections_config | length' /tmp/earth_search_collections.json
+jq -r '.earth_search.collections_config | keys[]' /tmp/earth_search_collections.json | head -5
 ```{{exec}}
 
 Discovery does not download EO data. It reads catalogue metadata that can be reviewed before adding or overriding provider configuration.

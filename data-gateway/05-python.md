@@ -39,12 +39,12 @@ results = dag.search(
     start="2024-01-01",
     end="2024-01-10",
     provider="earth_search",
-    items_per_page=5
+    limit=5
 )
 print(f"Found {len(results)} products")
 ```{{exec}}
 
-`results` behaves like a Python list of normalised EODAG product objects. `items_per_page=5` limits this request; it is not a count of every possible match.
+`results` behaves like a Python list of normalised EODAG product objects. `limit=5` limits this request; it is not a count of every possible match.
 
 ### Inspect a Product
 
@@ -91,7 +91,7 @@ results = dag.search(
     start="2024-01-01",
     end="2024-01-05",
     provider="earth_search",
-    items_per_page=3
+    limit=3
 )
 for r in results:
     print(f"{r.properties.get('id')}: {r.properties.get('datetime')}")
@@ -109,7 +109,7 @@ results = dag.search(
     end="2024-06-30",
     provider="cop_dataspace",
     cloud_cover=20,
-    items_per_page=5
+    limit=5
 )
 print(f"Found {len(results)} products with <=20% cloud cover")
 ```{{exec}}

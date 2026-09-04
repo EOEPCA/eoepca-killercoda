@@ -27,18 +27,8 @@ The parameters are:
 Instead of printing the entire GeoJSON document, summarise the collection and its first product:
 
 ```
-jq '{
-  type,
-  returned: (.features | length),
-  first_product: (
-    .features[0] | {
-      id,
-      provider: .properties."eodag:provider",
-      datetime: .properties.start_datetime,
-      cloud_cover: .properties."eo:cloud_cover"
-    }
-  )
-}' sentinel2_results.geojson
+jq '.features | length' sentinel2_results.geojson
+jq '.features[0] | {id, provider: .properties."eodag:provider", datetime: .properties.start_datetime, cloud_cover: .properties."eo:cloud_cover"}' sentinel2_results.geojson
 ```{{exec}}
 
 `eodag:provider` records which backend answered the request. Other fields have been mapped into EODAG's common metadata model, so downstream code does not need to understand the provider's original response format.
@@ -59,10 +49,8 @@ eodag search \
 ```{{exec}}
 
 ```
-jq -r '
-  "Returned \(.features | length) products; cloud cover values: "
-  + ([.features[].properties."eo:cloud_cover"] | join(", "))
-' low_cloud_results.geojson
+jq '.features | length' low_cloud_results.geojson
+jq '.features[].properties."eo:cloud_cover"' low_cloud_results.geojson
 ```{{exec}}
 
 This is a catalogue metadata filter. It does not inspect image pixels, and cloud-cover definitions can vary between collections.
@@ -84,18 +72,15 @@ eodag search \
 Confirm the result count and the provider selected by EODAG:
 
 ```
-jq '{
-  returned: (.features | length),
-  provider: .features[0].properties."eodag:provider",
-  first_id: .features[0].id
-}' landsat_results.geojson
+jq '.features | length' landsat_results.geojson
+jq '.features[0].id, .features[0].properties."eodag:provider"' landsat_results.geojson
 ```{{exec}}
 
 This illustrates the gateway idea: the query structure and output format remain the same even though the mission and upstream catalogue have changed.
 
 ### Get All Results
 
-`--items` controls one result page. If a workflow genuinely needs every match, `--all` follows provider pagination until no more products remain. Use it carefully with broad areas or long date ranges.
+`--limit` controls one result page. If a workflow genuinely needs every match, `--all` follows provider pagination until no more products remain. Use it carefully with broad areas or long date ranges.
 
 This deliberately narrow query returns all matches without creating a large request:
 
@@ -115,7 +100,7 @@ jq '.features | length' all_results.geojson
 
 ### Observe Provider Fallback
 
-Verbose logs reveal the provider-selection process. The `grep` keeps the tutorial output focused on provider attempts and the final result:
+The `-vv` flag turns on verbose logging, showing which provider EODAG picks and, if one fails or returns nothing, which provider it falls back to next:
 
 ```
 eodag -vv search \
@@ -123,10 +108,7 @@ eodag -vv search \
   --box 1 43 2 44 \
   --start 2024-01-01 \
   --end 2024-01-05 \
-  --storage verbose_results.geojson \
-  2>&1 |
-  grep --color=never -E \
-    'Searching on provider|No result could|Returned|Results stored'
+  --storage verbose_results.geojson
 ```{{exec}}
 
-It is normal to see one public endpoint fail before EODAG falls back to another. That is different from an empty successful search: the log tells us whether a provider returned no matching products or could not answer the request.
+Look for the `Searching on provider` lines. It is normal to see one public endpoint fail before EODAG falls back to another. That is different from an empty successful search: the log tells us whether a provider returned no matching products or could not answer the request.

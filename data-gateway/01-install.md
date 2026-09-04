@@ -13,10 +13,10 @@ The shell prompt now starts with `(venv)`. Commands such as `python`, `pip`, and
 
 ### Install EODAG
 
-Install the tested EODAG version with its optional server dependencies. The `[server]` extra adds the packages required by the STAC API used later in the tutorial.
+Install the tested EODAG version with the `[all-providers]` extra, which pulls in the dependencies needed by every built-in provider plugin:
 
 ```
-pip3 install 'eodag==4.7.1'
+pip install "eodag[all-providers]==4.7.2"
 ```{{exec}}
 
 ### Verify the Installation
@@ -27,7 +27,7 @@ Ask the installed command to report its version:
 eodag version
 ```{{exec}}
 
-The expected version is `4.7.1`.
+The expected version is `4.7.2`.
 
 Now display the command-line help:
 

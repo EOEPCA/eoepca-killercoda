@@ -8,7 +8,7 @@ To install and start the server run:
 
 ```
 pip install stac-fastapi.eodag uvicorn
-python -m stac_fastapi.eodag.app > /tmp/eodac-stac.log 2>&1 &
+python -m stac_fastapi.eodag.app > /tmp/eodag-stac.log 2>&1 &
 EODAG_SERVER_PID=$!
 ```{{exec}}
 
@@ -25,34 +25,22 @@ curl -fsS http://localhost:8000/ |
 
 ### List Collections
 
-EODAG exposes product types as STAC collections. Asking for every provider produces a large response, so select the public Earth Search provider:
+EODAG exposes product types as STAC collections:
 
 ```
-curl -fsS "http://localhost:8000/collections?provider=earth_search" |
-  jq '{
-    returned: (.collections | length),
-    collections: [.collections[] | {id, title}]
-  }'
+curl -fsS "http://localhost:8000/collections" | jq '.collections | length'
+curl -fsS "http://localhost:8000/collections" | jq '.collections[0:5] | map({id, title})'
 ```{{exec}}
 
 The collection IDs are EODAG's common collection IDs. This is why `S2_MSI_L1C` can be used consistently by the CLI, STAC API, and Python API.
 
 ### Search via STAC API
 
-Use the STAC Item Search endpoint with the same collection, bounding box, time interval, and five-item limit used earlier. Here the EODAG server supports a `provider` query parameter, so the request explicitly targets Earth Search:
+Use the STAC Item Search endpoint with the same collection, bounding box, time interval, and five-item limit used earlier. The server picks a provider itself, the same way the CLI and Python API do; the answering provider is recorded per item under `federation:backends`:
 
 ```
-curl -fsS \
-  "http://localhost:8000/search?provider=earth_search&collections=S2_MSI_L1C&bbox=1,43,2,44&start_datetime=2024-01-01/2024-01-15&limit=5" |
-  jq '{
-    type,
-    returned: .numberReturned,
-    products: [.features[] | {
-      id,
-      datetime: .properties.datetime,
-      cloud_cover: .properties["eo:cloud_cover"]
-    }]
-  }'
+curl -fsS "http://localhost:8000/search?collections=S2_MSI_L1C&bbox=1,43,2,44&start_datetime=2024-01-01/2024-01-15&limit=5" |
+  jq '.features | map({id, datetime: .properties.datetime, cloud_cover: .properties."eo:cloud_cover", provider: .properties."federation:backends"})'
 ```{{exec}}
 
 The response is a STAC `FeatureCollection`. Each feature is a STAC Item, and its `assets` object describes the files associated with that product.
