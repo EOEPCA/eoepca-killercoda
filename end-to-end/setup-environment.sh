@@ -74,6 +74,17 @@ ANSWERS
     | jq -r ".access_token")
   export REALM_MANAGEMENT_CLIENT_UUID=$(curl --silent --show-error -H "Authorization: Bearer ${KEYCLOAK_ADMIN_TOKEN}" \
     "http://auth.eoepca.local/admin/realms/${REALM}/clients?clientId=realm-management" | jq -r ".[0].id")
+
+  OFFLINE_ACCESS_ROLE=$(curl --silent --show-error -H "Authorization: Bearer ${KEYCLOAK_ADMIN_TOKEN}" \
+    "http://auth.eoepca.local/admin/realms/${REALM}/roles/offline_access")
+  for TEST_USERNAME in "${KEYCLOAK_TEST_USER}" "${KEYCLOAK_TEST_ADMIN}"; do
+    TEST_USER_ID=$(curl --silent --show-error -H "Authorization: Bearer ${KEYCLOAK_ADMIN_TOKEN}" \
+      "http://auth.eoepca.local/admin/realms/${REALM}/users?username=${TEST_USERNAME}&exact=true" | jq -r ".[0].id")
+    curl --silent --show-error -X POST -H "Authorization: Bearer ${KEYCLOAK_ADMIN_TOKEN}" -H "Content-Type: application/json" \
+      "http://auth.eoepca.local/admin/realms/${REALM}/users/${TEST_USER_ID}/role-mappings/realm" \
+      -d "[${OFFLINE_ACCESS_ROLE}]"
+  done
+
   gomplate -f workspace-dependencies/pipeline-iam-template.yaml -o workspace-dependencies/generated-pipeline-iam.yaml
   kubectl apply -f workspace-dependencies/generated-pipeline-iam.yaml
 
@@ -138,6 +149,26 @@ ANSWERS
   kubectl apply -f iam/generated-iam.yaml || true
   # no cert-manager here, so the Certificate resource always fails - ApisixRoute/ApisixTls still apply
   kubectl apply -f eoapi/generated-ingress.yaml || true
+
+  cat <<EOF | kubectl apply -f -
+apiVersion: group.keycloak.m.crossplane.io/v1alpha1
+kind: Memberships
+metadata:
+  name: data-access-admin-members
+  namespace: iam-management
+spec:
+  providerConfigRef:
+    name: keycloak-provider-config
+    kind: ProviderConfig
+  forProvider:
+    realmId: ${REALM}
+    groupIdRef:
+      name: data-access-admin
+      policy:
+        resolution: Required
+    members:
+      - ${KEYCLOAK_TEST_ADMIN}
+EOF
 )
 
 log "Waiting for Data Access pods (image pulls + DB init can take several minutes)"
