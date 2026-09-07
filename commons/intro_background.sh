@@ -206,6 +206,7 @@ EOF
   add_server_block() {
     local port="$1" dest="$2" types="$3"
     local host="${4:-$dest}"
+    local extra_nginx_config="$5"
     cat <<EOF>>/etc/nginx/nginx.conf
   server {
     listen       $port;
@@ -224,6 +225,7 @@ EOF
       # streaming - e.g. for S3 API
       client_max_body_size 0;
       proxy_request_buffering off;
+      $extra_nginx_config
 EOF
     cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
     [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
@@ -238,7 +240,11 @@ EOF
   }
   # Add server blocks
   while read port dest types; do
-    add_server_block "$port" "$dest" "$types"
+    extra_nginx_config=
+    if [[ -f "/tmp/assets/extra-proxy-config-$port" ]]; then
+      extra_nginx_config=$(<"/tmp/assets/extra-proxy-config-$port")
+    fi
+    add_server_block "$port" "$dest" "$types" "" "$extra_nginx_config"
   done < /tmp/assets/killercodaproxy
   # Add minio servers if enabled
   # These need to set the Host header as the 'external' URL - minio is fussy
