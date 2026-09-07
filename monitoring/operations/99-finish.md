@@ -1,6 +1,6 @@
 We have learned in this tutorial how to deploy and use the EOEPCA Operations Building Block: metrics with Prometheus and Grafana, logs with Loki and Alloy, and alert triage with Alertmanager and Keep.
 
-You can now play more with the deployed stack. Try deploying another Building Block alongside it and watching its metrics and logs appear automatically, or jump to another one of the [EOEPCA Tutorials](https://killercoda.com/eoepca/).
+The sample web service and its alert rule remain deployed. Repeat the outage, inspect the request logs, or explore the cluster dashboards. You can also continue with another [EOEPCA Tutorial](https://killercoda.com/eoepca/).
 
 For more information about EOEPCA and the EOEPCA Operations Building Block, and more advanced deployments (including securing Grafana and Keep behind Keycloak SSO), have a look at the:
  - [EOEPCA Website](https://eoepca.org/)

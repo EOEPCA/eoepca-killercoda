@@ -8,6 +8,8 @@ bash apply-secrets.sh
 
 ## Deploy kube-prometheus-stack
 
+The two node-exporter overrides accommodate Localcoda’s containerised node: disable the host root mount and use netlink to read network device information.
+
 The core monitoring stack is deployed first so that its CRDs (`ServiceMonitor`, `PrometheusRule`, `AlertmanagerConfig`) are available for the components that follow. This is the biggest image pull in this tutorial, so it can take a few minutes:
 
 ```
@@ -36,11 +38,11 @@ helm upgrade -i loki grafana/loki \
   --wait --timeout 5m
 ```{{exec}}
 
-> The deployment guide's own `values-template.yaml` assumes a real S3 endpoint behind TLS, as it would be in a production deployment. The tutorial's local MinIO is plain HTTP, so this step adds `--set loki.storage.s3.insecure=true` on top of the generated values to match. This is a tutorial-only override, not a guide fix.
+> The local MinIO endpoint uses HTTP. The `insecure=true` override selects HTTP for this tutorial’s object store.
 
 ## Deploy Alloy
 
-Alloy is deployed as raw manifests rather than via Helm, since its configuration is tightly coupled to the cluster's log paths and the Loki endpoint:
+Apply the Alloy manifests from the guide. Alloy reads pod logs through the Kubernetes API and sends them to Loki:
 
 ```
 kubectl apply -k alloy/

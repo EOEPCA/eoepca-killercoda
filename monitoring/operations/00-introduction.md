@@ -2,7 +2,7 @@ Welcome to the **[EOEPCA Operations](https://eoepca.readthedocs.io/projects/depl
 
 The Operations service is the observability stack for an EOEPCA deployment. It gives operators a single place to see what the cluster is doing: metrics, logs, dashboards, and alerts.
 
-In this scenario, you will deploy the EOEPCA Operations Building Block, the component that collects metrics and logs from every other building block, visualises them, and routes alerts to a triage UI.
+In this scenario, you will deploy the EOEPCA Operations Building Block, the component that collects cluster metrics and pod logs, visualises them, and routes alerts to a triage UI.
 
 This tutorial can take a little time to start, for example 5 minutes or more, whilst Kubernetes and other prerequisites are installed for you.
 
@@ -18,14 +18,7 @@ This tutorial can take a little time to start, for example 5 minutes or more, wh
 
 ## Use Case
 
-Imagine you're running an Earth Observation platform made up of several other Building Blocks: data catalogues, processing engines, data access endpoints. You need a single place to confirm they're healthy, dig into what a failing pod actually logged, and make sure someone gets paged when something breaks.
-
-With Operations, you can:
-- See cluster-wide and per-workload metrics in curated Grafana dashboards
-- Search container logs across every namespace from the same UI
-- Have Prometheus alerts routed automatically to Keep, where operators acknowledge and triage them
-
-This tutorial deploys the full stack: Prometheus, Alertmanager, Grafana, Loki, Alloy and Keep, and walks through using each of them.
+Deploy a small web service, find its metrics and request logs in Grafana, then stop it to trigger an alert. Follow the alert from Prometheus through Alertmanager to Keep, acknowledge it and restore the service. Confirm that the metrics recover and the alert resolves.
 
 ---
 
@@ -33,8 +26,8 @@ This tutorial deploys the full stack: Prometheus, Alertmanager, Grafana, Loki, A
 
 The Operations BB deploys:
 
-- **Prometheus** scrapes metrics from the cluster and from any workload that exposes a `/metrics` endpoint
-- **Loki** stores container logs, with **Alloy** collecting them from every node
+- **Prometheus** scrapes cluster metrics and workloads selected by scrape configuration
+- **Loki** stores container logs, with **Alloy** collecting pod logs through the Kubernetes API
 - **Grafana** is the UI for both, with a set of cluster dashboards loaded out the box
 - **Alertmanager** routes firing alerts to **Keep**, which is where operators triage and acknowledge them
 

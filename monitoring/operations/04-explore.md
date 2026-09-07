@@ -1,82 +1,153 @@
-With Operations deployed, let's explore what it collects.
+Use a small web service to follow an outage through metrics, logs and alert triage. The service represents a platform endpoint; it does not deploy another building block.
 
 ## Log in to Grafana
 
-Without IAM enabled, Grafana uses local admin auth. Retrieve the chart-generated credentials:
+Retrieve the chart-generated credentials:
 
 ```
 kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-user}' | base64 -d; echo
 kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```{{exec}}
 
-[Open Grafana]({{TRAFFIC_HOST1_81}})
+For the API examples below, use the same Grafana credentials:
 
-## Verify the datasources
+```
+GRAFANA_USER=$(kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-user}' | base64 -d)
+GRAFANA_PASSWORD=$(kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d)
+GRAFANA_URL=http://monitoring.eoepca.local
+```{{exec}}
 
-`Connections → Data sources`: confirm **Prometheus** (default) and **Loki** are configured, and test each.
+## Create a monitored service
 
-## Explore metrics
+Inspect the sample Deployment, Service and PrometheusRule:
 
-**Explore** tab → **Prometheus**:
+```
+cat /tmp/assets/operations-demo.yaml
+```{{exec}}
+
+The rule fires when the web service has no available replicas for one minute. Its metric comes from kube-state-metrics, which observes Kubernetes workloads.
+
+```
+kubectl apply -f /tmp/assets/operations-demo.yaml
+kubectl -n operations rollout status deployment/operations-demo --timeout=120s
+DEMO_URL=http://$(kubectl -n operations get service operations-demo -o jsonpath='{.spec.clusterIP}')
+curl -sS "$DEMO_URL/?request=operations-workshop"
+```{{exec}}
+
+You should see the nginx welcome page. If you don't, wait 10 seconds and try again.
+
+## Inspect its metrics and logs
+
+In Grafana **Explore**, select **Prometheus** and run:
 
 ```promql
-up{namespace="operations"}
+kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}
 ```
 
-One result per scrape target in the namespace, all `1` — Prometheus is scraping the whole stack.
+The value should be `1`. Allow up to a minute for the first scrape. You can query the same datasource through Grafana's API:
 
-## Explore logs
+```
+curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+  "$GRAFANA_URL/api/datasources/proxy/uid/prometheus/api/v1/query" \
+  --data-urlencode 'query=kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}' | jq
+```{{exec}}
 
-**Explore** tab → **Loki**:
+Switch Explore to **Loki** and run:
 
 ```logql
-{namespace="operations"}
+{namespace="operations", app="operations-demo"} |= "operations-workshop"
 ```
 
-Log lines from the Operations BB's own components — the Alloy → Loki pipeline is working.
-
-## Load a curated dashboard
-
-`Dashboards → Browse` → **Kubernetes / Cluster View**. It populates with live cluster data.
-
-The **APISIX Endpoint SLOs** dashboard is also listed but stays empty here — it only has data once Data Access is deployed with STAC alerts enabled.
-
-## The pipeline in action
-
-The baseline rules include a `Watchdog` alert, firing continuously as a health check — proof the real Prometheus → Alertmanager → Keep pipeline is delivering on its own, with no one triggering it:
+Find the request with HTTP status `200`. Alloy has collected the pod's access log and sent it to Loki. The API equivalent is:
 
 ```
-curl -s "http://alerting.eoepca.local/v2/alerts" -H "Accept: application/json" -H "X-API-KEY: anything" | grep -o '"name":"Watchdog"'
+curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+  "$GRAFANA_URL/api/datasources/proxy/uid/loki/loki/api/v1/query_range" \
+  --data-urlencode 'query={namespace="operations", app="operations-demo"} |= "operations-workshop"' | jq
 ```{{exec}}
 
-## Trigger and triage an alert
+If either response is empty, run it again after a few seconds.
 
-Now simulate one yourself, as if it came from a monitored service:
+Open **Dashboards → Kubernetes / Cluster View** to see cluster resource use. **Kubernetes / Workload View** lets you select namespace `operations` and the `operations-demo` pod. CPU rates need several scrapes before they appear. CPU limit panels are empty for workloads without CPU limits. Localcoda reduces pod resource requests to fit the tutorial environment, so usage-to-request percentages can exceed 100%.
 
-```
-curl -s -X POST "http://alerting.eoepca.local/v2/alerts/event?fingerprint=tutorial-demo-alert" \
-  -H "X-API-KEY: anything" -H "Content-Type: application/json" \
-  -d '{"name":"DataAccessLatencyHigh","status":"firing","severity":"warning","lastReceived":"'"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"'"}'
-```{{exec}}
+The **APISIX Endpoint SLOs** dashboard needs Data Access metrics and STAC recording rules, which this tutorial does not deploy.
 
-Confirm it's firing in Keep:
+## Cause an outage
+
+Stop the sample service:
 
 ```
-curl -s "http://alerting.eoepca.local/v2/alerts/tutorial-demo-alert" -H "X-API-KEY: anything" | grep -o '"status":"firing"'
+kubectl -n operations scale deployment/operations-demo --replicas=0
 ```{{exec}}
 
-> Even with `AUTH_TYPE=NO_AUTH`, Keep still requires an `X-API-KEY` header — it just doesn't check its value.
-
-[Open Keep]({{TRAFFIC_HOST1_82}}) — the alert is in the list.
-
-Acknowledge it, same as a user would from the UI:
+Repeat the Prometheus query above: available replicas should fall to `0`. Query the alert state:
 
 ```
-curl -s -X POST "http://alerting.eoepca.local/v2/alerts/enrich" \
-  -H "X-API-KEY: anything" -H "Content-Type: application/json" \
-  -d '{"fingerprint":"tutorial-demo-alert","enrichments":{"status":"acknowledged"}}'
+curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+  "$GRAFANA_URL/api/datasources/proxy/uid/prometheus/api/v1/query" \
+  --data-urlencode 'query=ALERTS{alertname="TutorialServiceUnavailable"}' | jq
+```{{exec}}
+
+The `alertstate` label changes from `pending` to `firing` after one minute. Allow another minute for scraping, rule evaluation and Alertmanager delivery.
+
+## Triage in Keep
+
+[Open Keep]({{TRAFFIC_HOST1_82}}) and select **Alerts → Feed**. Find **TutorialServiceUnavailable** in the list. **Watchdog** should also be present as the continuous pipeline health check.
+
+```
+curl -sS http://alerting.eoepca.local/v2/alerts \
+  -H 'X-API-KEY: anything' | jq
+```{{exec}}
+
+Find `TutorialServiceUnavailable` and copy its `fingerprint` from the response:
+
+```
+read -r -p 'Alert fingerprint: ' ALERT_FINGERPRINT
+```{{exec}}
+
+Keep's unauthenticated mode still requires the API-key header, but accepts any value. Acknowledge the alert:
+
+```
+curl -sS -X POST http://alerting.eoepca.local/v2/alerts/enrich \
+  -H 'X-API-KEY: anything' -H 'Content-Type: application/json' \
+  -d "{\"fingerprint\":\"$ALERT_FINGERPRINT\",\"enrichments\":{\"status\":\"acknowledged\"}}" | jq
 ```{{exec}}
 
 ```
-curl -s "http://alerting.eoepca.local/v2/alerts/tutorial-demo-alert" -H "X-API-KEY: anything" | grep -o '"status":"acknowledged"'
+curl -sS "http://alerting.eoepca.local/v2/alerts/$ALERT_FINGERPRINT" \
+  -H 'X-API-KEY: anything' | jq
 ```{{exec}}
+
+Check for `status: acknowledged` in the response and refresh Keep to see the same status. Acknowledgement records that an operator has seen the problem; it does not restore the service.
+
+## Restore the service
+
+```
+kubectl -n operations scale deployment/operations-demo --replicas=1
+kubectl -n operations rollout status deployment/operations-demo --timeout=120s
+curl -sS "$DEMO_URL/?request=operations-workshop-recovered"
+```{{exec}}
+
+Repeat the metrics and logs queries. Available replicas should return to `1`, and Loki should contain the recovery request. The `ALERTS` query should become empty once Prometheus evaluates the recovered state.
+
+After Alertmanager delivers the recovery, check the alert again:
+
+```
+curl -sS "http://alerting.eoepca.local/v2/alerts/$ALERT_FINGERPRINT" \
+  -H 'X-API-KEY: anything' | jq
+```{{exec}}
+
+Check that `endsAt` contains the recovery time and `unresolvedCounter` is `0`. Keep retains the manual acknowledgement as a status override even after receiving the resolution. Remove that override to display the source status:
+
+```
+curl -sS -X POST http://alerting.eoepca.local/v2/alerts/unenrich \
+  -H 'X-API-KEY: anything' -H 'Content-Type: application/json' \
+  -d "{\"fingerprint\":\"$ALERT_FINGERPRINT\",\"enrichments\":[\"status\"]}" | jq
+```{{exec}}
+
+```
+curl -sS "http://alerting.eoepca.local/v2/alerts/$ALERT_FINGERPRINT" \
+  -H 'X-API-KEY: anything' | jq
+```{{exec}}
+
+Confirm `status: resolved` and refresh Keep's Feed to see the resolved alert. The service and its rule remain deployed so you can repeat the exercise.
