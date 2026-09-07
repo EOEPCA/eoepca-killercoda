@@ -19,45 +19,29 @@ Localcoda-specific compatibility values:
 
 ```
 helm upgrade -i resource-health eoepca-dev/resource-health-reference-deployment \
-  --version 2.1.1 \
+  --version 2.1.3 \
   -f generated-values.yaml \
   -f /tmp/assets/localcoda-values.yaml \
-  -n resource-health \
-  --create-namespace \
-  --timeout 10m
+  -n resource-health --create-namespace
 ```{{exec}}
 
-The additional values disable an OpenSearch sysctl init container that cannot
-change host-level kernel settings from a nested Localcoda container - the
-generated values already configure everything else (OpenSearch security,
-demo credentials, self-referential API links).
+The additional values disable the OpenSearch sysctl init container because
+Localcoda cannot change host kernel settings.
+
+Wait for OpenSearch and the remaining deployments. OpenSearch initialises its
+security configuration automatically on a fresh data volume:
+
+```
+kubectl rollout status statefulset/resource-health-opensearch \
+  -n resource-health --timeout=300s
+kubectl wait --for=condition=Available deployment --all \
+  -n resource-health --timeout=300s
+```{{exec}}
 
 Create the ingress resources:
 
 ```
 kubectl apply -f generated-ingress.yaml
-```{{exec}}
-
-Wait for OpenSearch to be ready, then bootstrap its security configuration -
-the chart mounts this config but does not apply it automatically, and the
-OpenSearch Dashboards deployment will not become ready until it has:
-
-```
-echo "Waiting for OpenSearch to be ready..."
-kubectl rollout status statefulset/resource-health-opensearch \
-  -n resource-health --timeout=300s
-
-bash bootstrap-opensearch-security.sh
-```{{exec}}
-
-Now wait for the remaining deployments (including OpenSearch Dashboards, which
-depends on the security bootstrap above) to become ready. This can take a few
-minutes while images are downloaded:
-
-```
-echo "Waiting for Resource Health deployments to be ready..."
-kubectl wait --for=condition=Available deployment --all \
-  -n resource-health --timeout=300s
 ```{{exec}}
 
 Let's check the status of all resources:

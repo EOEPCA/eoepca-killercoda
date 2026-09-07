@@ -6,7 +6,7 @@ List the installed check templates:
 
 ```bash
 curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/check_templates/" \
-  | jq '.data[] | {id, description: .attributes.metadata.description}'
+  | jq
 ```{{exec}}
 
 The deployment includes:
@@ -18,7 +18,7 @@ Inspect the input schema for `simple_ping`:
 
 ```bash
 curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/check_templates/simple_ping" \
-  | jq '.data.attributes'
+  | jq
 ```{{exec}}
 
 ### Create a health check
@@ -95,30 +95,15 @@ The pytest summary should report `1 passed`.
 
 ### Query the recorded telemetry
 
-OpenTelemetry batches results before writing them to OpenSearch. Poll for up to
-30 seconds for the first result:
+Query the Telemetry API:
 
 ```bash
-for attempt in {1..6}; do
-  TELEMETRY=$(curl -sS \
-    "http://resource-health.eoepca.local/api/telemetry/v1/spans")
-  RESULT_COUNT=$(echo "$TELEMETRY" \
-    | jq '.data[0].attributes.resourceSpans | length')
-  [ "$RESULT_COUNT" -gt 0 ] && break
-  sleep 5
-done
-
-echo "$TELEMETRY" | jq '{
-  result_count: (.data[0].attributes.resourceSpans | length),
-  health_checks: [
-    .data[0].attributes.resourceSpans[]?.resource.attributes[]?
-    | select(.key == "health_check.name")
-    | .value.stringValue
-  ] | unique
-}'
+curl -sS "http://resource-health.eoepca.local/api/telemetry/v1/spans" | jq
 ```{{exec}}
 
-You should see `mock-service-check` in the telemetry results.
+Look for `mock-service-check` in the response. OpenTelemetry batches results
+before writing them to OpenSearch. If the result has not appeared yet, run the
+command again after a few seconds.
 
 ### Monitor another Resource Health component
 
@@ -158,11 +143,7 @@ List the registered checks and their schedules:
 
 ```bash
 curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
-  | jq '.data[] | {
-      id,
-      name: .attributes.metadata.name,
-      schedule: .attributes.schedule
-    }'
+  | jq
 ```{{exec}}
 
 Open the [Resource Health dashboard]({{TRAFFIC_HOST1_81}}) to view the two
@@ -178,7 +159,7 @@ curl -sS -X DELETE \
   "http://resource-health.eoepca.local/api/healthchecks/v1/checks/${WEB_CHECK_ID}"
 
 curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
-  | jq '.data[].attributes.metadata.name'
+  | jq
 ```{{exec}}
 
 The API also removes its CronJob:
