@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operations-demo
+  namespace: operations
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: operations-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: operations-demo
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: operations-demo
+  namespace: operations
+spec:
+  selector:
+    app.kubernetes.io/name: operations-demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: operations-demo
+  namespace: operations
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: operations-demo
+      rules:
+        - alert: TutorialServiceUnavailable
+          expr: kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"} == 0
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: The tutorial web service has no available replicas.

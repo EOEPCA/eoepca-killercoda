@@ -1,5 +1,4 @@
 opensearch:
-  # A nested Localcoda container cannot change this host-level sysctl.
-  # OpenSearch runs in single-node mode here, so the init container is not needed.
+  # Localcoda cannot change host kernel settings.
   sysctlInit:
     enabled: false
