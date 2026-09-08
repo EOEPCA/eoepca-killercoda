@@ -11,9 +11,10 @@ This tutorial can take a little time to start, for example 5 minutes or more, wh
 ### What You'll Learn
 
 - Deploy the Resource Discovery building block on Kubernetes
-- Register a STAC-compliant dataset into the catalogue
+- Register, update and remove STAC metadata through the IAM-protected transactional endpoint
 - Search the catalogue with spatial and temporal filters via the STAC API
-- Use the Swagger UI to explore and interact with the API
+- Extend a search to external catalogues with federated search
+- Browse the results in the catalogue web interface and its Swagger UI
 
 ---
 

@@ -44,14 +44,24 @@ kubectl apply -f generated-protected-ingress.yaml
 ```{{exec}}
 
 
-Now we wait for the pods to start. To automatically wait until it is read you can run:
+Now we wait for the pods to start.
 
 ```
-kubectl wait --for=condition=Available -n resource-discovery deployment/resource-catalogue-protected-service
-while [[ `curl -s -o /dev/null -w "%{http_code}" "http://resource-catalogue-protected.eoepca.local/stac"` != 302 ]]; do sleep 1; done
+while ! kubectl wait --for=condition=Ready --all=true -n resource-discovery pod --timeout=1m &>/dev/null; do
+  sleep 10
+  echo "Waiting for Resource Discovery readiness"
+done
+
+echo -e "\nResource Discovery is READY"
 ```{{exec}}
 
-Once deployed, the Resource Discovery STAC API should be accessible at `http://resource-catalogue-protected.eoepca.local`{{}}
+Once deployed, the writable STAC API is served at `http://resource-catalogue-protected.eoepca.local`{{}}. Unauthenticated requests are redirected to Keycloak instead of being served:
+
+```
+curl -s -o /dev/null -w "%{http_code}\n" http://resource-catalogue-protected.eoepca.local/
+```{{exec}}
+
+This returns `302`{{}}, the redirect to the login page.
 
 We can now validate both the read-only and the writable catalogue with the provided script `validation.sh`{{}}
 
@@ -59,4 +69,4 @@ We can now validate both the read-only and the writable catalogue with the provi
 bash validation.sh
 ```{{exec}}
 
-and also have a look at the catalogue web interface from [this link]({{TRAFFIC_HOST1_83}}) (come back here afterwards, the tutorial is still not over).
+Opening the writable catalogue in a browser shows the protection in action. Follow [this link]({{TRAFFIC_HOST1_83}}): APISIX sends you to Keycloak, where you log in as `eoepcauser`{{}} / `eoepcapassword`{{}} and grant access to the `resource-catalogue` client, after which the catalogue pages are served (come back here afterwards, the tutorial is still not over).
