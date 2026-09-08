@@ -33,7 +33,7 @@ yes
 
 Client ID for Application Quality:
 ```
-application-quality
+application-quality-bb
 ```{{exec}}
 
 Enable optional Grafana dashboards? We don't need these for this tutorial:
