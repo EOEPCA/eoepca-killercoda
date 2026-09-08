@@ -1,6 +1,6 @@
 {
   "title": "EOEPCA End-to-End Datacube Access",
-  "description": "Scaffolding for the notebook-driven end-to-end datacube workflow - see README.md for status.",
+  "description": "Prepare IAM, Workspace, Data Access and Python for the Datacube Access notebook.",
   "details": {
     "intro": {
       "text": "00-introduction.md",
