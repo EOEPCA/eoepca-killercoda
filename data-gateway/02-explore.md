@@ -12,6 +12,8 @@ grep -c '^\*' /tmp/eodag-collections.txt
 head -30 /tmp/eodag-collections.txt
 ```{{exec}}
 
+EODAG 4.7.2 defines 246 collections.
+
 `--no-fetch` is important here: it uses EODAG's local definitions and does not contact every remote provider. Each entry includes a collection ID, descriptive metadata, and the providers that implement it.
 
 ### Filter by Provider
@@ -48,7 +50,7 @@ Notice the distinction between a **constellation** (`SENTINEL2`), a **platform**
 
 ### Filter by Sensor Type
 
-The same mechanism can select broad data characteristics. Ask for optical product types available from Earth Search:
+The same mechanism can select broad data characteristics. Ask for optical collections available from Earth Search:
 
 ```
 eodag list \

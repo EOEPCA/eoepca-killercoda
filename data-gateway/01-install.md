@@ -37,11 +37,12 @@ eodag --help
 
 The commands we will use are:
 
-- `list` — inspect the product types already known to EODAG;
-- `discover` — ask a provider for additional product-type definitions;
+- `list` — inspect the collections already known to EODAG;
+- `discover` — ask a provider for additional collection definitions;
 - `search` — search provider catalogues and serialise the results as GeoJSON;
+- `download` — retrieve product data.
 
-EODAG also provides `download`. We will inspect download and asset links in this workshop, but not transfer a complete EO product because those files can be several gigabytes.
+A complete Sentinel-2 product is around one gigabyte, so in the final step we download a single small asset rather than a whole scene.
 
 ### Create the User Configuration
 

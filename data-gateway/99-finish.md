@@ -3,12 +3,13 @@ We have used EODAG as the implementation of the EOEPCA Data Gateway and exercise
 You've explored:
 
 - Installing and configuring EODAG
-- Listing available providers and product types
-- Discovering product types from a live provider
+- Listing available providers and collections
+- Discovering collections from a live provider
 - Searching and normalising EO product metadata with the CLI
-- Observing automatic provider fallback
-- Querying an explicitly selected provider through a STAC API
+- Comparing the same search across two backends
+- Querying the gateway, and selecting a backend, through a STAC API
 - Using the Python API to inspect products and their data assets
+- Downloading a single product asset from a provider
 
 ### Key Takeaways
 
@@ -17,6 +18,7 @@ You've explored:
 - EODAG normalises provider-specific protocols and metadata into common searches and product objects.
 - Provider coverage, authentication, metadata, and assets still differ, so provider choice remains visible and controllable.
 - STAC provides an interoperable HTTP boundary, while the Python API is the natural choice for direct workflow integration.
+- Downloads go through the same product objects as searches, and can be restricted to the assets an application actually needs.
 - Large product downloads should be planned deliberately; discovery and metadata searches are lightweight by comparison.
 
 For more information:
