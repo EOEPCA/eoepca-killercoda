@@ -1,13 +1,17 @@
 
 ## Configure Groups in the Application Hub
 
-After having [logged in]({{TRAFFIC_HOST1_83}}) with the `eric` user (password: `eoepcapassword`).
+The Application Hub filters the profiles it offers by the JupyterHub groups a user belongs to. Each profile in the Hub's configuration lists the groups allowed to use it, so a user with no groups is offered nothing.
 
-Visit the [Admin Panel]({{TRAFFIC_HOST1_83}}/hub/admin#/) of the Application Hub.
+Open the [Application Hub]({{TRAFFIC_HOST1_83}}) and log in as `eric`{{}} with the password `eoepcapassword`{{}}. Keycloak handles the login and returns you to the Hub.
 
-1. Select [**Manage Groups**]({{TRAFFIC_HOST1_83}}/hub/admin#/groups)
-2. Create the following group with exact naming: `group-1`
+Go to the [Admin Panel]({{TRAFFIC_HOST1_83}}/hub/admin#/) and select [**Manage Groups**]({{TRAFFIC_HOST1_83}}/hub/admin#/groups).
 
-3. After creating the groups, assign the `eric` user to the group and click **Apply**
+Create two groups with this exact naming:
 
-These groups correspond to the profile access controls defined in the Application Hub configuration. Users in `group-1`, `group-2`, and `group-3` will have access to different application profiles depending on how the Platform Operator sets them up.
+- `group-1`
+- `group-3`
+
+Then assign the `eric` user to both groups and click **Apply**.
+
+`group-1` carries the Streamlit dashboard used in the next step, `group-3` the JupyterLab environment used after it. The default configuration also defines `group-2`, whose profiles are not used in this tutorial.

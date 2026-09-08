@@ -22,7 +22,7 @@ To remove the Application Hub:
 helm uninstall application-hub -n app-hub
 kubectl delete -f generated-iam.yaml --ignore-not-found
 kubectl delete -f generated-demo-user.yaml --ignore-not-found
-kubectl delete namespace app-hub
+kubectl delete namespace app-hub ws-eric
 ```
 
 If you have questions about this tutorial or EOEPCA in general, you can contact us using [this form](https://github.com/EOEPCA/community-support/issues/new?template=eoepca-support-request.yaml).

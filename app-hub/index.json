@@ -38,8 +38,16 @@
         "text": "7-spawn-profile.md"
       },
       {
+        "title": "Inspect the User Workspace",
+        "text": "8-inspect-workspace.md"
+      },
+      {
+        "title": "The Persistent Workspace",
+        "text": "9-persistent-workspace.md"
+      },
+      {
         "title": "Validation",
-        "text": "8-validation.md"
+        "text": "10-validation.md"
       }
     ],
     "finish": {

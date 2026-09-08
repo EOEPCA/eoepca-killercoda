@@ -31,11 +31,12 @@ For the OAuth client ID:
 application-hub
 ```{{exec}}
 
-The script will generate a client secret automatically. Make note of this value as you'll need it for the Keycloak client creation.
+The script generates the client secret itself and renders it into the Keycloak client manifest, along with three other files:
 
-The configuration script generates two files:
 - `generated-values.yaml` - Helm values for the Application Hub
 - `generated-ingress.yaml` - Ingress configuration
+- `generated-iam.yaml` - Keycloak client
+- `generated-demo-user.yaml` - demo admin user `eric`
 
 You can inspect the generated values:
 
