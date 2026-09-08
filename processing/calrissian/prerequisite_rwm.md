@@ -1,8 +1,6 @@
-a Read-Write-Many Storage Class is a pre-requisite.
+ZOO-Project and Calrissian need shared ReadWriteMany storage. The tutorial supplies the `standard` storage class.
 
-This is not normally provided by all the Kubernetes CSI storage drivers, nor by most Kubernetes cloud services. It can be anyway installed as per the [EOEPCA pre-requisites tutorial](../../prerequisites).
-
-Here we have installed a `standard`{{}} StorageClass supporting Read-Write-Many. To check it is available and working properly, you can try to instantiate a Read-Write-Many persistent volume:
+Create a test claim:
 
 ```
 cat <<EOF | kubectl apply -f -
@@ -20,16 +18,15 @@ spec:
 EOF
 ```{{exec}}
 
-and check that this is created and in the status `Bound` via
+Wait for the claim to bind:
 
 ```
-kubectl get pvc
+kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/test-rwx-pvc --timeout=60s
+kubectl get pvc test-rwx-pvc
 ```{{exec}}
 
-and then it can be deleted
+Delete the test claim:
 
 ```
 kubectl delete pvc/test-rwx-pvc
 ```{{exec}}
-
-We are now ready to start with our deployment
