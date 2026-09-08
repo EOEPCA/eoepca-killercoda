@@ -16,7 +16,7 @@ kubectl expose deployment nginx --port=80
 
 ## **2. Create a Keycloak Client for the Dummy Service**
 
-A Keycloak client is required for the ingress protection of the dummy nginx service - to paricipate in OIDC flows for delegated access.
+A Keycloak client is required for the ingress protection of the dummy nginx service - to participate in OIDC flows for delegated access.
 
 In order for the OIDC redirect URIs to work correctly, we need to create a dedicated OIDC client for the nginx service - which must use the external URLs that are exposed by this tutorial environment:
 
@@ -167,7 +167,7 @@ The `ApisixRoute`{{}} route includes two routes:
 
 The protected `nginx`{{}} route uses 3 plugins:
 
-* `openid-connect`{{}} - Authnentication - ensures the user is authenticated via bearer JWT token, and will trigger an OIDC auth flow if required
+* `openid-connect`{{}} - Authentication - ensures the user is authenticated via bearer JWT token, and will trigger an OIDC auth flow if required
 * `opa`{{}} - Authorization - enforces the [`example/tutorial/protected`{{}}](https://github.com/EOEPCA/iam-policies/blob/main/policies/example/tutorial/protected.rego) policy
 * `response-rewrite`{{}} - Disables caching for protected content
 
@@ -250,4 +250,4 @@ curl "http://nginx.eoepca.local" -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```{{exec}}
 
 This returns a `403`{{}} response which indicates that the request is forbidden.
-The policy enforcement has recognised the presence of the access token, from which it is able to assert that the referenced user (`eric`{{}}) is not authorized to access the requested resource.
+The policy enforcement has recognised the presence of the access token, from which it is able to assert that the referenced user (`eoepcaadmin`{{}}) is not authorized to access the requested resource.

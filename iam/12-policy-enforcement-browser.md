@@ -28,3 +28,11 @@ If we instead login as user `eoepcaadmin`{{}} with password `eoepcapassword`{{}}
 Navigate to the [Protected Dummy Service]({{TRAFFIC_HOST1_93}}) URL again.
 
 Login as user `eoepcaadmin`{{}} with password `eoepcapassword`{{}} - then access to the protected service is denied - with a `403 Forbidden`{{}} response.
+
+## **User Account Console**
+
+Keycloak also provides an account console in which users manage their own profile, credentials and sessions.
+
+Open the [Account Console]({{TRAFFIC_HOST1_90}}/realms/eoepca/account/) and login as user `eoepcauser`{{}} with password `eoepcapassword`{{}}.
+
+The _Personal info_ page shows the profile that Crossplane created, and _Signing in_ allows the user to change their own password.
