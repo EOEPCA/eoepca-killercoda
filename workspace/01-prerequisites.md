@@ -2,9 +2,6 @@ As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.re
 
 First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide, to which this tutorial refers:
 
-<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
-     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
-     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
 git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 ```{{exec}}
@@ -14,7 +11,7 @@ The Workspace deployment scripts are available in the `workspace` directory:
 cd deployment-guide/scripts/workspace
 ```{{exec}}
 
-The EOEPCA Deployment Guide uses scripts to facilitate the deployment. The scripts are highly configurable to allow adaption to the target deployment environemnt, and so they request user input to gather information. This deployment information is maintained by the scripts in the state file `~/.eoepca/state`.
+The EOEPCA Deployment Guide uses scripts to facilitate the deployment. The scripts are highly configurable to allow adaptation to the target deployment environment, and so they request user input to gather information. This deployment information is maintained by the scripts in the state file `~/.eoepca/state`.
 
 The tutorial startup scripts have already pre-configured a number of aspects of the deployment to fit with the constraints of the tutorial environment, including:
 * use of `http` instead of `https`
@@ -27,7 +24,7 @@ The tutorial startup scripts have already pre-configured a number of aspects of 
 cat ~/.eoepca/state
 ```{{exec}}
 
-In general EOEPCA Building Blocks will require as a minimum prerequisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. The Workspace BB integrates with the Identity & Access BB in conjuction with the APISIX ingress controller to provide authentication and authorization services.
+In general EOEPCA Building Blocks will require as a minimum prerequisite a Kubernetes cluster, with an ingress controller to expose the EOEPCA building block interfaces and DNS entries to map the EOEPCA interface endpoints. The Workspace BB integrates with the Identity & Access BB in conjunction with the APISIX ingress controller to provide authentication and authorisation services.
 
 We can check the specific prerequisites for installing the Workspace building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
@@ -35,9 +32,9 @@ bash check-prerequisites.sh
 ```{{exec}}
 
 This is the first Deployment Guide script run in this tutorial, so it also asks a few
-questions to establish the remaining shared EOEPCA configuration - specifically the
-persistent (ReadWriteOnce) storage class and whether to use cert-manager. The ingress class
-and domain questions are skipped because they've already been set for you, as shown above.
+questions to establish the shared EOEPCA configuration. Confirm the existing domain,
+then choose the persistent (ReadWriteOnce) storage class and whether to use cert-manager.
+The HTTP scheme and ingress class are already set.
 
 Keep `eoepca.local`{{}} as the local domain shared by the EOEPCA services:
 ```
@@ -49,7 +46,7 @@ Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutori
 local-path
 ```{{exec}}
 
-Disable cert-manager because Localcoda provides the tutorial's external HTTPS proxy:
+Disable cert-manager for this HTTP tutorial environment:
 ```
 no
 ```{{exec}}

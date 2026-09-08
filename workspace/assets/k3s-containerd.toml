@@ -1,0 +1,4 @@
+# Sysbox virtualises these sysctls; runc cannot write them through its procfs mount.
+[plugins.'io.containerd.cri.v1.runtime']
+  enable_unprivileged_ports = false
+  enable_unprivileged_icmp = false

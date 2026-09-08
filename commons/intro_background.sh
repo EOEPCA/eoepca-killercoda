@@ -41,7 +41,7 @@ if [[ -e /tmp/assets/localdns ]]; then
   
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
-  kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
+  kubectl apply -f kc.yml && rm kc.yml &&   kubectl rollout restart -n kube-system deployment/coredns &&   kubectl rollout status -n kube-system deployment/coredns --timeout=60s
   mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
 export HTTP_SCHEME="http"
 export INGRESS_HOST="eoepca.local"
@@ -202,7 +202,7 @@ EOF
   while read port dest types; do
     echo "      proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
   done < /tmp/assets/killercodaproxy
-  # helper function to add an nginx server block
+    # helper function to add an nginx server block
   add_server_block() {
     local port="$1" dest="$2" types="$3"
     local host="${4:-$dest}"
@@ -228,12 +228,12 @@ EOF
       $extra_nginx_config
 EOF
     cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
-    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
-      subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
+    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] &&       cat <<EOF>>/etc/nginx/nginx.conf
+subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
       subs_filter $dest  `sed -e "s|^https\?://PORT|$port|" /etc/killercoda/host`;
       subs_filter_types ${types//\'/};
 EOF
-    cat <<EOF>>/etc/nginx/nginx.conf
+        cat <<EOF>>/etc/nginx/nginx.conf
     }
   }
 EOF

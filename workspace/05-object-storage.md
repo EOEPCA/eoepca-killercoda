@@ -1,98 +1,65 @@
-Each new Workspace is created with a dedicated S3-compatible object storage bucket. In this section, we will connect to that object storage and perform some basic operations.
+Each workspace has a dedicated S3 bucket. Use the workspace owner's credentials to upload a small sample of vegetation-index observations, then read it from the Datalab in the next step.
 
 ## Get Storage Credentials
 
-Authenticate as `eoepcauser` - the owner of the newly created workspace
+Authenticate as the workspace owner:
 
 ```bash
 source ~/.eoepca/state
-ACCESS_TOKEN=$( \
-  curl -X POST "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/${REALM}/protocol/openid-connect/token" \
-    --silent --show-error \
+ACCESS_TOKEN=$(
+  curl --silent --show-error --fail \
+    "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/token" \
     -d "username=${KEYCLOAK_TEST_USER}" \
     --data-urlencode "password=${KEYCLOAK_TEST_PASSWORD}" \
     -d "grant_type=password" \
     -d "client_id=${WORKSPACE_API_CLIENT_ID}" \
-    -d "client_secret=${WORKSPACE_API_CLIENT_SECRET}" \
-    | jq -r '.access_token' \
+    | jq -r '.access_token'
 )
-echo "Access Token: ${ACCESS_TOKEN:0:20}..."
-```{{exec}}
-
-Record the storage credentials from the 'Get Workspace Details' response
-
-```bash
-source ~/.eoepca/state
-SECRET=$( \
-  curl -X GET "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/workspaces/ws-${KEYCLOAK_TEST_USER}" \
-    --silent --show-error \
+WORKSPACE_DETAILS=$(
+  curl --silent --show-error --fail \
+    "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/workspaces/ws-${KEYCLOAK_TEST_USER}" \
     -H "Accept: application/json" \
-    -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-    | jq -r '.storage.credentials.secret'
+    -H "Authorization: Bearer ${ACCESS_TOKEN}"
 )
-S3_KEYNAME=$( \
-  curl -X GET "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/workspaces/ws-${KEYCLOAK_TEST_USER}" \
-    --silent --show-error \
-    -H "Accept: application/json" \
-    -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-    | jq -r '.storage.credentials.access'
-)
-echo "S3 Secret: ${SECRET}"
-echo "S3 Key Name: ${S3_KEYNAME}"
+ACCESS_KEY=$(echo "$WORKSPACE_DETAILS" | jq -r '.storage.credentials.access')
+SECRET=$(echo "$WORKSPACE_DETAILS" | jq -r '.storage.credentials.secret')
+BUCKET=$(echo "$WORKSPACE_DETAILS" | jq -r '.storage.credentials.bucketname')
 ```{{exec}}
 
-## Use the MinIO Client `mc`
+The access key is a generated storage account, not the Keycloak username.
 
-Using the retrieved secret, configure the MinIO client alias `mystorage` to access the user's workspace object storage...
+## Connect to the Bucket
+
+Configure the MinIO client with the workspace credentials and the configured storage endpoint:
 
 ```bash
-mc alias set mystorage http://minio.eoepca.local:9000 "$S3_KEYNAME" "$SECRET"
+mc alias set mystorage "$S3_ENDPOINT" "$ACCESS_KEY" "$SECRET"
+mc ls "mystorage/$BUCKET"
 ```{{exec}}
 
-## Check the workspace bucket
+## Upload Sample Observations
 
-List the contents of the object storage...
+These three illustrative observations are enough to exercise the storage and development environment:
 
 ```bash
-mc ls mystorage
+cat > observations.csv <<'EOF'
+site,ndvi
+field-a,0.2
+field-b,0.5
+field-c,0.8
+EOF
+mc cp observations.csv "mystorage/$BUCKET/observations.csv"
+mc ls "mystorage/$BUCKET"
 ```{{exec}}
 
-> The bucket `ws-eoepcauser` is shown to exist, but is currently empty.
+The listing should contain `observations.csv`.
+
+## Download and Compare
 
 ```bash
-mc ls mystorage/ws-eoepcauser
+mc cp "mystorage/$BUCKET/observations.csv" downloaded-observations.csv
+diff observations.csv downloaded-observations.csv
+rm downloaded-observations.csv
 ```{{exec}}
 
-## Check file upload
-
-Upload a test file...
-
-> Assumes the working directory `scripts/workspace`
-
-```bash
-mc cp validation.sh mystorage/ws-eoepcauser
-```{{exec}}
-
-Check the uploaded file...
-
-```bash
-mc ls mystorage/ws-eoepcauser
-```{{exec}}
-
-## Check file download
-
-Download the test file...
-
-```bash
-mc cp mystorage/ws-eoepcauser/validation.sh downloaded-validation.sh
-ls -l downloaded-validation.sh
-```{{exec}}
-
-## Cleanup
-
-Remove the test file...
-
-```bash
-mc rm mystorage/ws-eoepcauser/validation.sh
-rm downloaded-validation.sh
-```{{exec}}
+No output from `diff` means that the downloaded data matches the original. Leave the object in the bucket - the next step reads it from the Datalab.

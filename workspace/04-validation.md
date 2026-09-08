@@ -28,7 +28,6 @@ ACCESS_TOKEN=$( \
     --data-urlencode "password=${KEYCLOAK_TEST_PASSWORD}" \
     -d "grant_type=password" \
     -d "client_id=${WORKSPACE_API_CLIENT_ID}" \
-    -d "client_secret=${WORKSPACE_API_CLIENT_SECRET}" \
     | jq -r '.access_token' \
 )
 echo "Access Token: ${ACCESS_TOKEN:0:20}..."
@@ -52,6 +51,12 @@ EOF
 ```{{exec}}
 
 ### Check Workspace Creation
+
+Creation is asynchronous. Wait for Crossplane to provision storage, membership and the Datalab before authenticating as the owner:
+
+```bash
+kubectl wait --for=condition=Ready storage/ws-${KEYCLOAK_TEST_USER} datalab/ws-${KEYCLOAK_TEST_USER} -n workspace --timeout=10m
+```{{exec}}
 
 **Namespace...**
 
@@ -79,7 +84,6 @@ ACCESS_TOKEN=$( \
     --data-urlencode "password=${KEYCLOAK_TEST_PASSWORD}" \
     -d "grant_type=password" \
     -d "client_id=${WORKSPACE_API_CLIENT_ID}" \
-    -d "client_secret=${WORKSPACE_API_CLIENT_SECRET}" \
     | jq -r '.access_token' \
 )
 echo "Access Token: ${ACCESS_TOKEN:0:20}..."
