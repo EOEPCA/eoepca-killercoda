@@ -10,7 +10,8 @@ The **Application Hub** provides a suite of web-based tools for interactive anal
 
 By the end of this tutorial, you will have:
 - Deployed the Application Hub with OIDC authentication via Keycloak
-- Configured user profiles and groups
-- Validated the deployment and spawned a test environment
+- Created groups and used them to control which profiles a user is offered
+- Spawned a dashboard and a JupyterLab session, and inspected what the Hub created for the user
+- Written a file to the user's persistent workspace and found it again after restarting the server
 
 This tutorial assumes basic familiarity with Kubernetes and the EOEPCA system.

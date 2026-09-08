@@ -7,7 +7,7 @@ Now that you have configured the IAM environment and applied the necessary secre
 helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
 helm repo update eoepca-dev
 helm upgrade -i iam eoepca-dev/iam-bb \
-  --version 2.1.0-dev13 \
+  --version 2.1.0-dev15 \
   --namespace iam --create-namespace \
   --values generated-values.yaml \
   --set iam.keycloak.hosts="{${KEYCLOAK_HOST},auth.eoepca.local}"
@@ -56,12 +56,28 @@ grep KEYCLOAK_ADMIN_ ~/.eoepca/state
 
 ## Check the EOEPCA Realm
 
-A realm called `eoepca` has been created by a background Job created by the Helm chart and can be checked by querying the OpenID configuration endpoint for the realm.
+A realm called `eoepca` is imported by a Job that the Keycloak Operator creates shortly after Keycloak itself becomes ready. The Job is created a few seconds after the Keycloak pod, so wait for it to appear before waiting for it to complete.
+
+```bash
+until kubectl get job/eoepca-realm -n iam >/dev/null 2>&1; do
+  echo "Waiting for the realm import job to be created..."
+  sleep 5
+done
+kubectl wait -n iam --for=condition=complete job/eoepca-realm --timeout=5m
+```{{exec}}
+
+Query the OpenID configuration endpoint for the realm.
 
 ```bash
 curl -k http://auth.eoepca.local/realms/eoepca/.well-known/openid-configuration | jq
 ```{{exec}}
 
-If this does not return data for the realm (a long JSON document) then wait a little longer for the job to complete or inspect `kubectl get job -n iam eoepca-realm`.
-
 Note that a user called `eoepcaadmin` (or the username given to the configuration script) has been pre-created and in a real environment you should replace this with an individual admin account for each system administrator.
+
+## Apply the Account Console Fix
+
+The `account-console`{{}} client in the `eoepca`{{}} realm is created without a Web origin, which breaks the user account console. The Deployment Guide provides a Crossplane resource that adds the missing `"+"`{{}} origin.
+
+```bash
+kubectl apply -f eoepca-account-console-fix.yaml
+```{{exec}}

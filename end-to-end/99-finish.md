@@ -1,1 +1,1 @@
-Continue from here.
+The environment is available for the notebook workflow. 

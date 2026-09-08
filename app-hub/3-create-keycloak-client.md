@@ -6,7 +6,7 @@ The Application Hub requires an OIDC client in Keycloak for authentication. We'l
 Wait for the Crossplane provider to be ready:
 
 ```bash
-kubectl wait --for=condition=Healthy provider/provider-keycloak -n crossplane-system --timeout=2m 2>/dev/null || echo "Waiting for provider..."
+kubectl wait --for=condition=Healthy provider/provider-keycloak -n crossplane-system --timeout=5m
 ```{{exec}}
 
 `configure-app-hub.sh` already rendered `generated-iam.yaml` with the client's exact callback URL. Apply it:

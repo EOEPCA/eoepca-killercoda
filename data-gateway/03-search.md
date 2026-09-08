@@ -98,9 +98,9 @@ eodag search \
 jq '.features | length' all_results.geojson
 ```{{exec}}
 
-### Observe Provider Fallback
+### Observe Provider Selection
 
-The `-vv` flag turns on verbose logging, showing which provider EODAG picks and, if one fails or returns nothing, which provider it falls back to next:
+The `-vv` flag turns on verbose logging, which shows how EODAG chooses a backend for the request:
 
 ```
 eodag -vv search \
@@ -111,4 +111,33 @@ eodag -vv search \
   --storage verbose_results.geojson
 ```{{exec}}
 
-Look for the `Searching on provider` lines. It is normal to see one public endpoint fail before EODAG falls back to another. That is different from an empty successful search: the log tells us whether a provider returned no matching products or could not answer the request.
+Two kinds of line matter here. `provider needing auth for search has been pruned` lists the providers dropped because we supplied no credentials. `Searching on provider` names the backend that was actually queried. If that backend fails or returns nothing, EODAG moves on to the next candidate and logs another `Searching on provider` line.
+
+### Compare Two Providers
+
+Run the same query against two backends explicitly:
+
+```
+eodag search -p cop_dataspace \
+  --collection S2_MSI_L1C \
+  --box 1 43 2 44 \
+  --start 2024-01-01 \
+  --end 2024-01-05 \
+  --storage cds_results.geojson
+
+eodag search -p earth_search \
+  --collection S2_MSI_L1C \
+  --box 1 43 2 44 \
+  --start 2024-01-01 \
+  --end 2024-01-05 \
+  --storage es_results.geojson
+```{{exec}}
+
+Compare the product identifiers returned by each:
+
+```
+jq -r '.features[].id' cds_results.geojson
+jq -r '.features[].id' es_results.geojson
+```{{exec}}
+
+Both catalogues hold the same Sentinel-2 acquisitions, and EODAG returns them under the same collection ID and the same GeoJSON structure. What differs is where the data itself lives, which becomes visible in the next steps when we look at the assets.

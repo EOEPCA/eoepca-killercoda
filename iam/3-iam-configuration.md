@@ -1,4 +1,4 @@
-In addition to the core platform configuration, there is additonal information required to fully tailor the deployment of the IAM building block to a target platform environment.
+In addition to the core platform configuration, there is additional information required to fully tailor the deployment of the IAM building block to a target platform environment.
 
 The following command runs a script `configure-iam.sh`{{}} that prompts for the information required to tailor the IAM.
 
@@ -17,8 +17,6 @@ bash configure-iam.sh
 
 For this tutorial we define some values that are consistent with the local tutorial environment:<br>
 _Select the provided values to inject them into the terminal prompts_
-
-> NOTE that some of the previosly answered questions are repeated - in which case the existing value can be accepted.
 
 * Keycloak realm: `eoepca`{{exec}}
     _Name of the realm to create in Keycloak_

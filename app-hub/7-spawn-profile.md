@@ -1,17 +1,12 @@
 
 ## Spawn a Profile
 
-1. Navigate to the [Home of the Application Hub]({{TRAFFIC_HOST1_83}}/) 
+Go to the [Application Hub home]({{TRAFFIC_HOST1_83}}/) and click **Start My Server**.
 
-2. Click onto **Start my Server**.
+The **Server Options** page now lists the profiles available to `eric`'s groups. Select **IGA - Streamlit demo** and click **Start** at the bottom of the window.
 
-3. Here, you have the opportunity to select your desired **Server Options**.
+The Hub pulls the profile's image and starts a pod for `eric`. The first start takes a minute or two - the progress page redirects on its own once the server is ready.
 
-4. For this demonstration, click onto the **IGA - Streamlit demo** option.
+You should land on a Streamlit dashboard. The profile is an ordinary web application packaged as a container image: the Hub runs it as your server and proxies your browser to it under `/user/eric/`.
 
-5. Click onto **Start** at the bottom of the window.
-
-The first start normally takes two or three minutes. The JupyterHub progress page redirects automatically when it is ready.
-
-Once ready, you will be automatically redirected and you will now have access to a Streamlit dashboard running in your own profile.
-This is an example of an application that can be spawned in the Application Hub using a predefined profile.
+> Use the profiles named in this tutorial. The other profiles in the list pull images that this tutorial environment cannot unpack.

@@ -33,4 +33,4 @@ This does not copy every provider's data into EOEPCA. The gateway remains a clie
 
 ### What We Will Validate
 
-All searches in this tutorial use public catalogue endpoints and historical date ranges, so no provider credentials or large downloads are required. We will inspect product metadata and asset links, but deliberately avoid downloading a complete satellite scene during the tutorial.
+All searches in this tutorial use public catalogue endpoints and historical date ranges, so no provider credentials are required. We finish by retrieving real product data, choosing a single small asset rather than a complete satellite scene.

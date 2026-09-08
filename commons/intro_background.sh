@@ -1,5 +1,23 @@
 #!/bin/bash
 #Script to set pre-requisites for EOEPCA components
+#Retry a command - remote chart downloads and freshly installed CRDs are not always available first time
+retry() {
+  local attempts="$1"
+  shift
+  local i
+  for i in $(seq "$attempts"); do
+    "$@" && return 0
+    sleep 5
+  done
+  return 1
+}
+#Abort the setup, reporting the problem in the foreground log
+setup_failed() {
+  echo "ERROR: $1" >> /tmp/killercoda_setup.log
+  touch /tmp/killercoda_setup.failed
+  while ! killall tail; do sleep 1; done
+  exit 1
+}
 echo setting-up your environment... wait till this setup terminates before starting the tutorial >> /tmp/killercoda_setup.log
 if [[ -e /tmp/assets/killeditor ]]; then
   echo "disabling editor to recover RAM (editor tab on the left will not work anymore)..." >> /tmp/killercoda_setup.log
@@ -41,7 +59,7 @@ if [[ -e /tmp/assets/localdns ]]; then
   
   kubectl get -n kube-system configmap/coredns -o yaml > kc.yml
   sed -i -e ':a;N;$!ba;s|hosts[^{]*{[^}]*}||g' -e "s|ready|ready\n        hosts {\n          172.30.1.2 $WEBSITES\n          fallthrough\n        }|" kc.yml
-  kubectl apply -f kc.yml && rm kc.yml && kubectl rollout restart -n kube-system deployment/coredns && kubectl rollout status -n kube-system deployment/coredns --timeout=60s
+  kubectl apply -f kc.yml && rm kc.yml &&   kubectl rollout restart -n kube-system deployment/coredns &&   kubectl rollout status -n kube-system deployment/coredns --timeout=60s
   mkdir -p ~/.eoepca && cat <<EOF >>~/.eoepca/state
 export HTTP_SCHEME="http"
 export INGRESS_HOST="eoepca.local"
@@ -61,10 +79,7 @@ if [[ -e /tmp/assets/ignoreresrequests ]]; then
     --set cleanupController.enabled=false \
     --set reportsController.enabled=false \
     --wait --timeout=5m; then
-    echo "ERROR: Kyverno did not become ready. Check: kubectl get pods -n kyverno" >> /tmp/killercoda_setup.log
-    touch /tmp/killercoda_setup.failed
-    while ! killall tail; do sleep 1; done
-    exit 1
+    setup_failed "Kyverno did not become ready. Check: kubectl get pods -n kyverno"
   fi
   echo "kyverno is ready." >> /tmp/killercoda_setup.log
   # Create the cluster policy to set minimal resource requests
@@ -128,12 +143,14 @@ if [[ -e /tmp/assets/nginxingress ]]; then
   #Installing Ingress (basic)
   echo installing nginx ingress... >> /tmp/killercoda_setup.log
   which helm &>/dev/null || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  helm upgrade --install ingress-nginx ingress-nginx \
+  if ! retry 3 helm upgrade --install ingress-nginx ingress-nginx \
     --repo https://kubernetes.github.io/ingress-nginx \
     --namespace ingress-nginx --create-namespace \
     --set controller.hostNetwork=true \
     --set controller.allowSnippetAnnotations=true \
-    --set controller.config.annotations-risk-level=Critical
+    --set controller.config.annotations-risk-level=Critical; then
+    setup_failed "NGINX ingress install failed. Check: kubectl get pods -n ingress-nginx"
+  fi
 fi
 if [[ -e /tmp/assets/apisix ]]; then
   # Install apisix
@@ -141,7 +158,7 @@ if [[ -e /tmp/assets/apisix ]]; then
   mkdir -p ~/.eoepca && echo 'export INGRESS_CLASS="apisix"' >> ~/.eoepca/state
   helm repo add apisix https://apache.github.io/apisix-helm-chart/
   helm repo update apisix
-  helm upgrade -i apisix apisix/apisix \
+  if ! retry 3 helm upgrade -i apisix apisix/apisix \
     --version 2.16.0 \
     --namespace ingress-apisix --create-namespace \
     --set securityContext.runAsUser=0 \
@@ -157,7 +174,9 @@ if [[ -e /tmp/assets/apisix ]]; then
     --set ingress-controller.config.provider.type=apisix-standalone \
     --set ingress-controller.enabled=true \
     --set ingress-controller.webhook.enabled=true \
-    --set ingress-controller.gatewayProxy.createDefault=true
+    --set ingress-controller.gatewayProxy.createDefault=true; then
+    setup_failed "APISIX ingress install failed. Check: kubectl get pods -n ingress-apisix"
+  fi
 fi
 if [[ -e /tmp/assets/killercodaproxy ]]; then
   #Use an NGinx proxy to force the Host and replace the links to allow most applciations
@@ -202,7 +221,7 @@ EOF
   while read port dest types; do
     echo "      proxy_redirect http://$dest `sed -e "s/PORT/$port/g" /etc/killercoda/host`;" >> /tmp/assets/killercodaproxy_redirects
   done < /tmp/assets/killercodaproxy
-  # helper function to add an nginx server block
+    # helper function to add an nginx server block
   add_server_block() {
     local port="$1" dest="$2" types="$3"
     local host="${4:-$dest}"
@@ -228,12 +247,12 @@ EOF
       $extra_nginx_config
 EOF
     cat /tmp/assets/killercodaproxy_redirects >> /etc/nginx/nginx.conf
-    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] && cat <<EOF>>/etc/nginx/nginx.conf
-      subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
+    [[ "$types" != "NONE" && "$types" != "'NONE'" ]] &&       cat <<EOF>>/etc/nginx/nginx.conf
+subs_filter http://$dest  `sed -e "s/PORT/$port/g" /etc/killercoda/host`;
       subs_filter $dest  `sed -e "s|^https\?://PORT|$port|" /etc/killercoda/host`;
       subs_filter_types ${types//\'/};
 EOF
-    cat <<EOF>>/etc/nginx/nginx.conf
+        cat <<EOF>>/etc/nginx/nginx.conf
     }
   }
 EOF
@@ -287,7 +306,9 @@ fi
 if [[ -e /tmp/assets/readwritemany ]]; then
   ### Prerequisites: readwritemany StorageClass
   echo enabling ReadWriteMany StorageClass..  >> /tmp/killercoda_setup.log
-  kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/release-2.1/docs/prerequisites/hostpath-provisioner.yaml
+  if ! retry 3 kubectl apply -f https://raw.githubusercontent.com/EOEPCA/deployment-guide/refs/heads/release-2.1/docs/prerequisites/hostpath-provisioner.yaml; then
+    setup_failed "ReadWriteMany StorageClass could not be applied"
+  fi
   mkdir -p ~/.eoepca && echo 'export SHARED_STORAGECLASS="standard"'>>~/.eoepca/state
 fi
 if [[ -e /tmp/assets/pythonvenv ]]; then
@@ -345,12 +366,14 @@ if [[ -e /tmp/assets/crossplane ]]; then
   # Deploy Crossplane
   echo installing crossplane...  >> /tmp/killercoda_setup.log
   # Deploy Crossplane via helm chart
-  helm upgrade --install crossplane crossplane \
+  if ! retry 3 helm upgrade --install crossplane crossplane \
     --repo https://charts.crossplane.io/stable \
     --version 2.4.0 \
     --namespace crossplane-system \
     --create-namespace \
-    --set provider.defaultActivations={}
+    --set provider.defaultActivations={}; then
+    setup_failed "Crossplane install failed. Check: kubectl get pods -n crossplane-system"
+  fi
   # Secret with Minio credentials for Crossplane S3 provider
   source ~/.eoepca/state
   kubectl create secret generic minio-secret \
@@ -361,9 +384,9 @@ if [[ -e /tmp/assets/crossplane ]]; then
     --namespace crossplane-system
   # Deploy providers and associated setup
   echo "waiting for crossplane to start (this may take a while)..."  >> /tmp/killercoda_setup.log
-  until kubectl apply -f /tmp/assets/crossplane &>/dev/null; do
-    sleep 2
-  done
+  if ! retry 60 kubectl apply -f /tmp/assets/crossplane; then
+    setup_failed "Crossplane providers could not be applied. Check: kubectl get pods -n crossplane-system"
+  fi
 fi
 if [[ -e /tmp/assets/iam ]]; then
   echo "installing IAM..." >> /tmp/killercoda_setup.log
@@ -419,27 +442,26 @@ EOF
   helm repo update eoepca
   helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
   helm repo update eoepca-dev
-  iam_helm_values | helm upgrade -i iam eoepca-dev/iam-bb \
+  iam_helm_values > /tmp/iam-values.yaml
+  if ! retry 3 helm upgrade -i iam eoepca-dev/iam-bb \
     --version 2.1.0-dev12 \
     --namespace iam \
-    --values - \
-    --create-namespace
+    --values /tmp/iam-values.yaml \
+    --create-namespace; then
+    setup_failed "IAM install failed. Check: helm list -n iam"
+  fi
   # IAM post-setup - direct outputs to dedicated log.
-  (
+  if ! (
     # Wait for IAM to be ready
     echo "waiting IAM to be ready (this may take a while)..." >> /tmp/killercoda_setup.log
-    while ! kubectl wait --for=condition=Ready --all=true -n iam pod -l 'app!=keycloak-realm-import' --timeout=1m &>/dev/null; do sleep 1; done
-    until curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/.well-known/openid-configuration" >/dev/null; do
-      echo "Waiting for Keycloak master Realm readiness..."
-      sleep 5
-    done
+    retry 15 kubectl wait --for=condition=Ready --all=true -n iam pod -l 'app!=keycloak-realm-import' --timeout=1m || exit 1
+    retry 60 curl -sf "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/master/.well-known/openid-configuration" || exit 1
     # Wait for Crossplane Keycloak CRDs to be available
     echo "waiting for Crossplane Keycloak CRDs (this may also take a while)..." >> /tmp/killercoda_setup.log
-    until kubectl get crd providerconfigs.keycloak.m.crossplane.io &>/dev/null; do
-      echo "Waiting for Crossplane Keycloak CRD readiness..."
-      sleep 5
-    done
-  ) &> /tmp/iam_post_setup.log
+    retry 60 kubectl get crd providerconfigs.keycloak.m.crossplane.io || exit 1
+  ) &> /tmp/iam_post_setup.log; then
+    setup_failed "IAM did not become ready. Check: kubectl get pods -n iam and /tmp/iam_post_setup.log"
+  fi
 fi
 if [[ -e /tmp/assets/rshared-root ]]; then
   #This is needed for rclone CSI and likely to be needed for other CSIs.

@@ -13,15 +13,15 @@ bash apply-secrets.sh
 The workspace dependencies include CSI-RClone for storage mounting and the Educates framework for workspace environments.
 
 ```bash
-# Deploy Kyverno (required by Educates' own bundled ClusterPolicies, and reused
-# later for the optional TLS/IAM workarounds in sections 8.2 and 9.3)
+# Educates and the session ingress policies require Kyverno.
 helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update kyverno
 helm upgrade -i kyverno kyverno/kyverno \
   --version 3.9.0 \
   --namespace kyverno \
   --create-namespace \
-  --set backgroundController.enable=true
+  --set backgroundController.enabled=true \
+  --wait --timeout=5m
 
 # Deploy CSI-RClone
 helm upgrade -i workspace-dependencies-csi-rclone \
@@ -70,7 +70,7 @@ helm upgrade -i workspace-pipeline \
 
 ## DataLab Session Cleaner
 
-This deploys a CronJob that automatically cleans up inactive DataLab sessions - removing all sessions except the default ones.
+This deploys a CronJob that stops all Datalab sessions daily at 20:00 UTC, including the default session. Their configuration is preserved so they can be started again.
 
 ```bash
 kubectl apply -f workspace-cleanup/datalab-cleaner.yaml
@@ -115,6 +115,22 @@ kubectl apply -f workspace-dependencies/generated-pipeline-iam.yaml
 ```{{exec}}
 
 
+## TLS Certificate for Datalab Sessions
+
+Each Datalab session ingress references a `workspace-tls` secret in the `workspace` namespace, which Educates copies into the session namespace. APISIX drops an ingress whose TLS secret is missing, so create it before the first workspace.
+
+The session ingress uses the internal `eoepca.local` domain, so use a self-signed certificate:
+
+```bash
+source ~/.eoepca/state
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -keyout /tmp/workspace-tls.key -out /tmp/workspace-tls.crt \
+  -subj "/CN=*.${INGRESS_HOST}" \
+  -addext "subjectAltName=DNS:*.${INGRESS_HOST}"
+kubectl -n workspace create secret tls workspace-tls \
+  --cert=/tmp/workspace-tls.crt --key=/tmp/workspace-tls.key
+```{{exec}}
+
 ## Keycloak Client for the Workspace API
 
 Render and apply the `workspace-api` Keycloak client, with protocol mappers so its tokens carry an `aud` claim naming itself (the workspace-api app rejects tokens lacking this) and a `groups` claim (used to resolve workspace ownership/membership). This also creates an `admin` client role and a `workspace-admin` group granting it, with `KEYCLOAK_TEST_ADMIN` added as a member - the app itself checks this role (independent of any ingress-layer enforcement) to grant access across every workspace rather than just ones the caller owns:
@@ -125,34 +141,6 @@ gomplate -f workspace-api/iam-template.yaml -o workspace-api/generated-iam.yaml
 kubectl apply -f workspace-api/generated-iam.yaml
 ```{{exec}}
 
-> Note: the following two steps are typically not necessary in a production environment
-
-For the `workspace-api` client, we use the 'external tutorial' hostname for the Workspace API client - as this is what will be used via the tutorial UI to access the service. First we calculate this:
-
-```bash
-source ~/.eoepca/state
-WORKSPACE_EXT_API_HOST="$(
-  sed "s#http://PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("workspace-api." host) {print $1}' /tmp/assets/killercodaproxy)#" \
-    /etc/killercoda/host
-)"
-echo "Workspace API external host: ${WORKSPACE_EXT_API_HOST}"
-```{{exec}}
-
-and now we patch the client created by the template to use it
-
-```bash
-kubectl patch client.openidclient.keycloak.m.crossplane.io -n iam-management ${WORKSPACE_API_CLIENT_ID} --patch-file /dev/stdin --type merge <<EOF
-spec:
-  forProvider:
-    rootUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
-    baseUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
-    adminUrl: ${HTTP_SCHEME}://${WORKSPACE_EXT_API_HOST}
-    validRedirectUris:
-      - "/*"
-      - "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/*"
-EOF
-```{{exec}}
-
 **_Workspace API Ingress_**
 
 ```bash
@@ -161,7 +149,7 @@ kubectl apply -f workspace-api/generated-ingress.yaml
 
 ## Protect Datalab Sessions with Keycloak SSO
 
-Session ingresses aren't otherwise IAM-protected - a Kyverno policy wraps every Datalab session `Ingress` with the same `workspace-api` OIDC client, so opening a session requires a valid Keycloak login.
+The Kyverno policy adds Keycloak login and the IAM OPA policy `eoepca/workspace/wsui` to each Datalab session ingress. The policy checks the user's workspace access or administrator role.
 
 Grant Kyverno permission to manage `ApisixPluginConfig` resources, then apply the session-protection policy:
 

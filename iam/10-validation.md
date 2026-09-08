@@ -25,6 +25,7 @@ ACCESS_TOKEN=$( \
     -d "username=eoepcauser" \
     --data-urlencode "password=eoepcapassword" \
     -d "grant_type=password" \
+    -d "scope=openid" \
     -d "client_id=opa" \
     -d "client_secret=${OPA_CLIENT_SECRET}" \
     "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/token" | jq -r '.access_token' \
@@ -38,6 +39,16 @@ echo "${ACCESS_TOKEN:0:20}..."
 ```{{exec}}
 
 This token will be valid for 5 minutes. After this time you will need to repeat the step above to get a new one.
+
+The token carries the identity claims that the authorization policies act upon. Ask Keycloak to describe the token holder.
+
+```bash
+curl --silent --show-error \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  "http://auth.eoepca.local/realms/eoepca/protocol/openid-connect/userinfo" | jq
+```{{exec}}
+
+Note the `preferred_username`{{}} and `email_verified`{{}} claims - these are the inputs used by the example policies below.
 
 ## 3. Open Policy Agent Validation
 
@@ -64,7 +75,7 @@ curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'bob' is a privileged use...**
+**User 'bob' is a privileged user...**
 
 Ref. https://github.com/EOEPCA/iam-policies/blob/main/policies/example/data.json
 
@@ -77,7 +88,7 @@ curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'eric' is NOT a privileged use...**
+**User 'eric' is NOT a privileged user...**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \

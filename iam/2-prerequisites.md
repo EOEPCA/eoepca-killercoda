@@ -36,7 +36,7 @@ In general EOEPCA Building Blocks will require as a minimum prerequisite a Kuber
 
 The IAM BB requires APISIX as the ingress controller for policy enforcement, and relies upon Crossplane for declarative Keycloak configuration via Kubernetes Custom Resources. Thus, APISIX and Crossplane have been pre-configured in this tutorial environment.
 
-We can check the specific prerequisites for installing the Workspace building block are met. The Deployment Guide scripts provide a dedicated script for this task:
+We can check the specific prerequisites for installing the IAM building block are met. The Deployment Guide scripts provide a dedicated script for this task:
 ```
 bash check-prerequisites.sh
 ```{{exec}}

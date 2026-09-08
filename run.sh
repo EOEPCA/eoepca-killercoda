@@ -31,15 +31,15 @@ fi
 
 # --- sysbox requirement check -------------------------------------------------
 
-# Workspace tutorial requires sysbox due to CSI driver mount propagation requirements
+# Tutorials using Workspace require sysbox for CSI mount propagation
 (
-  if [ "$TUTORIAL" = "workspace" ]; then
+  if [[ "$TUTORIAL" == "workspace" || "$TUTORIAL" == "end-to-end" ]]; then
     if [ -f "${LOCALCODA_ROOT}/backend/cfg/conf" ]; then
       source "${LOCALCODA_ROOT}/backend/cfg/conf"
     fi
 
     if [ "$VIRT_ENGINE" != "sysbox" ]; then
-      echo "ERROR: The workspace tutorial requires sysbox virtualisation engine."
+      echo "ERROR: The $TUTORIAL tutorial requires sysbox virtualisation engine."
       echo ""
       echo "The CSI-rclone plugin used by the Workspace building block requires"
       echo "mount propagation features that are only available with sysbox."

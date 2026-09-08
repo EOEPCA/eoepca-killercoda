@@ -1,67 +1,48 @@
-The application is now running. After a few seconds, its dedicated namespace is created. Calrissian automatically removes this namespace after the execution finishes, so a fast job may already be cleaned up when you run this command:
+Calrissian creates the execution namespace after accepting the job. While it is running, inspect its pods:
 
 ```
-kubectl get namespace "$JOB_NAMESPACE" 2>/dev/null ||
-  echo "The execution namespace has already been cleaned up."
+kubectl get pods -n "$JOB_NAMESPACE"
 ```{{exec}}
 
-It may take another few seconds before the namespace is populated with the Kubernetes job pods:
+The namespace is removed when execution finishes. If there are no pods yet, or they have already been removed, use the API to check progress:
 
 ```
-if kubectl get namespace "$JOB_NAMESPACE" >/dev/null 2>&1; then
-  kubectl get pods -n "$JOB_NAMESPACE"
-else
-  echo "No active execution pods (the job may already be complete)."
-fi
+curl -sS "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq
 ```{{exec}}
 
-The processing status is available from the API:
+Repeat the request after a few seconds until `status` is `successful`. The first execution takes longer while Kubernetes downloads the images. A successful response includes links to the application and stage-out logs. If the status is `failed`, inspect the message and logs before continuing.
+
+Retrieve the results:
 
 ```
-curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq
+curl -sS "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID/results" \
+  -o resize-results.json
+jq . resize-results.json
 ```{{exec}}
 
-When the job completes successfully, the API status becomes `successful`.
+The response is a GeoJSON `FeatureCollection` containing a STAC Item. Its `assets` entry gives the S3 location of the resized PNG. The logo is a demonstration image; the global bounding box is placeholder metadata, not a geographic footprint.
 
-The first execution takes longer because Kubernetes must download the application images. The following bounded loop checks every 30 seconds for up to 10 minutes:
+Download that asset using the configured MinIO client:
 
 ```
-for attempt in {1..20}; do
-  JOB_STATUS=$(curl -s -S \
-    "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" |
-    jq -r '.status')
-  echo "Job status: $JOB_STATUS"
-  kubectl get pods -n "$JOB_NAMESPACE" 2>/dev/null || true
-
-  case "$JOB_STATUS" in
-    successful|failed|dismissed) break ;;
-  esac
-
-  sleep 30
-done
-
-if [[ "$JOB_STATUS" != "successful" ]]; then
-  echo "Job did not complete successfully (status: $JOB_STATUS)"
-  kubectl get events -n "$JOB_NAMESPACE" \
-    --sort-by=.lastTimestamp | tail -20
-  false
-fi
+OUTPUT_URI=$(jq -r '.features[0].assets["logo6_med.original-resize"].href' resize-results.json)
+mc cp "minio-local/${OUTPUT_URI#s3://}" resized.png
 ```{{exec}}
 
-We can now access the status document, which includes the final status and links to the processing logs:
+Download the original image and compare their dimensions with the `file` utility:
 
 ```
-curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID" | jq
+apt-get install -y file
+curl -fsSL https://eoepca.org/media_portal/images/logo6_med.original.png -o original.png
+file original.png resized.png
 ```{{exec}}
 
-For a successful job, the results endpoint returns a STAC Collection describing the output:
+For this logo, `file` reports 822 × 162 pixels for the original and 411 × 81 pixels for the output: half the width and height. This verifies that the application processed the input and that its result was staged to object storage.
+
+List the stored results, including their STAC metadata:
 
 ```
-curl -s -S "http://zoo.eoepca.local/test/ogc-api/jobs/$JOB_ID/results" | jq
+mc ls -r minio-local/eoepca/processing-results/
 ```{{exec}}
 
-The STAC metadata and resized image are also available directly from object storage:
-
-```
-mc ls -r minio-local/eoepca
-```{{exec}}
+Keep the registered process and results so you can submit another execution with a different resize percentage.

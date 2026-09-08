@@ -1,22 +1,12 @@
-We have now our `convert-url`{{}} application deployed in our platform, we can submit a processing request.
+Submit a job to resize the EOEPCA logo to 50% of its original width and height. Calrissian runs the application and stages its output to MinIO.
 
-Once the processing request is submitted, Zoo will invoke Calrissian, which will then create a new Kubernetes namespace in the same Kubernetes cluster where Zoo and the [OGC Process API](https://ogcapi.ogc.org/processes/) interface is installed and start there the application jobs.
-
-The jobs will gather the input, execute the processing and in the push the output inside the platform object storage.
-
-From the [OGC Process API](https://ogcapi.ogc.org/processes/) interface we will be able to monitor the status of the job and, at the end of its successful completition, retrieve its output.
-
-So, let's start to submit a processing request to the convert-url application.
-
-We can check the inputs we need for submittign a processing request for this application from the API via
+Inspect the inputs:
 
 ```
-curl -s -S http://zoo.eoepca.local/test/ogc-api/processes/convert-url | jq .inputs
+curl -sS http://zoo.eoepca.local/test/ogc-api/processes/convert-url | jq .inputs
 ```{{exec}}
 
-As you can see, and as you may recall from the CWL submitted in the previous step, this application requires three inputs: "fn", "url" and "size".
-
-As example, we can just use their default values in the job submission, via
+Submit the execution asynchronously:
 
 ```
 JOB_ID=$(

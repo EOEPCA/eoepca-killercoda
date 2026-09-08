@@ -26,17 +26,24 @@
         "text": "04-deploy-write.md"
       },
       {
-        "title": "Add STAC Collections and Items",
+        "title": "Register STAC Metadata",
         "text": "05-add-stac.md"
+      },
+      {
+        "title": "Search the Catalogue",
+        "text": "06-search.md"
       }
     ],
     "finish": {
-     "title": "Finish",
-     "text": "99-finish.md"
+      "title": "Finish",
+      "text": "99-finish.md"
     },
     "assets": {
       "host01": [
-        {"file": "*", "target": "/tmp/assets"}
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
       ]
     }
   },

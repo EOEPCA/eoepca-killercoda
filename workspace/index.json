@@ -1,6 +1,6 @@
 {
   "title": "EOEPCA Workspace BB",
-  "description": "Isolated, self-service environments for data access, algorithm development, and collaborative exploration.",
+  "description": "Deploy a workspace, upload sample data and process it in a Datalab with persistent storage.",
   "details": {
     "intro": {
       "text": "00-introduction.md",

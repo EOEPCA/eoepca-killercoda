@@ -1,10 +1,4 @@
-Welcome to the **[EOEPCA Workspace](https://eoepca.readthedocs.io/projects/workspace/en/latest/)** building block tutorial!
-
-**Workspaces** enable individuals, teams, and organisations to provision isolated, self-service environments for data access, algorithm development, and collaborative exploration — all declaratively managed on Kubernetes and orchestrated through the **Workspace REST API** or via the **Workspace Web UI**.
-
-In this scenario, you will learn how to deploy and interact with the EOEPCA Workspace Building Block — which provides a unified environment that combines object storage, interactive runtimes, and collaborative tooling into a single Kubernetes-native platform.
-
----
+Deploy the **[EOEPCA Workspace](https://eoepca.readthedocs.io/projects/workspace/en/latest/)** building block, create a workspace and use its object storage and Datalab development environment.
 
 ## **What You'll Learn**
 
@@ -53,10 +47,7 @@ Before we start, you should note that this tutorial assumes a generic knowledge 
 Before proceeding, wait for the prerequisite services to be ready:
 
 ```
-while ! kubectl wait --for=condition=Ready --all=true -A pod --timeout=10s -l 'app!=keycloak-realm-import' &>/dev/null; do
-  not_ready=$(kubectl get pods -A --no-headers | awk '$3 !~ /1\/1/ {print "  " $1 "/" $2}')
-  echo -e "\nWaiting for Readiness - PODS not ready ($(date -u)): \n$not_ready"
-done
+kubectl wait --for=condition=Ready pod --all -A --timeout=10m -l 'app!=keycloak-realm-import'
 ```{{exec}}
 
 ## **Prerequisite Services**

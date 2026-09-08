@@ -54,7 +54,7 @@ Select the first result and read commonly used metadata. EODAG maps provider-nat
 product = results[0]
 print(f"ID: {product.properties.get('id')}")
 print(f"Date: {product.properties.get('datetime')}")
-print(f"Cloud cover: {product.properties.get('eo:cloud_cover'):.1f}%")
+print(f"Cloud cover: {product.properties.get('eo:cloud_cover')}")
 print(f"Provider: {product.provider}")
 ```{{exec}}
 
@@ -99,7 +99,7 @@ for r in results:
 
 ### Filter by Cloud Cover
 
-Provider-specific queries are expressed with the same common arguments used by the CLI. This returns up to five products whose catalogue metadata reports no more than 20 percent cloud:
+Metadata filters are passed as STAC property names. `eo:cloud_cover` contains a colon, so it has to be expanded from a dictionary rather than written as a keyword argument. This returns up to five products whose catalogue metadata reports no more than 20 percent cloud:
 
 ```python
 results = dag.search(
@@ -108,13 +108,16 @@ results = dag.search(
     start="2024-06-01",
     end="2024-06-30",
     provider="cop_dataspace",
-    cloud_cover=20,
-    limit=5
+    limit=5,
+    **{"eo:cloud_cover": 20}
 )
-print(f"Found {len(results)} products with <=20% cloud cover")
+for r in results:
+    print(r.properties.get("id"), r.properties.get("eo:cloud_cover"))
 ```{{exec}}
 
-### List Product Types for a Provider
+Every reported cloud cover is at or below 20 percent. The CLI's `--cloud-cover` option maps onto this same property.
+
+### List Collections for a Provider
 
 Applications can inspect provider capabilities before constructing a search:
 
