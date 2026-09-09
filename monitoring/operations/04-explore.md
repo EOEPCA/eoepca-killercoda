@@ -1,15 +1,15 @@
-Use a small web service to follow an outage through metrics, logs and alert triage. The service represents a platform endpoint; it does not deploy another building block.
+Deploy a small nginx service, check its replica count in Prometheus and find its request logs in Loki. The next page uses this service to demonstrate alert handling.
 
 ## Log in to Grafana
 
-Retrieve the chart-generated credentials:
+[Open Grafana]({{TRAFFIC_HOST1_81}}) and log in with the credentials stored in this Kubernetes Secret:
 
 ```
 kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-user}' | base64 -d; echo
 kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```{{exec}}
 
-For the API examples below, use the same Grafana credentials:
+Store the credentials and URL for the API commands on this page and the next:
 
 ```
 GRAFANA_USER=$(kubectl -n operations get secret kube-prometheus-stack-grafana -o jsonpath='{.data.admin-user}' | base64 -d)
@@ -19,135 +19,82 @@ GRAFANA_URL=http://monitoring.eoepca.local
 
 ## Create a monitored service
 
-Inspect the sample Deployment, Service and PrometheusRule:
+Inspect the manifest. It defines an nginx Deployment, a Service and an alert rule:
 
 ```
 cat /tmp/assets/operations-demo.yaml
 ```{{exec}}
 
-The rule fires when the web service has no available replicas for one minute. Its metric comes from kube-state-metrics, which observes Kubernetes workloads.
+The alert rule uses kube-state-metrics to detect when the Deployment has no available replicas for one minute. First, deploy the service and send an HTTP request:
 
 ```
 kubectl apply -f /tmp/assets/operations-demo.yaml
 kubectl -n operations rollout status deployment/operations-demo --timeout=120s
 DEMO_URL=http://$(kubectl -n operations get service operations-demo -o jsonpath='{.spec.clusterIP}')
-curl -sS "$DEMO_URL/?request=operations-workshop"
+curl -sS --retry 5 --retry-connrefused --retry-delay 2 "$DEMO_URL/?request=operations-workshop"
 ```{{exec}}
 
-You should see the nginx welcome page. If you don't, wait 10 seconds and try again.
+You should see the nginx welcome page. The request retries briefly while Kubernetes updates the service route.
 
-## Inspect its metrics and logs
+## Check the replica count
 
-In Grafana **Explore**, select **Prometheus** and run:
+In Grafana **Explore**, select the **Prometheus** datasource, then **Code** on the top right next to _Builder_ and run:
 
 ```promql
 kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}
 ```
 
-The value should be `1`. Allow up to a minute for the first scrape. You can query the same datasource through Grafana's API:
+The value should be `1`: one replica is available. Allow up to a minute for Prometheus to scrape the metric. To see the same result in the terminal, use Grafana's datasource API:
 
 ```
-curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+METRICS_RESPONSE=$(curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
   "$GRAFANA_URL/api/datasources/proxy/uid/prometheus/api/v1/query" \
-  --data-urlencode 'query=kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}' | jq
+  --data-urlencode 'query=kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}')
+printf '%s\n' "$METRICS_RESPONSE" | jq
 ```{{exec}}
 
-Switch Explore to **Loki** and run:
+Show just the available replica count:
+
+```
+printf '%s\n' "$METRICS_RESPONSE" | jq -r '.data.result[].value[1]'
+```{{exec}}
+
+If no count appears yet, wait up to a minute and rerun the request above. The `jq` command only reads the saved response; it does not fetch new data.
+
+## Find the request log
+
+In Grafana **Explore**, select **Loki** and run:
 
 ```logql
 {namespace="operations", app="operations-demo"} |= "operations-workshop"
 ```
 
-Find the request with HTTP status `200`. Alloy has collected the pod's access log and sent it to Loki. The API equivalent is:
+Look for `operations-workshop` and HTTP status `200`. This confirms that Alloy collected nginx's access log and sent it to Loki. The same query is available through the API:
 
 ```
-curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+LOGS_RESPONSE=$(curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
   "$GRAFANA_URL/api/datasources/proxy/uid/loki/loki/api/v1/query_range" \
-  --data-urlencode 'query={namespace="operations", app="operations-demo"} |= "operations-workshop"' | jq
+  --data-urlencode 'query={namespace="operations", app="operations-demo"} |= "operations-workshop"')
+printf '%s\n' "$LOGS_RESPONSE" | jq
 ```{{exec}}
 
-If either response is empty, run it again after a few seconds.
-
-Open **Dashboards → Kubernetes / Cluster View** to see cluster resource use. **Kubernetes / Workload View** lets you select namespace `operations` and the `operations-demo` pod. CPU rates need several scrapes before they appear. CPU limit panels are empty for workloads without CPU limits. Localcoda reduces pod resource requests to fit the tutorial environment, so usage-to-request percentages can exceed 100%.
-
-The **APISIX Endpoint SLOs** dashboard needs Data Access metrics and STAC recording rules, which this tutorial does not deploy.
-
-## Cause an outage
-
-Stop the sample service:
+Show just the log lines, without the query statistics:
 
 ```
-kubectl -n operations scale deployment/operations-demo --replicas=0
+printf '%s\n' "$LOGS_RESPONSE" | jq -r '.data.result[].values[][1]'
 ```{{exec}}
 
-Repeat the Prometheus query above: available replicas should fall to `0`. Query the alert state:
+Logs can take up to a minute to appear. Rerun the request to refresh `LOGS_RESPONSE`, then display the log lines again.
 
-```
-curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
-  "$GRAFANA_URL/api/datasources/proxy/uid/prometheus/api/v1/query" \
-  --data-urlencode 'query=ALERTS{alertname="TutorialServiceUnavailable"}' | jq
-```{{exec}}
+## View resource use
 
-The `alertstate` label changes from `pending` to `firing` after one minute. Allow another minute for scraping, rule evaluation and Alertmanager delivery.
+Open these Grafana dashboards:
 
-## Triage in Keep
+- **Kubernetes / Cluster View** shows cluster CPU and memory use.
+- **Kubernetes / Workload View** shows individual pods. Select namespace `operations` and the pod whose name starts with `operations-demo`.
 
-[Open Keep]({{TRAFFIC_HOST1_82}}) and select **Alerts → Feed**. Find **TutorialServiceUnavailable** in the list. **Watchdog** should also be present as the continuous pipeline health check.
+CPU rates need several scrapes before they appear. CPU limit panels are empty because the sample has no CPU limit. Localcoda reduces resource requests, so usage-to-request percentages can exceed 100%.
 
-```
-curl -sS http://alerting.eoepca.local/v2/alerts \
-  -H 'X-API-KEY: anything' | jq
-```{{exec}}
+The **APISIX Endpoint SLOs** dashboard stays empty: this tutorial does not deploy the Data Access metrics and STAC rules it needs.
 
-Find `TutorialServiceUnavailable` and copy its `fingerprint` from the response:
-
-```
-read -r -p 'Alert fingerprint: ' ALERT_FINGERPRINT
-```{{exec}}
-
-Keep's unauthenticated mode still requires the API-key header, but accepts any value. Acknowledge the alert:
-
-```
-curl -sS -X POST http://alerting.eoepca.local/v2/alerts/enrich \
-  -H 'X-API-KEY: anything' -H 'Content-Type: application/json' \
-  -d "{\"fingerprint\":\"$ALERT_FINGERPRINT\",\"enrichments\":{\"status\":\"acknowledged\"}}" | jq
-```{{exec}}
-
-```
-curl -sS "http://alerting.eoepca.local/v2/alerts/$ALERT_FINGERPRINT" \
-  -H 'X-API-KEY: anything' | jq
-```{{exec}}
-
-Check for `status: acknowledged` in the response and refresh Keep to see the same status. Acknowledgement records that an operator has seen the problem; it does not restore the service.
-
-## Restore the service
-
-```
-kubectl -n operations scale deployment/operations-demo --replicas=1
-kubectl -n operations rollout status deployment/operations-demo --timeout=120s
-curl -sS "$DEMO_URL/?request=operations-workshop-recovered"
-```{{exec}}
-
-Repeat the metrics and logs queries. Available replicas should return to `1`, and Loki should contain the recovery request. The `ALERTS` query should become empty once Prometheus evaluates the recovered state.
-
-After Alertmanager delivers the recovery, check the alert again:
-
-```
-curl -sS "http://alerting.eoepca.local/v2/alerts/$ALERT_FINGERPRINT" \
-  -H 'X-API-KEY: anything' | jq
-```{{exec}}
-
-Check that `endsAt` contains the recovery time and `unresolvedCounter` is `0`. Keep retains the manual acknowledgement as a status override even after receiving the resolution. Remove that override to display the source status:
-
-```
-curl -sS -X POST http://alerting.eoepca.local/v2/alerts/unenrich \
-  -H 'X-API-KEY: anything' -H 'Content-Type: application/json' \
-  -d "{\"fingerprint\":\"$ALERT_FINGERPRINT\",\"enrichments\":[\"status\"]}" | jq
-```{{exec}}
-
-```
-curl -sS "http://alerting.eoepca.local/v2/alerts/$ALERT_FINGERPRINT" \
-  -H 'X-API-KEY: anything' | jq
-```{{exec}}
-
-Confirm `status: resolved` and refresh Keep's Feed to see the resolved alert. The service and its rule remain deployed so you can repeat the exercise.
+Leave the service running and keep this terminal open. The next page uses the same shell variables to trigger an outage and follow its alert through to recovery.

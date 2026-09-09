@@ -1,73 +1,56 @@
 
+With the Application Quality BB deployed, let's look at what it offers through its API. Set the
+public URL once, so the following commands stay short:
 
-With the Application Quality BB deployed, let's explore its capabilities through both the API and web interface.
+```bash
+source ~/.eoepca/state
+export AQ_URL="${HTTP_SCHEME}://${APP_QUALITY_PUBLIC_HOST}"
+echo "$AQ_URL"
+```{{exec}}
 
 ### Discover the API
 
-The API provides endpoints for managing analysis tools and pipelines:
-
 ```
-curl -s "http://application-quality.eoepca.local/api/" | jq .
+curl -sS "$AQ_URL/api/" | jq
 ```{{exec}}
 
-The API exposes three main resources: **pipelines**, **tools**, and **tags**.
+The API exposes analysis **tools**, **tags**, **pipelines**, and the **triggers** that can start a
+pipeline automatically from an external event.
 
-### List Available Analysis Tools
-
-Retrieve all available analysis tools:
-
-```
-curl -s "http://application-quality.eoepca.local/api/tools/" | jq '.[].name'
-```{{exec}}
-
-You should see tools including Flake8, Pylint, Bandit, Ruff, Trivy and the OGC Application Package Validator.
-
-### Examine a Tool in Detail
-
-Let's look at Flake8, which checks Python code style:
+### List the available analysis tools
 
 ```
-curl -s "http://application-quality.eoepca.local/api/tools/flake8_subworkflow/" | jq '{name, description, user_params}'
+curl -sS "$AQ_URL/api/tools/" | jq -r '.[].name'
 ```{{exec}}
 
-Key fields:
-- **name**: Human-readable tool name
-- **description**: What the tool does
-- **user_params**: Configurable parameters (e.g. file patterns, verbosity)
+Each tool is a CWL sub-workflow that runs in its own container: linters such as Flake8, Pylint and
+Ruff, the security scanner Bandit, the container image scanner Trivy, and validators for Jupyter
+notebooks and OGC Application Packages.
 
-### Security Analysis Tools
+### Examine a tool in detail
 
-Bandit detects security vulnerabilities in Python code:
+Bandit finds common security issues in Python code:
 
 ```
-curl -s "http://application-quality.eoepca.local/api/tools/bandit_subworkflow/" | jq '{name, description}'
+curl -sS "$AQ_URL/api/tools/bandit_subworkflow/" | jq
 ```{{exec}}
 
-Trivy scans container images for vulnerabilities:
+`user_params`{{}} are the inputs you can set when a pipeline runs the tool. Bandit takes a
+`filter.regex`{{}} selecting which files to analyse, and a `verbose`{{}} flag.
+
+Compare that with Trivy, which scans a container image rather than source files:
 
 ```
-curl -s "http://application-quality.eoepca.local/api/tools/trivy_subworkflow/" | jq '{name, description}'
+curl -sS "$AQ_URL/api/tools/trivy_subworkflow/" | jq
 ```{{exec}}
 
-### OGC Application Package Validator
+### Browse the tool categories
 
-This tool validates CWL files against OGC Best Practice standards — essential for EOEPCA processing workflows:
+Tags group the tools by the asset they analyse and the kind of check they perform:
 
 ```
-curl -s "http://application-quality.eoepca.local/api/tools/ap_validator_subworkflow/" | jq .
+curl -sS "$AQ_URL/api/tags/" | jq -r '.[].name'
 ```{{exec}}
 
-### Browse Tool Categories
-
-Tags categorise tools by asset type and check type:
-
-```
-curl -s "http://application-quality.eoepca.local/api/tags/" | jq '.[] | {id, name}'
-```{{exec}}
-
-Categories include:
-- **asset: python** — Tools for Python code
-- **asset: cwl** — Tools for CWL workflow validation
-- **asset: docker** — Tools for container analysis
-- **type: best practice** — Code quality checks
-- **type: app quality** — Security and vulnerability scanning
+Tools and tags are readable without logging in. Pipelines and their runs are not - that is what we
+set up next.

@@ -8,11 +8,15 @@ bash apply-secrets.sh
 
 ## Deploy kube-prometheus-stack
 
-The two node-exporter overrides accommodate Localcoda’s containerised node: disable the host root mount and use netlink to read network device information.
-
 The core monitoring stack is deployed first so that its CRDs (`ServiceMonitor`, `PrometheusRule`, `AlertmanagerConfig`) are available for the components that follow. This is the biggest image pull in this tutorial, so it can take a few minutes:
 
+> **Localcoda only:** The `GRAFANA_HOST` lines and the three `--set` flags are exclusively for this environment. Grafana is reached through the Localcoda proxy hostname, which it must trust to accept requests from the browser.
+
 ```
+GRAFANA_HOST=$(sed 's/PORT/81/' /etc/killercoda/host)
+GRAFANA_HOST=${GRAFANA_HOST#*://}
+GRAFANA_HOST=${GRAFANA_HOST%%:*}
+
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update prometheus-community
 helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack \
@@ -20,6 +24,7 @@ helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack
   --namespace operations \
   --create-namespace \
   --values kube-prometheus-stack/generated-values.yaml \
+  --set-string grafana.env.GF_SECURITY_CSRF_TRUSTED_ORIGINS="$GRAFANA_HOST" \
   --set prometheus-node-exporter.hostRootFsMount.enabled=false \
   --set "prometheus-node-exporter.extraArgs[0]=--collector.netclass.netlink" \
   --wait --timeout 5m

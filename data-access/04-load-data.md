@@ -1,57 +1,27 @@
+Load the sample Sentinel-2 Level-2A collection supplied with the deployment guide. It contains 226 STAC items from 2023 covering Iceland. The metadata links to publicly accessible Cloud Optimised GeoTIFFs; ingestion does not copy those raster files into MinIO.
 
-Now that the Data Access services are running, let's load some sample Earth Observation data.
+### Load the collection and items
 
-### About the Sample Data
-
-The deployment guide includes a sample Sentinel-2 Level-2A collection covering Iceland. This dataset contains:
-- Multispectral imagery from Sentinel-2A and Sentinel-2B satellites
-- 13 spectral bands at 10m, 20m, and 60m resolution
-- Data from 2023 covering Iceland's extent
-
-### Load the Collection
-
-Navigate to the sample collection directory and run the ingestion script:
-
-```
+```bash
 cd collections/sentinel-2-iceland
-bash /tmp/assets/run-ingest-local
+../ingest.sh
 cd ../..
 ```{{exec}}
 
+The script loads the collection and its items into pgSTAC. You can run it again: existing records are left in place.
 
-### Verify the Collection
+### Inspect the catalogue
 
-Let's verify the collection was loaded successfully by querying the STAC API:
-
-```
-curl -s "http://eoapi.eoepca.local/stac/collections" | jq '.collections[].id'
+```bash
+curl -fsS "http://eoapi.eoepca.local/stac/collections" | jq
 ```{{exec}}
 
-You should see `sentinel-2-iceland` in the list.
+Look for `sentinel-2-iceland`. Its extent covers Iceland during 2023.
 
-### View Collection Details
-
-Get the full collection metadata:
-
-```
-curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland" | jq '{id, title, description, extent}'
+```bash
+curl -fsS "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=1000&fields=id" | jq
 ```{{exec}}
 
-This shows the collection covers Iceland with a bounding box from approximately 24°W to 14°W longitude and 63°N to 67°N latitude.
+`numberReturned` should be `226`. Each feature is an observation with its own identifier.
 
-### Count Items
-
-Let's see how many items are in the collection:
-
-```
-curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-iceland/items?limit=1000&fields=id" | jq '.numberReturned'
-```{{exec}}
-
-The sample contains 226 items.
-
-### Browse in STAC Browser
-
-The eoAPI deployment includes a built-in STAC Browser that is already configured
-to use this tutorial's STAC API. [Open the Iceland collection
-directly]({{TRAFFIC_HOST1_82}}/browser/external/{{TRAFFIC_HOST1_82}}/stac/collections/sentinel-2-iceland) to browse
-its items visually.
+Open the [STAC Browser]({{TRAFFIC_HOST1_82}}/browser/) and select **Sentinel-2 Level-2A Iceland**. Browse an item to inspect its footprint, acquisition time and asset links.

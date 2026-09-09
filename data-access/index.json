@@ -1,4 +1,3 @@
-
 {
   "title": "EOEPCA Data Access BB",
   "description": "Deploy and use STAC and OGC APIs for Earth Observation data access.",
@@ -31,7 +30,7 @@
         "text": "05-explore-apis.md"
       },
       {
-        "title": "Advanced Usage",
+        "title": "Compare Imagery and Update Metadata",
         "text": "06-advanced-usage.md"
       }
     ],
@@ -41,7 +40,10 @@
     },
     "assets": {
       "host01": [
-        {"file": "*", "target": "/tmp/assets"}
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
       ]
     }
   },
