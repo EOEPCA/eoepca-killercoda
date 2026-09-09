@@ -20,9 +20,10 @@ spec:
 EOF
 ```{{exec}}
 
-Check that the claim has reached the `Bound` status and reports the `RWX` access mode:
+Wait for the claim to bind, and check that it reports the `RWX` access mode:
 
 ```
+kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/test-rwx-pvc --timeout=60s
 kubectl get pvc test-rwx-pvc
 ```{{exec}}
 

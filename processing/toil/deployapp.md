@@ -5,10 +5,10 @@ Applications are deployed according to the [OGC Best Practice for Earth Observat
 Inspect the sample CWL application included in the Deployment Guide:
 
 ```
-less /tmp/assets/convert-url-app.cwl
+less examples/convert-url-app.cwl
 ```{{exec}}
 
-This application is intentionally basic. It accepts an operation, an image URL, and a resize percentage, and outputs the resized image.
+This application is intentionally basic. It accepts an operation, an image URL, and a resize percentage, and outputs a directory containing the resized image and its STAC metadata.
 
 The `DockerRequirement` identifies the `eoepca/convert` container, while `baseCommand: convert.sh` identifies the command that Toil will execute through HTCondor.
 

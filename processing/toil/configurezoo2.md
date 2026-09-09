@@ -17,11 +17,16 @@ test
 $2y$12$ci.4U63YX83CwkyUrjqxAucnmi2xXOIlEF6T/KdP9824f1Rf1iyNG
 ```{{exec}}
 
-The script has now generated the Helm values for our building-block deployment. Check the main integration settings without displaying the stored credentials:
+Inspect the Helm values the script generated:
 
 ```
-grep -n -E 'templateUrl|WES_URL|STAGE(IN|OUT)_AWS_SERVICEURL|storageClass|hosturl' \
-  generated-values.yaml
+less generated-values.yaml
 ```{{exec}}
 
-The values should reference the Toil WES endpoint, the MinIO stage-in and stage-out service, and the configured storage classes.
+They reference the Toil WES endpoint, the MinIO stage-in and stage-out service, and the configured storage classes. Press `q`{{exec}} to exit.
+
+Run the deployment guide prerequisite checks using the configuration you just saved:
+
+```
+bash check-prerequisites.sh
+```{{exec}}

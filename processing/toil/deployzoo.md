@@ -27,13 +27,11 @@ kubectl -n processing wait pod --all \
   --for=condition=Ready
 ```{{exec}}
 
-Once all pods are ready, check their status:
+Run the deployment guide validation:
 
 ```
-kubectl -n processing get pods
+bash validation.sh
 ```{{exec}}
-
-If the wait times out, inspect the latest events with `kubectl -n processing get events --sort-by=.lastTimestamp | tail -n 20`{{copy}}.
 
 The OGC API - Processes interface should now be available:
 
@@ -44,3 +42,5 @@ curl --silent --show-error \
 ```{{exec}}
 
 If everything worked, the response contains an `echo` processing service. This is a simple built-in demonstration process. We will add our own application in the next step.
+
+You can also explore the interface in the [Swagger UI]({{TRAFFIC_HOST1_81}}/swagger-ui/oapip/).

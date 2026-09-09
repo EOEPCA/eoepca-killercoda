@@ -1,6 +1,6 @@
 To configure a [Toil WES interface](https://toil.readthedocs.io/en/master/running/server/wes.html) on our HPC cluster, we need first to install the Toil software.
 
-Toil standard installation is performed as a Python virtual environment in a folder accessible to all the HPC computing nodes. This way the computing nodes will seamlessly start it.
+Toil standard installation is performed as a Python virtual environment in a folder accessible to all the HPC computing nodes, so that every computing node can start it.
 
 Toil will also require, for coordinating the jobs execution, a working folder accessible from all the computing nodes for storing the job storage directories.
 
@@ -11,15 +11,13 @@ mkdir -p ~/toil ~/toil/storage
 python3 -m venv --prompt toil ~/toil/venv
 ```{{exec}}
 
-We can now enter the virtual environment and install Toil with HTCondor support via pip:
+We can now enter the virtual environment and install Toil with HTCondor support via pip, at the versions given in the deployment guide:
 
 ```
 source ~/toil/venv/bin/activate
 
 pip install 'toil[cwl,htcondor,server,aws]==9.3.0' 'htcondor==24.12.21'
 ```{{exec}}
-
-The version is pinned because Toil 9.3.0 has been validated with the WES workflow and dependencies used by this workshop.
 
 Check the installed version:
 

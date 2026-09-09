@@ -6,7 +6,7 @@ Download the example application from the same **release-2.1** Deployment Guide 
 
 ```
 cd ~
-curl --fail --location --show-error \
+curl --fail --silent --show-error \
   --output convert-url-app.cwl \
   https://raw.githubusercontent.com/EOEPCA/deployment-guide/release-2.1/scripts/processing/oapip/examples/convert-url-app.cwl
 ```{{exec}}
@@ -48,10 +48,10 @@ toil-cwl-runner \
 
 If everything works correctly, Toil finishes successfully and prints a JSON description of the output directory, including the resized PNG and its STAC metadata.
 
-You can now delete the test folder:
+You can now delete the test folder and the downloaded application:
 
 ```
-rm -rf ~/toil/storage/test
+rm -rf ~/toil/storage/test ~/convert-url-app.cwl
 ```{{exec}}
 
 Now that we know Toil works correctly, we will install and start the Toil WES service in the next step.

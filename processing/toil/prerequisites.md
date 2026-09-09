@@ -15,9 +15,7 @@ We also need to install uuidgen:
 sudo apt-get install -y uuid-runtime
 ```{{exec}}
 
-Localcoda has already installed Docker as part of the HTCondor setup. Run the compatibility helper before starting nested application containers:
-
-Only run this command if you are using the tutorial virtual machine. 
+This tutorial machine runs the HPC jobs in nested Docker containers. Prepare its container runtime:
 
 ```
 sudo /tmp/assets/prepare-docker-runtime

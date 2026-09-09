@@ -19,12 +19,12 @@ curl --silent --show-error \
   --request POST \
   --header "Content-Type: application/cwl+yaml" \
   --header "Accept: application/json" \
-  --data-binary @/tmp/assets/convert-url-app.cwl \
+  --data-binary @examples/convert-url-app.cwl \
   http://zoo.eoepca.local/test/ogc-api/processes/ \
   | jq
 ```{{exec}}
 
-The first deployment can take around a minute while ZOO-Project generates the process wrapper.
+ZOO-Project generates the process wrapper and returns its description.
 
 If everything worked, `convert-url`{{}} is now included in the list of deployed applications:
 

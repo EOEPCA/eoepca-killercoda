@@ -12,30 +12,28 @@ curl --silent --show-error \
   | jq '.inputs'
 ```{{exec}}
 
-As shown in the CWL, the application accepts three inputs: `fn`, `url`, and `size`.
+As shown in the CWL, the application accepts three inputs: `fn`, `url` and `size`.
 
-Submit an asynchronous execution using their example values:
+Submit an asynchronous execution that resizes a PNG to half its width and height:
 
 ```
 JOB_ID=$(
-  curl --fail --silent --show-error \
-    --request POST \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json" \
-    --header "Prefer: respond-async" \
-    --data @- \
-    http://zoo.eoepca.local/test/ogc-api/processes/convert-url/execution <<EOF \
-  | jq -er '.jobID'
-{
-  "inputs": {
-    "fn": "resize",
-    "url": "https://raw.githubusercontent.com/github/explore/main/topics/kubernetes/kubernetes.png",
-    "size": "50%"
+  curl --silent --show-error \
+    -X POST http://zoo.eoepca.local/test/ogc-api/processes/convert-url/execution \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -H "Prefer: respond-async" \
+    -d @- <<EOF | jq -r '.jobID'
+  {
+    "inputs": {
+      "fn": "resize",
+      "url":  "https://raw.githubusercontent.com/github/explore/main/topics/kubernetes/kubernetes.png",
+      "size": "50%"
+    }
   }
-}
 EOF
 )
-echo "Job ID: $JOB_ID"
+echo "$JOB_ID"
 ```{{exec}}
 
-The API returns a job identifier, which is saved in the `$JOB_ID`{{}} variable for the monitoring commands in the next step. The `--fail` and `jq -e` options prevent an HTTP error or missing job ID from being silently accepted.
+The API returns a job identifier, which is saved in the `$JOB_ID`{{}} variable for the monitoring commands in the next step.

@@ -5,10 +5,8 @@ docker run -d \
   --restart=always \
   --name toil-wes-rabbitmq \
   -p 127.0.0.1:5672:5672 \
-  rabbitmq:3.13-alpine
+  rabbitmq:4.1-alpine
 ```{{exec}}
-
-RabbitMQ is pinned to the validated 3.13 release so that its queue behavior remains compatible with Celery.
 
 Then we need a Celery worker to manage the queue, which we can start with:
 
@@ -38,22 +36,14 @@ TOIL_WES_BROKER_URL=amqp://guest:guest@127.0.0.1:5672// \
 echo "$!" > $HOME/toil.pid
 ```{{exec}}
 
-If everything went well, the Toil WES interface is now available. Poll it for up to one minute:
+The WES interface takes a few seconds to accept requests, so let curl retry until it answers:
 
 ```
-for attempt in {1..12}; do
-  if curl --fail --silent \
-    http://toil-wes.hpc.local:8080/ga4gh/wes/v1/service-info \
-    > /tmp/toil-service-info.json; then
-    break
-  fi
-  sleep 5
-done
-jq '{version, workflow_engine_versions, default_workflow_engine_parameters}' \
-  /tmp/toil-service-info.json
+curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-connrefused \
+  http://toil-wes.hpc.local:8080/ga4gh/wes/v1/service-info | jq
 ```{{exec}}
 
-The response should report Toil 9.3.0 and show HTCondor as a default workflow engine parameter.
+The response reports Toil 9.3.0 and lists `--batchSystem=htcondor` under `default_workflow_engine_parameters`.
 
 We can now go back to our `controlplane` user to install and configure the EOEPCA Processing Building Block:
 
