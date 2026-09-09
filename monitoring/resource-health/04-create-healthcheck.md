@@ -105,23 +105,24 @@ Look for `mock-service-check` in the response. OpenTelemetry batches results
 before writing them to OpenSearch. If the result has not appeared yet, run the
 command again after a few seconds.
 
-### Monitor another Resource Health component
+### Compare a failed check
 
-Create a second check that monitors the Resource Health web service itself:
+Create a check for a missing page on the same mock service. It expects HTTP 200,
+but the service returns 404:
 
 ```bash
-cat <<'EOF' > healthcheck-web.json
+cat <<'EOF' > healthcheck-missing.json
 {
   "data": {
     "type": "check",
     "attributes": {
       "schedule": "*/10 * * * *",
       "metadata": {
-        "name": "resource-health-web-check",
-        "description": "Check the Resource Health web service",
+        "name": "mock-missing-page-check",
+        "description": "Demonstrate a failed check against a missing page",
         "template_id": "simple_ping",
         "template_args": {
-          "endpoint": "http://resource-health-web:80/",
+          "endpoint": "http://resource-health-mock-api:5000/missing-page",
           "expected_status_code": 200
         }
       }
@@ -130,33 +131,57 @@ cat <<'EOF' > healthcheck-web.json
 }
 EOF
 
-WEB_RESPONSE=$(curl -sS -X POST \
+FAILED_RESPONSE=$(curl -sS -X POST \
   "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
   -H "Content-Type: application/vnd.api+json" \
-  -d @healthcheck-web.json)
+  -d @healthcheck-missing.json)
 
-echo "$WEB_RESPONSE" | jq
-WEB_CHECK_ID=$(echo "$WEB_RESPONSE" | jq -r '.data.id')
+echo "$FAILED_RESPONSE" | jq
+FAILED_CHECK_ID=$(echo "$FAILED_RESPONSE" | jq -r '.data.id')
+
+kubectl delete job manual-missing-check -n resource-health --ignore-not-found
+kubectl create job --from=cronjob/"$FAILED_CHECK_ID" \
+  manual-missing-check -n resource-health
+kubectl wait --for=condition=complete job/manual-missing-check \
+  -n resource-health --timeout=180s
+kubectl logs job/manual-missing-check -n resource-health --all-containers \
+  | tail -30
 ```{{exec}}
+
+The pytest summary should report `1 failed`, with HTTP 404 instead of 200.
+The runner records test failures without failing the Kubernetes Job: a completed
+Job means the runner finished, not that the monitored service passed its check.
+
+Query the recorded results again:
+
+```bash
+curl -sS "http://resource-health.eoepca.local/api/telemetry/v1/spans" | jq
+```{{exec}}
+
+Look for `mock-missing-page-check` and its error status. If it has not appeared
+yet, repeat the request after a few seconds.
+
+### Inspect the dashboard
+
+Open the [Resource Health dashboard]({{TRAFFIC_HOST1_81}}). Compare
+`mock-service-check` with `mock-missing-page-check`, then open each check to
+inspect its recorded run and test result. The missing-page check should show
+`FAIL 1` and `assert 404 == 200`; the original check should show `PASS 1`.
+Refresh after a few seconds if telemetry is still arriving.
 
 List the registered checks and their schedules:
 
 ```bash
-curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
-  | jq
+curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" | jq
 ```{{exec}}
-
-Open the [Resource Health dashboard]({{TRAFFIC_HOST1_81}}) to view the two
-checks. The dashboard uses the same Health Checks and Telemetry APIs exercised
-above.
 
 ### Delete a health check
 
-Delete the second check through the API:
+Remove the deliberately failing check through the API:
 
 ```bash
 curl -sS -X DELETE \
-  "http://resource-health.eoepca.local/api/healthchecks/v1/checks/${WEB_CHECK_ID}"
+  "http://resource-health.eoepca.local/api/healthchecks/v1/checks/${FAILED_CHECK_ID}"
 
 curl -sS "http://resource-health.eoepca.local/api/healthchecks/v1/checks/" \
   | jq
@@ -167,3 +192,6 @@ The API also removes its CronJob:
 ```bash
 kubectl get cronjobs -n resource-health
 ```{{exec}}
+
+Keep `mock-service-check` running. It continues to check the mock service every
+five minutes, so you can follow later results in the dashboard.

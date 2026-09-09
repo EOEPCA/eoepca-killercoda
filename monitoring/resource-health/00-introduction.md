@@ -6,7 +6,7 @@ In this tutorial you will:
 
 - Deploy Resource Health using the EOEPCA Deployment Guide
 - Create and run scheduled health checks
-- Query check results through the Telemetry API
+- Compare passing and failing results through the Telemetry API
 - View checks in the web dashboard
 
 The deployment includes the Health Checks API, Telemetry API, web dashboard, OpenTelemetry Collector, OpenSearch and OpenSearch Dashboards.

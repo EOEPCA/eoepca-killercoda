@@ -1,5 +1,6 @@
 
-We have learned in this tutorial how to deploy and use the EOEPCA Resource Health Building Block.
+You have deployed Resource Health, run passing and failing checks, and inspected
+their results through the Telemetry API and dashboard. 
 
 ### Key Concepts
 
