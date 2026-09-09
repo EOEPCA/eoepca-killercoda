@@ -20,7 +20,7 @@ GRAFANA_HOST=${GRAFANA_HOST%%:*}
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update prometheus-community
 helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack \
-  --version 83.1.0 \
+  --version 89.2.4 \
   --namespace operations \
   --create-namespace \
   --values kube-prometheus-stack/generated-values.yaml \
@@ -36,7 +36,7 @@ helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update grafana
 helm upgrade -i loki grafana/loki \
-  --version 6.55.0 \
+  --version 7.3.0 \
   --namespace operations \
   --values loki/generated-values.yaml \
   --set loki.storage.s3.insecure=true \
@@ -63,7 +63,7 @@ helm repo add keephq https://keephq.github.io/helm-charts
 helm repo update keephq
 
 helm upgrade -i keep keephq/keep \
-  --version 0.1.95 \
+  --version 0.1.97 \
   --namespace operations \
   --values keep/generated-values.yaml \
   --wait --timeout 5m
@@ -116,5 +116,5 @@ bash validation.sh
 
 Grafana and Keep are now available through the Localcoda proxy:
 
-- [Grafana]({{TRAFFIC_HOST1_81}})
+- [Grafana]({{TRAFFIC_HOST1_81}}) (see next step for credentials)
 - [Keep]({{TRAFFIC_HOST1_82}})

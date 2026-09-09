@@ -1,4 +1,4 @@
-Welcome to the **[EOEPCA Operations](https://eoepca.readthedocs.io/projects/deploy/en/eoepca-2.1/building-blocks/operations/)** building block tutorial!
+Welcome to the **[EOEPCA Operations](https://eoepca.readthedocs.io/projects/operations/en/latest/)** building block tutorial!
 
 The Operations service is the observability stack for an EOEPCA deployment. It gives operators a single place to see what the cluster is doing: metrics, logs, dashboards, and alerts.
 
