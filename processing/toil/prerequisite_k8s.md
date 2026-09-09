@@ -1,6 +1,6 @@
 A Kubernetes cluster is required by EOEPCA components, together with an ingress controller to expose their interfaces and DNS entries that map the service endpoints.
 
-For simplicity, we use the nginx ingress controller, static DNS entries, and no TLS support, as described in the [EOEPCA prerequisites tutorial](../pre-requisites).
+For simplicity, we use the nginx ingress controller, static DNS entries, and no TLS support, as described in the [EOEPCA prerequisites tutorial](https://killercoda.com/eoepca/scenario/prerequisites).
 
 Check that the Kubernetes ingress controller is installed:
 

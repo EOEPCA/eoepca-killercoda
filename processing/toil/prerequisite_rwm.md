@@ -1,6 +1,6 @@
 A ReadWriteMany Storage Class is a prerequisite for ZOO-Project.
 
-This is not provided by every Kubernetes CSI storage driver or cloud service. It can be installed as described in the [EOEPCA prerequisites tutorial](../../prerequisites).
+This is not provided by every Kubernetes CSI storage driver or cloud service. It can be installed as described in the [EOEPCA prerequisites tutorial](https://killercoda.com/eoepca/scenario/prerequisites).
 
 Here we have installed a `standard`{{}} StorageClass that supports ReadWriteMany. Check that it works by creating a temporary persistent volume claim:
 

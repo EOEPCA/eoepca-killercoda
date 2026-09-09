@@ -11,6 +11,8 @@ docker run -d \
 Then we need a Celery worker to manage the queue, which we can start with:
 
 ```
+source ~/toil/venv/bin/activate
+
 celery \
   --broker=amqp://guest:guest@127.0.0.1:5672// \
   -A toil.server.celery_app multi start w1 \
