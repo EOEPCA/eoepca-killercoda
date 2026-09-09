@@ -68,6 +68,14 @@
       {
         "title": "Monitor a job",
         "text": "monitorproc.md"
+      },
+      {
+        "title": "Retrieve the results",
+        "text": "results.md"
+      },
+      {
+        "title": "Manage the application",
+        "text": "lifecycle.md"
       }
 		],
 		"finish": {
