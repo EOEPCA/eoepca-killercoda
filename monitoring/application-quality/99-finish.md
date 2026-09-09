@@ -1,6 +1,9 @@
 
-We've deployed and explored the EOEPCA Application Quality Building Block in this tutorial.
+We've deployed the EOEPCA Application Quality Building Block, run a quality pipeline against a real
+repository and created a pipeline with our own quality rules.
 
+The deployment is still running, so you can keep exploring the portal, add tools to your pipeline or
+point it at another repository.
 
 ### Further Resources
 

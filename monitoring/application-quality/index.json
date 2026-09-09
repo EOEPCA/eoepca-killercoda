@@ -1,6 +1,6 @@
 {
   "title": "EOEPCA Application Quality BB",
-  "description": "Deploy and explore the Application Quality Building Block for code analysis and quality pipelines.",
+  "description": "Deploy the Application Quality Building Block and run code quality pipelines against a real repository.",
   "details": {
     "intro": {
       "text": "00-introduction.md",
@@ -22,16 +22,20 @@
         "text": "03-deploy.md"
       },
       {
-        "title": "Explore the Application Quality BB",
+        "title": "Explore the Analysis Tools",
         "text": "04-explore.md"
       },
       {
-        "title": "Authenticate with OIDC",
+        "title": "Authenticate",
         "text": "05-authenticate.md"
       },
       {
-        "title": "Create a Sample Pipeline",
-        "text": "06-create-pipeline.md"
+        "title": "Run a Quality Pipeline",
+        "text": "06-run-pipeline.md"
+      },
+      {
+        "title": "Create Your Own Pipeline",
+        "text": "07-create-pipeline.md"
       }
     ],
     "finish": {

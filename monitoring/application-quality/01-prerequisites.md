@@ -27,7 +27,7 @@ Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutori
 local-path
 ```{{exec}}
 
-Disable automatic certificate generation, since Localcoda provides the tutorial's external HTTPS proxy:
+Disable automatic certificate issuance - this tutorial is served over plain HTTP through the Localcoda proxy:
 ```
 no
 ```{{exec}}

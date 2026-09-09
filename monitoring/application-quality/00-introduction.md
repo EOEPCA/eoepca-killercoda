@@ -1,24 +1,20 @@
 Welcome to the **[EOEPCA Application Quality](https://eoepca.readthedocs.io/projects/application-quality/en/latest/)** Building Block tutorial!
 
-The Application Quality BB helps transition scientific algorithms from research prototypes to production-ready workflows. It orchestrates code quality checks, security scans, vulnerability detection and performance testing through configurable pipelines.
+The Application Quality BB helps move scientific algorithms from research prototypes to production
+workflows. It runs code quality checks, security scans and performance measurements as pipelines on
+Kubernetes, and records the results against quality rules that decide whether an application passes.
 
-In this scenario, you'll deploy the Application Quality BB with full authentication, create a quality pipeline and run it against a real image.
+In this scenario you'll deploy the building block with Keycloak authentication, run one of its
+pipelines against a real EOEPCA repository, read the reports it produces, and then define a pipeline
+of your own.
 
-Before proceeding - wait for all prerequisite services to be ready...
-
-```bash
-echo "Waiting for readiness"
-until kubectl wait --for=condition=Ready --all=true -A pod -l 'app!=keycloak-realm-import' --timeout=1m &>/dev/null; do
-  sleep 2
-  echo "Waiting for readiness"
-done
-```{{exec}}
 
 ---
 
 ### What You'll Learn
 
 - Deploy the Application Quality BB with OIDC authentication via Keycloak
-- Navigate the web portal and understand its capabilities
-- Execute a pipeline
-- View analysis results
+- Browse the analysis tools through the API and the web portal
+- Execute a pipeline and watch it run on Kubernetes
+- Read the reports, the quality verdict and the resource usage of a run
+- Define a pipeline with your own quality rules
