@@ -22,8 +22,12 @@
         "text": "03-deploy.md"
       },
       {
-        "title": "Explore Metrics, Logs and Alerts",
+        "title": "Explore Metrics and Logs",
         "text": "04-explore.md"
+      },
+      {
+        "title": "Handle an Alert and Recover",
+        "text": "05-alerts.md"
       }
     ],
     "finish": {

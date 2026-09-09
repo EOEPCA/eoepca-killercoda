@@ -23,7 +23,7 @@ Host URL for the S3-compatible object store: (already set)
 n
 ```{{exec}}
 
-Bucket name for Loki chunk storage. This is a fresh question, since the tutorial environment only pre-seeds the shared MinIO connection details, not a bucket name. A `logging` bucket has already been created for you, so use that:
+Bucket name for Loki chunk storage. Use the `logging` bucket created by the tutorial environment:
 ```
 logging
 ```{{exec}}
