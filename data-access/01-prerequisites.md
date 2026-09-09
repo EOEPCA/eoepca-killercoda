@@ -3,9 +3,6 @@ As usual for EOEPCA, we will use the [EOEPCA Deployment Guide](https://eoepca.re
 
 First, we clone the **release-2.1** branch of the EOEPCA Deployment Guide:
 
-<!-- TODO(release-2.1): once the eoepca-2.1 tag is published, revert this step to the tarball
-     download: curl -L https://github.com/EOEPCA/deployment-guide/tarball/eoepca-2.1 | tar zx
-     --transform 's|^EOEPCA[^/]*|deployment-guide|' -->
 ```
 git clone --branch release-2.1 --depth 1 https://github.com/EOEPCA/deployment-guide.git
 cd deployment-guide/scripts/data-access
@@ -38,7 +35,7 @@ local-path
 ```{{exec}}
 
 
-Disable cert-manager because Localcoda provides the tutorial's external HTTPS proxy:
+Disable cert-manager for this HTTP tutorial environment:
 ```
 no
 ```{{exec}}

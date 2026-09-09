@@ -1,49 +1,27 @@
-Welcome to the **[EOEPCA Data Access](https://eoepca.readthedocs.io/projects/data-access/en/latest/)** building block tutorial!
+The **[EOEPCA Data Access](https://eoepca.readthedocs.io/projects/data-access/en/latest/)** building block serves Earth Observation data through STAC and OGC APIs.
 
-The **Data Access** Building Block provides standard OGC/STAC interfaces to geospatial data assets stored in the platform. This tutorial provides step-by-step instructions to deploy the Data Access BB in a Kubernetes cluster.
+In this tutorial you will:
 
----
+- Deploy eoAPI, PostgreSQL, STAC Manager and titiler-openeo using the deployment guide.
+- Load a Sentinel-2 catalogue covering Iceland.
+- Search for a clear summer scene near Reykjavík.
+- Render true-colour and spectral-band previews, and explore a collection mosaic.
+- Update collection metadata and inspect the change in STAC Manager and STAC Browser.
 
-### What You'll Learn
+The sample catalogue links to public Cloud Optimised GeoTIFFs. Data Access reads these files when you request imagery.
 
-- Deploy the Data Access building block on Kubernetes
-- Load a sample Sentinel-2 collection into the STAC catalogue
-- Query the STAC API for metadata discovery
-- Access raster tiles and visualise imagery
-- Use the STAC Manager UI for catalogue administration
+### Services
 
----
+- **STAC API** — catalogue discovery and transactions, backed by PostgreSQL and pgSTAC.
+- **Raster API** — previews, tiles and mosaics from raster assets.
+- **STAC Browser** — visual catalogue exploration.
+- **STAC Manager** — catalogue browsing and administration.
+- **Vector API** — OGC API Features for vector data.
+- **Multidimensional API** — access to formats such as Zarr and NetCDF.
+- **titiler-openeo** — raster processing through an openEO interface.
 
-### Use Case
+### Environment
 
-Imagine you're building an Earth Observation platform that needs to serve satellite imagery to researchers and applications. You need standardised APIs for data discovery and access.
+Localcoda supplies Kubernetes, NGINX ingress and MinIO. For deployment on your own infrastructure, follow the [EOEPCA prerequisites](https://eoepca.readthedocs.io/projects/deploy/en/latest/prerequisites/).
 
-With Data Access, you can:
-- Catalogue Earth Observation data using STAC (SpatioTemporal Asset Catalog)
-- Serve raster imagery via dynamic tile APIs
-- Provide vector data access through OGC API Features
-- Support multidimensional data formats like Zarr and NetCDF
-- Manage your catalogue through a web-based administration interface
-
-This tutorial deploys the Data Access services, loads sample Sentinel-2 data from Iceland, and demonstrates how to query and visualise the data.
-
----
-
-### Components Overview
-
-The Data Access BB includes:
-- **STAC API** — Metadata catalogue for discovering Earth Observation data
-- **Raster API** — Dynamic tile generation via TiTiler for imagery visualisation
-- **Vector API** — OGC API Features for vector data access
-- **Multidim API** — Access to multidimensional datasets (Zarr, NetCDF)
-- **TiTiler OpenEO** — An OpenEO endpoint for on-the-fly processing and visualization
-- **STAC Manager** — Web interface for catalogue administration
-- **PostgreSQL + pgSTAC** — Database backend for metadata storage
-
----
-
-### Assumptions
-
-This tutorial assumes a generic knowledge of EOEPCA prerequisites (Kubernetes, Object Storage, etc.) and some tools installed on your environment (gomplate, etc.). If you want to know more about what is needed, for example if you want to replicate this tutorial on your own environment, you can follow the <a href="prerequisites" target="_blank" rel="noopener noreferrer">EOEPCA Pre-requisites</a> tutorial.
-
-This tutorial deploys Data Access in a simplified mode without OIDC authentication, suitable for demonstration purposes.
+This tutorial runs without IAM. STAC reads and transactions are unauthenticated; openEO processing requires the credentials generated during configuration.

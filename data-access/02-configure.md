@@ -3,20 +3,11 @@ Before proceeding with the Data Access building block deployment, we need to con
 
 This tutorial environment uses a proxy to route access to running services. We have to ensure that this public URL is correctly configured for the STAC Manager web UI.
 
-The deployment guide expects `EOAPI_PUBLIC_HOST` to contain only a hostname, without `http://` or `https://`. We also retain the complete external URL in `EOAPI_PUBLIC_URL` for the STAC Manager deployment step.
+Set the public URL used by the browser interfaces:
 
 ```bash
-source ~/.eoepca/state
-EOAPI_PROXY_PORT=$(
-  awk -v host="$INGRESS_HOST" '$0 ~ ("eoapi." host) {print $1; exit}' \
-    /tmp/assets/killercodaproxy
-)
-export EOAPI_PUBLIC_URL=$(
-  sed "s/PORT/${EOAPI_PROXY_PORT}/" /etc/killercoda/host
-)
+export EOAPI_PUBLIC_URL="{{TRAFFIC_HOST1_82}}"
 export EOAPI_PUBLIC_HOST="${EOAPI_PUBLIC_URL#*://}"
-
-printf 'Public URL for eoAPI: %s\n' "$EOAPI_PUBLIC_URL"
 ```{{exec}}
 
 Now we can run the configuration script `configure-data-access.sh` provided in the EOEPCA deployment guide:
@@ -91,4 +82,4 @@ head -50 eoapi/generated-values.yaml
 grep -E '^(publicUrl|stacApi):' stac-manager/generated-values.yaml
 ```{{exec}}
 
-The generated STAC Manager URLs use the cluster's HTTP scheme. In the next step, the Helm command overrides them with the HTTPS Localcoda proxy URL.
+The generated STAC Manager URLs use this public hostname. The eoAPI Helm command also sets the STAC Browser catalogue URL for Localcoda.
