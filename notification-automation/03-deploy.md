@@ -2,7 +2,7 @@ We can now deploy Notification and Automation.
 
 ## Install the Knative Operator
 
-The BB chart deploys the webhook source, API server source, CloudEvents player and (if enabled) the emailer and Kafka. It does **not** install Knative itself, that's a separate, mandatory step first:
+Install the Knative Operator before deploying the BB chart:
 
 ```
 helm repo add knative-operator https://knative.github.io/operator
@@ -11,7 +11,7 @@ helm repo update knative-operator
 helm upgrade -i knative-operator knative-operator/knative-operator \
   --namespace knative-operator \
   --create-namespace \
-  --version v1.23.1 \
+  --version v1.19.6 \
   --wait
 ```{{exec}}
 
@@ -28,11 +28,18 @@ kubectl wait --for=condition=Ready knativeserving/knative-serving -n knative-ser
 kubectl wait --for=condition=Ready knativeeventing/knative-eventing -n knative-eventing --timeout=300s
 ```{{exec}}
 
-> The deployment guide has an optional step here to apply a wildcard `ApisixRoute` for Knative Services you deploy yourself, giving each one a public URL. It needs a real DNS-01 `ClusterIssuer`, which this sandbox doesn't have, so we skip it. Nothing in this tutorial needs it: webhooks, the CloudEvents player, and the Trigger we wire up later all work without a public URL for the function itself.
+## Prepare the tutorial inbox
+
+Mailpit is the SMTP server for this exercise. Its manifest creates a Deployment, Service and browser Ingress in the tutorial namespace:
+
+```
+kubectl apply -f /tmp/assets/mailpit.yaml
+kubectl rollout status deployment/mailpit -n notifications --timeout=120s
+```{{exec}}
 
 ## Install the BB chart
 
-This deploys the webhook source (GitHub and GitLab), the API server source, the CloudEvents player and the default broker:
+This deploys the webhook source (GitHub and GitLab), the API server source, the CloudEvents player, emailer and default broker:
 
 ```
 helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev/
@@ -41,6 +48,7 @@ helm repo update eoepca-dev
 helm upgrade -i notification-automation eoepca-dev/notification-automation \
   --namespace notifications \
   --create-namespace \
+  --version 0.1.2 \
   -f generated-na-values.yaml \
   --wait
 ```{{exec}}

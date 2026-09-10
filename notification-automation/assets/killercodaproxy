@@ -1,2 +1,3 @@
 81 cloudevents-player.notifications.eoepca.local 'text/html application/javascript application/json'
 82 webhooks.notifications.eoepca.local 'NONE'
+83 mailpit.notifications.eoepca.local 'text/html application/javascript application/json'

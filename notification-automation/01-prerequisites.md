@@ -17,7 +17,7 @@ Now check the Notification and Automation prerequisites are met:
 bash check-prerequisites.sh
 ```{{exec}}
 
-This is the first Deployment Guide script run in this tutorial, so it will also ask a few questions to establish the shared EOEPCA configuration (domain, storage class, TLS) used by every building block. The domain and ingress class questions are skipped because they've already been set for you by the tutorial environment.
+This is the first Deployment Guide script run in this tutorial, so it will also ask a few questions to establish the shared EOEPCA configuration (domain, storage class, TLS) used by every building block. The HTTP scheme and ingress class questions are skipped because they've already been set for you by the tutorial environment.
 
 > Some configuration has already been established by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
 
@@ -31,9 +31,9 @@ Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutori
 local-path
 ```{{exec}}
 
-We don't use cert-manager to issue certificates for individual services in this tutorial. Localcoda's proxy provides the external HTTPS instead:
+We don't use cert-manager to issue certificates for individual services in this tutorial. The tutorial uses HTTP through the Localcoda proxy:
 ```
 no
 ```{{exec}}
 
-The pre-requisites should now be met. You can ignore the `DNS-01` issuer warning, it is not relevant to this tutorial.
+The prerequisite checks should now pass. A DNS-01 issuer is only needed if you later enable wildcard TLS for your own Knative Services.

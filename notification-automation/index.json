@@ -1,6 +1,6 @@
 {
   "title": "EOEPCA Notification and Automation BB",
-  "description": "Deploy an event-driven workflow layer on Knative - route webhooks and cluster events through CloudEvents, and trigger your own automations.",
+  "description": "Route a signed webhook through Knative and deliver an email to a local inbox.",
   "details": {
     "intro": {
       "text": "00-introduction.md",
@@ -22,7 +22,7 @@
         "text": "03-deploy.md"
       },
       {
-        "title": "Send Events and Trigger an Automation",
+        "title": "Send Events and Deliver Notifications",
         "text": "04-explore.md"
       }
     ],
@@ -32,7 +32,10 @@
     },
     "assets": {
       "host01": [
-        {"file": "*", "target": "/tmp/assets"}
+        {
+          "file": "*",
+          "target": "/tmp/assets"
+        }
       ]
     }
   },

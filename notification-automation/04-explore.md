@@ -1,77 +1,48 @@
-Time to see events flow through the system. A quick note before we start: there is no real GitHub repository and no real Slack workspace involved anywhere in this step. We fake GitHub by sending the exact same kind of HTTP request GitHub would send. We fake Slack with a web address that doesn't exist, so nothing gets posted anywhere, but we can still prove the message would have been sent by reading a log.
+We will notify an attendee when a GitHub push arrives. The webhook source checks the signature and creates a CloudEvent; a Trigger selects push events and delivers them to the emailer.
 
-## Step 1: Send a fake GitHub webhook
+## Send a signed webhook
 
-When code is pushed to a real GitHub repository, GitHub sends an HTTP request to whatever URL you've configured, and signs that request with a secret so the receiver knows it's genuinely from GitHub. We're going to send that same kind of request ourselves, signed with the secret our configuration script generated earlier.
-
-Run this:
+This sample represents a push to the deployment guide's `release-2.1` branch. It does not change the GitHub repository.
 
 ```
 source ~/.eoepca/state
-PAYLOAD='{"repository": {"html_url": "https://github.com/EOEPCA/deployment-guide"}, "ref": "refs/heads/main"}'
-SIGNATURE="sha256=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$NA_GITHUB_WEBHOOK_SECRET" | awk '{print $NF}')"
+PAYLOAD='{"repository":{"html_url":"https://github.com/EOEPCA/deployment-guide"},"ref":"refs/heads/release-2.1"}'
+SIGNATURE="sha256=$(printf '%s' "$PAYLOAD" | openssl dgst -sha256 -hmac "$NA_GITHUB_WEBHOOK_SECRET" | cut -d ' ' -f 2)"
 
-curl -X POST "http://webhooks.notifications.eoepca.local/github" \
+curl -sS -w '\nHTTP %{http_code}\n' \
+  "http://webhooks.notifications.eoepca.local/github" \
   -H "Content-Type: application/json" \
   -H "X-GitHub-Event: push" \
   -H "X-Hub-Signature-256: $SIGNATURE" \
   -d "$PAYLOAD"
 ```{{exec}}
 
-A response of `202` means the webhook source accepted the request and forwarded it as an event onto the `default` broker. Think of the broker as a mailbox: anything can drop an event in, and anything else can subscribe to read from it.
-
-## Step 2: Check the event arrived
-
-The CloudEvents player is a small web page that shows every event passing through the broker. Query it directly:
+Expect `HTTP 202`: the broker accepted the event. Check the player to see delivery:
 
 ```
-curl -s "http://cloudevents-player.notifications.eoepca.local/messages" \
-  | jq '.[] | select(.eventType == "org.eoepca.webhook.github.push")'
+curl -sS http://cloudevents-player.notifications.eoepca.local/messages | jq
 ```{{exec}}
 
-You should see the event we just sent, with our payload inside it. You can also open the player in your browser and watch new events appear as you send them:
+Look for `org.eoepca.webhook.github.push` and the repository URL and branch in the event data. If it has not arrived yet, run the request again after a few seconds.
 
 [Open CloudEvents Player]({{TRAFFIC_HOST1_81}})
 
-## Step 3: See cluster activity arrive automatically
+The API returns the ten most recent events by default. If cluster activity has moved your event out of that list, use `/messages?size=200` or find it in the browser's Activity table.
 
-There's a second source already running, called the API Server Source. It watches Kubernetes for things happening on the cluster (a pod starting, a job finishing, and so on) and drops each one onto the same broker. We didn't have to configure anything for this, it's on by default.
+The player subscribes to all events in the `default` broker. The emailer has no subscription yet, so the inbox should still be empty:
 
-Count how many of these cluster events have shown up so far:
+[Open tutorial inbox]({{TRAFFIC_HOST1_83}})
 
-```
-curl -s "http://cloudevents-player.notifications.eoepca.local/messages" \
-  | jq '[.[] | select(.eventType | startswith("dev.knative.apiserver"))] | length'
-```{{exec}}
+## Subscribe the emailer to push events
 
-This is the same mechanism any EOEPCA Building Block can use to become an event source: as long as something it does shows up as a Kubernetes `Event`, it's already flowing into this broker with no extra setup.
-
-## Step 4: React to an event automatically
-
-Now let's make something happen automatically when a GitHub push event arrives. We'll deploy a small prebuilt app called `send-notification-to-slack`, whose only job is to take a CloudEvent and post its contents to Slack. Then we'll create a Trigger, which is the piece that says "send events of this type to that app".
+A Trigger selects events from a broker for one subscriber. The player keeps its unfiltered subscription; this second Trigger delivers only GitHub push events to the emailer:
 
 ```
-cat <<EOF | kubectl apply -f -
-apiVersion: serving.knative.dev/v1
-kind: Service
-metadata:
-  name: slack-notifier
-  namespace: notifications
-spec:
-  template:
-    spec:
-      containers:
-        - image: ghcr.io/eoepca/send-notification-to-slack:latest
-          env:
-            - name: SLACK_WEBHOOK_URL
-              value: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
-EOF
-
 cat <<EOF | kubectl apply -f -
 apiVersion: eventing.knative.dev/v1
 kind: Trigger
 metadata:
-  name: slack-notifier-github
+  name: emailer-github
   namespace: notifications
 spec:
   broker: default
@@ -80,34 +51,84 @@ spec:
       type: org.eoepca.webhook.github.push
   subscriber:
     ref:
-      apiVersion: serving.knative.dev/v1
+      apiVersion: v1
       kind: Service
-      name: slack-notifier
+      name: notification-automation-emailer
 EOF
 
-kubectl wait --for=condition=Ready ksvc/slack-notifier -n notifications --timeout=120s
+kubectl wait --for=condition=Ready trigger/emailer-github -n notifications --timeout=120s
 ```{{exec}}
 
-The `SLACK_WEBHOOK_URL` above is fake, so it can't actually post anywhere. That's fine for this tutorial, we're only proving the pieces are wired together correctly.
-
-Wait a minute for the service to start up and now re-send the same webhook from Step 1:
+Send another push using the same payload and signature. The new Trigger receives new events; it does not replay the push sent before it existed:
 
 ```
-SIGNATURE="sha256=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$NA_GITHUB_WEBHOOK_SECRET" | awk '{print $NF}')"
-
-curl --max-time 5 -X POST "http://webhooks.notifications.eoepca.local/github" \
+curl -sS -w '\nHTTP %{http_code}\n' \
+  "http://webhooks.notifications.eoepca.local/github" \
   -H "Content-Type: application/json" \
   -H "X-GitHub-Event: push" \
   -H "X-Hub-Signature-256: $SIGNATURE" \
   -d "$PAYLOAD"
 ```{{exec}}
 
-This command will time out after 5 seconds and print an error. That's expected, ignore it. It happens because `send-notification-to-slack` doesn't reply in the exact format Knative expects, so Knative assumes delivery failed and keeps retrying in the background, even though the app already got the event. 
+Open the new message in the [tutorial inbox]({{TRAFFIC_HOST1_83}}). Check the recipient, event type, repository and branch. Match the event `id` in the email body to its entry in the CloudEvents player. This is an email delivered over SMTP by the BB's emailer, captured locally by Mailpit.
 
-To see what actually happened, check the app's own logs:
+You can also inspect the inbox through its API:
 
 ```
-kubectl logs -n notifications -l serving.knative.dev/service=slack-notifier -c user-container --tail=20
+curl -sS http://mailpit.notifications.eoepca.local/api/v1/messages | jq
 ```{{exec}}
 
-You should see it received the event, tried to post to Slack, and got an error, because the Slack address is fake. That error is proof the whole chain worked: webhook in, broker, Trigger, and our app, all the way through. Point `SLACK_WEBHOOK_URL` at a real [Slack Incoming Webhook](https://api.slack.com/apps) and the same setup would post for real.
+Once the inbox contains the new email, read the latest message, including its body:
+
+```
+MESSAGE_ID=$(curl -sS http://mailpit.notifications.eoepca.local/api/v1/messages | jq -r '.messages[0].ID')
+curl -sS "http://mailpit.notifications.eoepca.local/api/v1/message/$MESSAGE_ID" | jq
+```{{exec}}
+
+Check the emailer logs for the delivery:
+
+```
+kubectl logs -n notifications deployment/notification-automation-emailer --tail=20
+```{{exec}}
+
+## Observe the Trigger filter
+
+Create a Kubernetes Event in the namespace watched by the API Server Source:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Event
+metadata:
+  name: notification-demo
+  namespace: notifications
+involvedObject:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: notification-automation-emailer
+  namespace: notifications
+reason: WorkshopDemo
+message: The notification tutorial is running
+type: Normal
+EOF
+```{{exec}}
+
+```
+curl -sS http://cloudevents-player.notifications.eoepca.local/messages | jq
+```{{exec}}
+
+Look for a `dev.knative.apiserver.ref.add` event referencing `notification-demo`. If it has not arrived yet, repeat the request after a few seconds. The API Server Source sends an object reference; inspect the original object to read its message:
+
+```
+kubectl get event notification-demo -n notifications -o yaml
+```{{exec}}
+
+The event appears in the player but produces no email: its type does not match the emailer Trigger. Refresh the inbox to check. The source watches this namespace, not every building block in the cluster.
+
+Remove the sample Kubernetes Event when finished:
+
+```
+kubectl delete event notification-demo -n notifications
+```{{exec}}
+
+Leave the Trigger and inbox running. You can send more signed push requests and inspect the resulting notifications. The broker and inbox use temporary storage in this exercise; they are not a durable event archive.
