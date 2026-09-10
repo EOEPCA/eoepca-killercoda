@@ -1,21 +1,40 @@
 # EOEPCA Tutorials
 
-Please pick one of these, we have four instances running.
+## Release 2.1: quick start
 
-https://lc.tutorials.eoepca.org/
-https://lc.tutorials-two.deploybox.co.uk/
-https://lc.tutorials-three.deploybox.co.uk/
-https://lc.tutorials-four.deploybox.co.uk/
+You need two repositories: **eoepca-killercoda** contains the tutorials, and **Localcoda** runs them with instructions and a terminal in your browser. You do not need a separate Kubernetes cluster.
 
-This respository provides a suite of tutorials that introduce the deployment and usage of the EOEPCA Building Blocks.
+Use a Linux x86-64 machine or VM with Docker installed and accessible to your account (`docker ps` should work). The build also needs Git, curl, jq and zstd. On Ubuntu or Debian, install these with:
 
-The EOEPCA tutorials can be run either directly on [Killercoda](https://killercoda.com/eoepca), or locally using [localcoda](https://github.com/spinto/localcoda).
+```bash
+sudo apt-get update
+sudo apt-get install -y git curl jq zstd
+```
 
-> Due to limitations of the Killercoda cloud service, not all tutorials can be run in this environment. In such cases, then localcoda should be used.
+**Download both repositories and build the Localcoda images:**
 
-## Running on Killercoda
+```bash
+mkdir -p eoepca-tutorials
+cd eoepca-tutorials
+git clone --depth=1 https://github.com/spinto/localcoda.git
+git clone --branch eoepca-2.1 --depth=1 https://github.com/EOEPCA/eoepca-killercoda.git
+cd localcoda
+bash backend/bin/backend_images_build.sh -E docker
+cd ../eoepca-killercoda
+```
 
-Visit the [EOEPCA Tutorials](https://killercoda.com/eoepca) on Killercoda.
+Allow time for the first image build to finish. This uses Localcoda's default Docker runtime; no separate frontend image is needed to run a single tutorial. For Workspace, see the Sysbox instructions below.
+
+**Start a tutorial**, for example Data Access:
+
+```bash
+export LOCALCODA_ROOT="../localcoda"
+bash run.sh data-access
+```
+
+Open the URL printed by the command in your browser. Wait for the environment setup to finish in the tutorial terminal, then follow the pages to deploy and use the Building Block. If running on a remote server, your browser must be able to reach its address and the printed port; see **External Access** below.
+
+---
 
 ## Running on localcoda
 
