@@ -47,19 +47,12 @@ kube_deployment_status_replicas_available{namespace="operations", deployment="op
 The value should be `1`: one replica is available. Allow up to a minute for Prometheus to scrape the metric. To see the same result in the terminal, use Grafana's datasource API:
 
 ```
-METRICS_RESPONSE=$(curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
   "$GRAFANA_URL/api/datasources/proxy/uid/prometheus/api/v1/query" \
-  --data-urlencode 'query=kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}')
-printf '%s\n' "$METRICS_RESPONSE" | jq
+  --data-urlencode 'query=kube_deployment_status_replicas_available{namespace="operations", deployment="operations-demo"}' | jq
 ```{{exec}}
 
-Show just the available replica count:
-
-```
-printf '%s\n' "$METRICS_RESPONSE" | jq -r '.data.result[].value[1]'
-```{{exec}}
-
-If no count appears yet, wait up to a minute and rerun the request above. The `jq` command only reads the saved response; it does not fetch new data.
+Look for `"value": [<timestamp>, "1"]` in `data.result`. If the result is empty, wait a few seconds and rerun the request.
 
 ## Find the request log
 
@@ -72,19 +65,12 @@ In Grafana **Explore**, select **Loki** and run:
 Look for `operations-workshop` and HTTP status `200`. This confirms that Alloy collected nginx's access log and sent it to Loki. The same query is available through the API:
 
 ```
-LOGS_RESPONSE=$(curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
+curl -sS -u "$GRAFANA_USER:$GRAFANA_PASSWORD" -G \
   "$GRAFANA_URL/api/datasources/proxy/uid/loki/loki/api/v1/query_range" \
-  --data-urlencode 'query={namespace="operations", app="operations-demo"} |= "operations-workshop"')
-printf '%s\n' "$LOGS_RESPONSE" | jq
+  --data-urlencode 'query={namespace="operations", app="operations-demo"} |= "operations-workshop"' | jq
 ```{{exec}}
 
-Show just the log lines, without the query statistics:
-
-```
-printf '%s\n' "$LOGS_RESPONSE" | jq -r '.data.result[].values[][1]'
-```{{exec}}
-
-Logs can take up to a minute to appear. Rerun the request to refresh `LOGS_RESPONSE`, then display the log lines again.
+Logs can take up to a minute to appear. Rerun the request if `data.result` is empty; the log lines appear under `values`.
 
 ## View resource use
 

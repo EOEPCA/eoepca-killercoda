@@ -10,7 +10,7 @@ bash apply-secrets.sh
 
 The core monitoring stack is deployed first so that its CRDs (`ServiceMonitor`, `PrometheusRule`, `AlertmanagerConfig`) are available for the components that follow. This is the biggest image pull in this tutorial, so it can take a few minutes:
 
-> **Localcoda only:** The `GRAFANA_HOST` lines and the three `--set` flags are exclusively for this environment. Grafana is reached through the Localcoda proxy hostname, which it must trust to accept requests from the browser.
+> **Localcoda only:** The `GRAFANA_HOST` lines and the three `--set` flags are exclusively for this environment. Grafana must trust the Localcoda proxy hostname. The node-exporter flags accommodate the containerised host: disable the root filesystem mount and read network interface information through netlink.
 
 ```
 GRAFANA_HOST=$(sed 's/PORT/81/' /etc/killercoda/host)
@@ -20,7 +20,7 @@ GRAFANA_HOST=${GRAFANA_HOST%%:*}
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update prometheus-community
 helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack \
-  --version 89.2.4 \
+  --version 83.1.0 \
   --namespace operations \
   --create-namespace \
   --values kube-prometheus-stack/generated-values.yaml \
@@ -36,7 +36,7 @@ helm upgrade -i kube-prometheus-stack prometheus-community/kube-prometheus-stack
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update grafana
 helm upgrade -i loki grafana/loki \
-  --version 7.3.0 \
+  --version 6.55.0 \
   --namespace operations \
   --values loki/generated-values.yaml \
   --set loki.storage.s3.insecure=true \
@@ -63,7 +63,7 @@ helm repo add keephq https://keephq.github.io/helm-charts
 helm repo update keephq
 
 helm upgrade -i keep keephq/keep \
-  --version 0.1.97 \
+  --version 0.1.95 \
   --namespace operations \
   --values keep/generated-values.yaml \
   --wait --timeout 5m
