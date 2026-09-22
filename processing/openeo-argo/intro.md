@@ -8,7 +8,7 @@ This tutorial will guide you through:
 - Deploying the OpenEO ArgoWorkflows API together with its PostgreSQL, Redis, Argo Workflows and Dask Gateway dependencies.
 - Configuring OIDC authentication through the EOEPCA IAM Building Block.
 - Deploying the EOEPCA Resource Discovery Building Block as a STAC data source, and registering a small Sentinel-2 sample.
-- Exploring the OpenEO API and submitting a batch processing job.
+- Exploring the OpenEO API and running an NDVI batch job on that sample.
 - Monitoring the Argo Workflow and Dask execution.
 
 This tutorial assumes basic familiarity with Kubernetes and EOEPCA.

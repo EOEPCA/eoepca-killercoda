@@ -104,7 +104,7 @@ cat <<'EOF' > CAT_DEMO.json
     "links": [],
     "extent": {
       "spatial": {"bbox": [[4.998, 52.000, 5.052, 52.050]]},
-      "temporal": {"interval": [["2026-06-13T00:00:00Z", "2026-06-13T00:00:00Z"]]}
+      "temporal": {"interval": [["2026-06-25T00:00:00Z", "2026-06-25T00:00:00Z"]]}
     }
 }
 EOF
@@ -129,9 +129,9 @@ cat <<'EOF' > demo-item.json
       "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
       "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
     ],
-    "id": "S2B_31UFT_20260613_demo-crop",
+    "id": "S2C_31UFT_20260625_demo-crop",
     "collection": "sentinel-2-demo",
-    "properties": {"datetime": "2026-06-13T10:46:19Z", "proj:epsg": 32631},
+    "properties": {"datetime": "2026-06-25T10:46:39Z", "proj:epsg": 32631},
     "geometry": {
       "type": "Polygon",
       "coordinates": [[[4.998,52.000],[5.052,52.000],[5.052,52.050],[4.998,52.050],[4.998,52.000]]]

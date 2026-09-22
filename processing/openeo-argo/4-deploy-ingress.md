@@ -8,7 +8,7 @@ kubectl apply -f generated-ingress.yaml
 
 ### Create the Keycloak client
 
-The OpenEO API validates OIDC bearer tokens itself, so it needs a Keycloak client to check tokens against. `configure-openeo-argo.sh` already rendered `generated-iam.yaml` - a Crossplane `Client` CRD for the client, plus a `ClientDefaultScopes` override so its tokens carry the `profile`/`email`/`roles`/`basic` scopes:
+The OpenEO API validates OIDC bearer tokens itself, so it needs a Keycloak client to check tokens against. `configure-openeo-argo.sh` already rendered `generated-iam.yaml` - a Crossplane `Client` CRD for the client, the two `eduperson` client scopes the backend can use for OIDC policies, and a `ClientDefaultScopes` override that assigns them:
 
 ```bash
 kubectl apply -f generated-iam.yaml

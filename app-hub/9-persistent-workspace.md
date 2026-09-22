@@ -15,7 +15,15 @@ kubectl get pvc,configmap -n ws-eric
 
 > The Hub creates the user namespace as part of the first server start, so a profile's claim and config maps are only created from the second start onwards.
 
-In JupyterLab, open **File > New > Terminal** and write a file to the workspace:
+In JupyterLab, open **File > New > Terminal**. The files from the config maps are already in place:
+
+```
+cat ~/new-cm
+```
+
+The profile declares that file and its content, and the Hub writes it into the user's environment at spawn time. A production deployment uses the same mechanism to deliver object storage and registry credentials.
+
+Now write a file to the workspace:
 
 ```
 echo "hello from the Application Hub" > /workspace/notes.txt

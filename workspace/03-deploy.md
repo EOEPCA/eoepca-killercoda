@@ -17,7 +17,7 @@ The workspace dependencies include CSI-RClone for storage mounting and the Educa
 helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update kyverno
 helm upgrade -i kyverno kyverno/kyverno \
-  --version 3.9.0 \
+  --version 3.7.2 \
   --namespace kyverno \
   --create-namespace \
   --set backgroundController.enabled=true \
@@ -26,18 +26,18 @@ helm upgrade -i kyverno kyverno/kyverno \
 # Deploy CSI-RClone
 helm upgrade -i workspace-dependencies-csi-rclone \
   oci://ghcr.io/eoepca/workspace/workspace-dependencies-csi-rclone \
-  --version 2.2.0 \
+  --version 2.2.1 \
   --namespace workspace
 
 # Deploy Educates
 helm upgrade -i workspace-dependencies-educates \
   oci://ghcr.io/eoepca/workspace/workspace-dependencies-educates \
-  --version 2.2.0 \
+  --version 2.2.1 \
   --namespace workspace \
   --values workspace-dependencies/educates-values.yaml
 ```{{exec}}
 
-Educates gives every Datalab session's own registry component a per-session `Ingress`, but doesn't set an `ingressClassName` on it - so on an APISIX-only cluster it's created but never actually routable. Apply a Kyverno policy to fix this on every session:
+Educates does not set an `ingressClassName` on the per-session registry `Ingress`, so APISIX never routes it. Apply a Kyverno policy that sets it on every session:
 
 ```bash
 kubectl apply -f workspace-dependencies/kyverno-registry-ingress-class.yaml
@@ -63,7 +63,7 @@ The Workspace Pipeline manages the templating and provisioning of resources with
 ```bash
 helm upgrade -i workspace-pipeline \
   oci://ghcr.io/eoepca/workspace/workspace-pipeline \
-  --version 2.2.0 \
+  --version 2.2.1 \
   --namespace workspace \
   --values workspace-pipeline/generated-values.yaml
 ```{{exec}}
@@ -78,7 +78,8 @@ kubectl apply -f workspace-cleanup/datalab-cleaner.yaml
 
 ## Crossplane Provider Configurations
 
-Each Crossplane provider used by the Workspace BB needs a `ProviderConfig` in the `workspace` namespace (the MinIO provider is the exception - already configured cluster-wide in the Crossplane prerequisites):
+Each Crossplane provider used by the Workspace BB needs a `ProviderConfig` in the `workspace` namespace. The MinIO provider already has one, configured cluster-wide in the prerequisites.
+
 
 ```bash
 kubectl apply -f workspace-dependencies/provider-configs.yaml
@@ -88,7 +89,7 @@ kubectl apply -f workspace-dependencies/provider-configs.yaml
 
 The workspace pipeline needs its own Keycloak client, `workspace-pipeline`, so it can self-serve a Keycloak client/roles/groups for every workspace it provisions.
 
-Look up the UUID of Keycloak's built-in `realm-management` client (adopted below, since role grants reference it and it isn't created by the IAM Building Block itself):
+The role grants below reference Keycloak's built-in `realm-management` client, so look up its UUID:
 
 ```bash
 source ~/.eoepca/state
@@ -106,7 +107,7 @@ export REALM_MANAGEMENT_CLIENT_UUID=$( \
 )
 ```{{exec}}
 
-Render and apply the `workspace-pipeline` client, the adopted `realm-management` client, and the `realm-management` role grants it needs (`manage-users`, `manage-authorization`, `manage-clients`, `create-client`, and the composite `realm-admin` - required because the Keycloak Terraform provider Crossplane uses calls the realm's `serverinfo` admin endpoint on every connection, which only `realm-admin` can reach):
+Render and apply the `workspace-pipeline` client, the `realm-management` client, and the `realm-management` roles the pipeline needs: `manage-users`, `manage-authorization`, `manage-clients`, `create-client` and `realm-admin`.
 
 ```bash
 source ~/.eoepca/state
@@ -133,7 +134,9 @@ kubectl -n workspace create secret tls workspace-tls \
 
 ## Keycloak Client for the Workspace API
 
-Render and apply the `workspace-api` Keycloak client, with protocol mappers so its tokens carry an `aud` claim naming itself (the workspace-api app rejects tokens lacking this) and a `groups` claim (used to resolve workspace ownership/membership). This also creates an `admin` client role and a `workspace-admin` group granting it, with `KEYCLOAK_TEST_ADMIN` added as a member - the app itself checks this role (independent of any ingress-layer enforcement) to grant access across every workspace rather than just ones the caller owns:
+Render and apply the `workspace-api` Keycloak client. Its protocol mappers add the `aud` and `groups` claims that the Workspace API requires in a token.
+
+This also creates an `admin` client role, and a `workspace-admin` group holding it with `eoepcaadmin` as a member. Members of that group can manage every workspace, not only their own.
 
 ```bash
 source ~/.eoepca/state

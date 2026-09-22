@@ -4,6 +4,7 @@
   "items": [
     { "path": "toil" },
     { "path": "calrissian" },
-    { "path": "openeo-geotrellis" }
+    { "path": "openeo-geotrellis" },
+    { "path": "openeo-argo" }
   ]
 }
