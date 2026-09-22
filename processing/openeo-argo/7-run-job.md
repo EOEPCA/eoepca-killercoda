@@ -42,7 +42,7 @@ echo "Created job: ${JOB_ID}"
 A job sits in `created` status until started:
 
 ```bash
-curl -fsS -X POST "${OPENEO_URL}/jobs/${JOB_ID}/results" \
+curl -fsS "${OPENEO_URL}/jobs/${JOB_ID}" \
   -H "Authorization: Bearer ${AUTH_TOKEN}"
 echo
 ```{{exec}}
