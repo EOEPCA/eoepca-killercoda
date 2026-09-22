@@ -59,12 +59,3 @@ curl -fsS "${OPENEO_URL}/processes" \
 
 These are the same discovery endpoints used by OpenEO clients (such as the Python client or the Web Editor) to build and validate process graphs.
 
-### OpenEO Web Editor
-
-You can also connect the public [OpenEO Web Editor](https://editor.openeo.org) to this backend from your own browser:
-
-```
-https://editor.openeo.org?server={{TRAFFIC_HOST1_81}}/openeo/1.1.0/
-```
-
-Select `EOEPCA` and log in via the IAM Keycloak instance with `eoepcauser`{{copy}} / `eoepcapassword`{{copy}}.
