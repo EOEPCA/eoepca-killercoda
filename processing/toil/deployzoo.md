@@ -43,4 +43,4 @@ curl --silent --show-error \
 
 If everything worked, the response contains an `echo` processing service. This is a simple built-in demonstration process. We will add our own application in the next step.
 
-You can also explore the interface in the [Swagger UI]({{TRAFFIC_HOST1_81}}/swagger-ui/oapip/).
+You can also explore the interface in the [Swagger UI]({{TRAFFIC_HOST1_81}}/swagger-ui/oapip/) - within the tutorial environment you will need to change the URL to explore to the one exposed outside its container, `{{TRAFFIC_HOST1_81}}/ogc-api/api`.
