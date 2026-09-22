@@ -39,5 +39,3 @@ You can check the status of the IAM deployment with:
 ```bash
 kubectl get pods -n iam
 ```{{exec}}
-
-Wait until all pods show `Running` status before proceeding.
