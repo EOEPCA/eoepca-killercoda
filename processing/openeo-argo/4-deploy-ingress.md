@@ -29,4 +29,4 @@ while [[ $(curl -s -o /dev/null -w "%{http_code}" -L http://openeo-argo.eoepca.l
 curl -s -L http://openeo-argo.eoepca.local/openeo/1.1.0 | jq '{title, api_version, backend_version}'
 ```{{exec}}
 
-The OpenEO ingress is also available through the Localcoda proxy at [this link]({{TRAFFIC_HOST1_81}}).
+The OpenEO ingress is also available through the Localcoda proxy at [this link]({{TRAFFIC_HOST1_81}}/openeo/1.1.0/).
