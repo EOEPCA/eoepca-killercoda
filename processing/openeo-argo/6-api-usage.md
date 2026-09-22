@@ -19,13 +19,7 @@ export OPENEO_URL="http://openeo-argo.eoepca.local/openeo/1.1.0"
 Inspect the API capabilities:
 
 ```bash
-curl -fsS "${OPENEO_URL}/" \
-  | jq '{
-      title,
-      api_version,
-      backend_version,
-      endpoint_count: (.endpoints | length)
-    }'
+curl -fsS "${OPENEO_URL}/" | jq '{title, api_version, backend_version}'
 ```{{exec}}
 
 Check that the token is valid on a protected endpoint:
@@ -47,14 +41,10 @@ curl -fsS "${OPENEO_URL}/collections/sentinel-2-demo" \
   | jq '{id, title, extent}'
 ```{{exec}}
 
-Finally, summarize the available processes:
+Finally, list the processes this backend advertises - `ndvi`, used in the next step, is one of them:
 
 ```bash
-curl -fsS "${OPENEO_URL}/processes" \
-  | jq '{
-      count: (.processes | length),
-      examples: [.processes[0:10][].id]
-    }'
+curl -fsS "${OPENEO_URL}/processes" | jq '[.processes[].id] | sort'
 ```{{exec}}
 
 These are the same discovery endpoints used by OpenEO clients (such as the Python client or the Web Editor) to build and validate process graphs.

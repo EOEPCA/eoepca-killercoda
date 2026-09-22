@@ -6,7 +6,7 @@ set -euo pipefail
 
 BUCKET="${OPENEO_SAMPLE_BUCKET:-eoepca}"
 PREFIX="${OPENEO_SAMPLE_PREFIX:-openeo-samples}"
-SRC_TILE="https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/31/U/FT/2026/6/S2B_31UFT_20260613_0_L2A"
+SRC_TILE="https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/31/U/FT/2026/6/S2C_31UFT_20260625_0_L2A"
 WORK_DIR="${OPENEO_SAMPLE_WORK_DIR:-/tmp/openeo-sample-data}"
 POD_NAME="openeo-sample-crop"
 
