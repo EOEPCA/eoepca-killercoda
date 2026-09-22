@@ -35,4 +35,4 @@ List the built-in processes:
 curl -sS http://zoo.eoepca.local/ogc-api/processes/ | jq
 ```{{exec}}
 
-The response includes the sample `echo` process. You can also explore the API in the [Swagger UI]({{TRAFFIC_HOST1_81}}/swagger-ui/oapip/).
+The response includes the sample `echo` process. You can also explore the API in the [Swagger UI]({{TRAFFIC_HOST1_81}}/swagger-ui/oapip/) - within the tutorial environment you will need to change the URL to explore to the one exposed outside its container, `{{TRAFFIC_HOST1_81}}/swagger-ui/oapip/`.
