@@ -7,16 +7,14 @@ First, create the namespace and apply secrets:
 bash apply-secrets.sh
 ```{{exec}}
 
-The Application Quality BB is deployed from the Helm chart in its GitHub repository. Clone it and
-update the chart dependencies:
+The Application Quality BB is deployed from the Helm chart in its GitHub repository. Clone it and update the chart dependencies:
 
 ```
 git clone --branch reference-deployment https://github.com/EOEPCA/application-quality.git reference-repo
 helm dependency update reference-repo/application-quality-reference-deployment
 ```{{exec}}
 
-Deploy using Helm with the generated values. The first run pulls the API, frontend and PostgreSQL
-images, so it can take a few minutes:
+Deploy using Helm with the generated values. The first run pulls the API, frontend and PostgreSQL images, so it can take a few minutes:
 
 ```
 helm upgrade -i application-quality reference-repo/application-quality-reference-deployment \
@@ -39,9 +37,7 @@ You should see three components running:
 - **application-quality-db** — PostgreSQL database
 - **application-quality-web** — the web portal
 
-The API creates its local admin account before it applies the database migrations, so a first
-install cannot create that account, nor load the catalogue of analysis tools and pipelines that
-belongs to it. Restart the API once to complete the initialisation:
+The API creates its local admin account before it applies the database migrations, so a first install cannot create that account, nor load the catalogue of analysis tools and pipelines that belongs to it. Restart the API once to complete the initialisation:
 
 ```
 kubectl rollout restart deployment/application-quality-api -n application-quality
@@ -51,8 +47,7 @@ curl --fail --show-error --silent --retry 30 --retry-all-errors --retry-delay 2 
   "${HTTP_SCHEME}://${APP_QUALITY_PUBLIC_HOST}/api/tools/" | jq
 ```{{exec}}
 
-Now create the Keycloak client for Application Quality. The configuration script rendered it as a
-Crossplane `Client`{{}} resource:
+Now create the Keycloak client for Application Quality. The configuration script rendered it as a Crossplane `Client`{{}} resource:
 
 ```
 kubectl apply -f generated-iam.yaml

@@ -1,6 +1,5 @@
 
-With the Application Quality BB deployed, let's look at what it offers through its API. Set the
-public URL once, so the following commands stay short:
+With the Application Quality BB deployed, let's look at what it offers through its API. Set the public URL once, so the following commands stay short:
 
 ```bash
 source ~/.eoepca/state
@@ -8,26 +7,23 @@ export AQ_URL="${HTTP_SCHEME}://${APP_QUALITY_PUBLIC_HOST}"
 echo "$AQ_URL"
 ```{{exec}}
 
-### Discover the API
+## Discover the API
 
 ```
 curl -sS "$AQ_URL/api/" | jq
 ```{{exec}}
 
-The API exposes analysis **tools**, **tags**, **pipelines**, and the **triggers** that can start a
-pipeline automatically from an external event.
+The API exposes analysis **tools**, **tags**, **pipelines**, and the **triggers** that can start a pipeline automatically from an external event.
 
-### List the available analysis tools
+## List the available analysis tools
 
 ```
 curl -sS "$AQ_URL/api/tools/" | jq -r '.[].name'
 ```{{exec}}
 
-Each tool is a CWL sub-workflow that runs in its own container: linters such as Flake8, Pylint and
-Ruff, the security scanner Bandit, the container image scanner Trivy, and validators for Jupyter
-notebooks and OGC Application Packages.
+Each tool is a CWL sub-workflow that runs in its own container: linters such as Flake8, Pylint and Ruff, the security scanner Bandit, the container image scanner Trivy, and validators for Jupyter notebooks and OGC Application Packages.
 
-### Examine a tool in detail
+## Examine a tool in detail
 
 Bandit finds common security issues in Python code:
 
@@ -44,7 +40,7 @@ Compare that with Trivy, which scans a container image rather than source files:
 curl -sS "$AQ_URL/api/tools/trivy_subworkflow/" | jq
 ```{{exec}}
 
-### Browse the tool categories
+## Browse the tool categories
 
 Tags group the tools by the asset they analyse and the kind of check they perform:
 
@@ -52,5 +48,4 @@ Tags group the tools by the asset they analyse and the kind of check they perfor
 curl -sS "$AQ_URL/api/tags/" | jq -r '.[].name'
 ```{{exec}}
 
-Tools and tags are readable without logging in. Pipelines and their runs are not - that is what we
-set up next.
+Tools and tags are readable without logging in. Pipelines and their runs are not - that is what we set up next.
