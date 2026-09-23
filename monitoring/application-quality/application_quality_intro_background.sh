@@ -9,4 +9,5 @@ bash "${SCRIPT_DIR}/../../commons/intro_background.sh"
 AQ_PROXY_PORT="$(awk '$2 == "application-quality.eoepca.local" {print $1}' /tmp/assets/killercodaproxy)"
 AQ_PUBLIC_HOST="$(sed "s/PORT/${AQ_PROXY_PORT}/" /etc/killercoda/host | sed -E 's#^https?://##')"
 sed -i "s/proxy_set_header Host application-quality.eoepca.local;/proxy_set_header Host ${AQ_PUBLIC_HOST};/" /etc/nginx/nginx.conf
+sed -i "s/proxy_set_header X-Forwarded-Proto \\\$http_x_forwarded_proto;/proxy_set_header X-Forwarded-Proto http;/g" /etc/nginx/nginx.conf
 nginx -s reload
