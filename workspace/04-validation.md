@@ -71,6 +71,21 @@ kubectl get ns ws-${KEYCLOAK_TEST_USER}
 kubectl get storage/ws-${KEYCLOAK_TEST_USER} datalab/ws-${KEYCLOAK_TEST_USER} -n workspace
 ```{{exec}}
 
+**Resources provisioned for the workspace...**
+
+Crossplane creates the workspace's object storage and its Keycloak client, roles and
+groups from those two custom resources:
+
+```bash
+kubectl get buckets,users -n workspace
+kubectl get clients,roles.role.keycloak.m.crossplane.io,groups.group.keycloak.m.crossplane.io -n workspace
+```{{exec}}
+
+The `Bucket` and `User` are the workspace's object storage and the S3 credentials
+returned below. Access is shared through the Keycloak groups: members of `ws-eoepcauser`
+hold the `ws_access` role of the `ws-eoepcauser` client, and members of `ws-eoepcauser-admin`
+hold `ws_admin`. The owner, `eoepcauser`, is a member of both.
+
 ### Get Workspace Details
 
 Authenticate as `eoepcauser` - the owner of the newly created workspace
@@ -99,3 +114,10 @@ curl -X GET "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/workspaces/ws-${KEYC
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   | jq
 ```{{exec}}
+
+In the response:
+
+* `status` is `ready`
+* `storage.credentials` holds the S3 access key and secret for the workspace bucket
+* `datalab.sessions` lists the `default` session, which is `stopped`
+* `user.permissions` lists what the owner may do, such as `MANAGE_BUCKETS` and `MANAGE_SESSIONS`

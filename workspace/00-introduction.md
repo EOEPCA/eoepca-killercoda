@@ -2,13 +2,12 @@ Deploy the **[EOEPCA Workspace](https://eoepca.readthedocs.io/projects/workspace
 
 ## **What You'll Learn**
 
-- Deploy the Workspace building block on Kubernetes
-- Enable the Workspace BB for Crossplane integration
-- Establish integration with IAM for sharing management
-- Explore the Workspace REST API
-- Create a new Workspace and explore its UI
-- Connect with the Workspace object storage
-- Create custom workloads in the user's vCluster
+- Deploy the Workspace building block and its Crossplane provisioning pipeline
+- Integrate it with IAM for API and Datalab login
+- Create a workspace through the Workspace REST API and inspect what it provisions
+- Use the workspace object storage and add a bucket
+- Process data in a Datalab session and keep the result
+- Run workloads in the workspace's own vCluster
 
 ---
 

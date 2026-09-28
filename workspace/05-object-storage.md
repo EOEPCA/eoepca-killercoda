@@ -1,4 +1,4 @@
-Each workspace has a dedicated S3 bucket. Use the workspace owner's credentials to upload a small sample of vegetation-index observations, then read it from the Datalab in the next step.
+Each workspace has a dedicated S3 bucket. Use the workspace owner's credentials to upload a small sample of vegetation-index observations, and add a second bucket for results. The next step processes the sample in the Datalab.
 
 ## Get Storage Credentials
 
@@ -39,7 +39,7 @@ mc ls "mystorage/$BUCKET"
 
 ## Upload Sample Observations
 
-These three illustrative observations are enough to exercise the storage and development environment:
+A small CSV of vegetation-index readings is enough to exercise the storage and the Datalab:
 
 ```bash
 cat > observations.csv <<'EOF'
@@ -52,14 +52,36 @@ mc cp observations.csv "mystorage/$BUCKET/observations.csv"
 mc ls "mystorage/$BUCKET"
 ```{{exec}}
 
-The listing should contain `observations.csv`.
+The listing should contain `observations.csv`. Leave it in the bucket - the next step reads it from the Datalab.
 
-## Download and Compare
+## Storage Isolation
+
+The credentials only give access to this workspace's buckets. Try to list the platform's `eoepca` bucket:
 
 ```bash
-mc cp "mystorage/$BUCKET/observations.csv" downloaded-observations.csv
-diff observations.csv downloaded-observations.csv
-rm downloaded-observations.csv
+mc ls mystorage/eoepca
 ```{{exec}}
 
-No output from `diff` means that the downloaded data matches the original. Leave the object in the bucket - the next step reads it from the Datalab.
+MinIO answers `Access Denied`.
+
+## Add a Bucket
+
+The workspace owner can add buckets through the Workspace API. Add one to hold processing results:
+
+```bash
+curl --silent --show-error -X PUT \
+  "${HTTP_SCHEME}://workspace-api.${INGRESS_HOST}/workspaces/ws-${KEYCLOAK_TEST_USER}" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"add_buckets": [{"name": "ws-eoepcauser-results"}]}' | jq
+```{{exec}}
+
+Crossplane creates the bucket and adds it to the workspace's storage policy:
+
+```bash
+kubectl -n workspace wait --for=create bucket/ws-eoepcauser-results --timeout=1m
+kubectl -n workspace wait --for=condition=Ready bucket/ws-eoepcauser-results --timeout=2m
+mc ls mystorage
+```{{exec}}
+
+Both `ws-eoepcauser` and `ws-eoepcauser-results` are listed, using the same credentials. If the new bucket is missing, run `mc ls mystorage`{{exec}} again after a few seconds - its access policy is attached to the workspace credentials just after the bucket is ready.
