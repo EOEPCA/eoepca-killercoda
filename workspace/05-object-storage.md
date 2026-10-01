@@ -76,12 +76,11 @@ curl --silent --show-error -X PUT \
   -d '{"add_buckets": [{"name": "ws-eoepcauser-results"}]}' | jq
 ```{{exec}}
 
-Crossplane creates the bucket and adds it to the workspace's storage policy:
+Crossplane creates the bucket and grants the workspace credentials access to it:
 
 ```bash
-kubectl -n workspace wait --for=create bucket/ws-eoepcauser-results --timeout=1m
-kubectl -n workspace wait --for=condition=Ready bucket/ws-eoepcauser-results --timeout=2m
+kubectl get buckets
 mc ls mystorage
 ```{{exec}}
 
-Both `ws-eoepcauser` and `ws-eoepcauser-results` are listed, using the same credentials. If the new bucket is missing, run `mc ls mystorage`{{exec}} again after a few seconds - its access policy is attached to the workspace credentials just after the bucket is ready.
+Both `ws-eoepcauser` and `ws-eoepcauser-results` should be listed, using the same credentials. This takes a few seconds - if the new bucket is missing, run the commands again.

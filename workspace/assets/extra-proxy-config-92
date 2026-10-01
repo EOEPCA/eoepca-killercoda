@@ -1,0 +1,1 @@
+proxy_set_header Origin "http://editor-ws-eoepcauser-default.eoepca.local";

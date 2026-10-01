@@ -64,6 +64,8 @@ If the `Configuring session` cover remains visible, close it with the cross in t
 
 The dashboard provides a terminal, an editor and a file browser for the workspace buckets.
 
+> NOTE that the `Data` file browser is not available in this Tutorial. It mounts the bucket over FUSE, which the Tutorial's container runtime does not support, so its `data-ws-eoepcauser-default` pod stays in `CrashLoopBackOff` with a mount propagation error. The terminal and editor are not affected. Use the `aws` client in the terminal instead.
+
 ## Process the Observations
 
 The commands in this section run in the Datalab **terminal**, not in the Tutorial shell.
@@ -152,7 +154,7 @@ kubectl -n ws-${KEYCLOAK_TEST_USER} rollout status \
   deployment/ws-${KEYCLOAK_TEST_USER}-default --timeout=5m
 ```{{exec}}
 
-Reopen the Datalab and check what was kept, in its terminal:
+Reopen the [Datalab]({{TRAFFIC_HOST1_91}}/). As on the first start, it may return `502` for a few seconds until the new session's gateway is running - reload until the dashboard appears. Then check what was kept, in its terminal:
 
 ```bash
 ls ~
@@ -200,8 +202,6 @@ kubectl -n ws-${KEYCLOAK_TEST_USER}-default-vc get pods
 The host node reports a different `VERSION`. The `web` and `check` pods appear with names rewritten by the vCluster, next to its control plane, `my-vcluster-0`.
 
 The `web` deployment stays in the workspace's cluster for further experimentation. Unlike the buckets and the home directory, the vCluster is recreated when the session stops and starts again.
-
-> NOTE that the `Data` file browser is not available in this Tutorial. It mounts the bucket over FUSE, which the Tutorial's container runtime does not support. Use the `aws` client in the terminal, as above.
 
 ## Keep the Session Available
 
