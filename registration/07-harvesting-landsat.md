@@ -24,9 +24,9 @@ helm upgrade -i registration-harvester-worker-landsat eoepca-dev/registration-ha
 We also need the Landsat 8-9 OLI/TIRS Collection 2 Level-2 STAC collection to harvest into:
 
 ```
-curl -X POST "http://registration-api.eoepca.local/processes/register/execution" \
+curl -s -X POST "http://registration-api.eoepca.local/processes/register/execution" \
   -H "Content-Type: application/json" \
-  -d @- <<EOF
+  -d @- <<EOF | jq
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/landsat/landsat-ot-c2-l2.json"},
@@ -91,7 +91,7 @@ and Operaton's job statuses can be seen with
 
 ```
 source ~/.eoepca/state
-curl ${HTTP_SCHEME}://registration-harvester-bpm-engine.${INGRESS_HOST}/engine-rest/job | jq .
+curl -s ${HTTP_SCHEME}://registration-harvester-bpm-engine.${INGRESS_HOST}/engine-rest/job | jq .
 ```{{exec}}
 
 You can also use the Operaton UIs, the [task list]({{TRAFFIC_HOST1_88}}/operaton/app/tasklist/), [cockpit]({{TRAFFIC_HOST1_88}}/operaton/app/cockpit/) and [admin]({{TRAFFIC_HOST1_88}}/operaton/app/admin/) apps. Use `grep OPERATON_ADMIN ~/.eoepca/state`{{exec}} to see the login details.
@@ -100,7 +100,7 @@ You can also use the Operaton UIs, the [task list]({{TRAFFIC_HOST1_88}}/operaton
 Once complete, the catalogue will contain the harvested items which you can see with
 
 ```
-curl "http://eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2/items" | jq
+curl -s "http://eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2/items" | jq
 ```{{exec}}
 
-The harvested items are best visualised via the [Data Access BB's STAC Browser]({{TRAFFIC_HOST1_89}}/browser/#/external/eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2/items).
+The harvested items are best visualised via the [Data Access BB's STAC Browser]({{TRAFFIC_HOST1_89}}/browser/stac/collections/landsat-ot-c2-l2/items).

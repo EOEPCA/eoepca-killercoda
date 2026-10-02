@@ -20,7 +20,7 @@ And we create the ingress for our newly created Resource Registration API servic
 kubectl apply -f registration-api/generated-ingress.yaml
 ```{{exec}}
 
-Finally, we must register the harvester as a Keycloak client - even though the target STAC API doesn't itself require authentication, the generic STAC-catalog harvester used later needs a working IAM client to start up correctly:
+Finally, we must register the harvester as a Keycloak client - even though the target STAC API doesn't itself require authentication, the generic STAC-catalog harvester used later always requests an access token before it writes to the catalogue:
 
 ```
 source ~/.eoepca/state
@@ -28,10 +28,12 @@ kubectl apply -f generated-iam.yaml
 kubectl wait --for=condition=Ready client.openidclient.keycloak.m.crossplane.io/${RESOURCE_REGISTRATION_IAM_CLIENT_ID} -n iam-management --timeout=60s
 ```{{exec}}
 
-Now we wait for the Resource Registration pods to start. This may take some time, especially in this demo environment. To automatically wait until all service to are ready and the catalogue responds correctly you can run:
+Now we wait for the Registration API to start and answer requests. This may take some time, especially in this demo environment:
 
 ```
-while [[ `curl -s -o /dev/null -w "%{http_code}" "http://registration-api.eoepca.local/"` != 200 ]]; do sleep 1; done
+curl -sf -o /dev/null --retry 30 --retry-delay 10 --retry-all-errors \
+  "http://registration-api.eoepca.local/" \
+  && echo "Registration API is serving requests"
 ```{{exec}}
 
 Once deployed, the Resource Registration OGC Processes API should be accessible at `http://registration-api.eoepca.local`{{}}
@@ -44,11 +46,13 @@ You can also check the status of the Kubernetes resources directly
 kubectl get all -n resource-registration
 ```{{exec}}
 
-We can also see the provided registration processes via
+We can also list the processes the Registration API provides:
 
 ```
-curl -s http://registration-api.eoepca.local/processes | jq
+curl -s http://registration-api.eoepca.local/processes | jq '.processes[].id'
 ```{{exec}}
+
+`register`{{}} and `deregister`{{}} add and remove resources, and `pyeomp-record-validate`{{}} checks a record against the EOEPCA Metadata Profile.
 
 
 Or have a look at in the browser at [this link]({{TRAFFIC_HOST1_82}}) (come back here afterwards, the tutorial is not over).

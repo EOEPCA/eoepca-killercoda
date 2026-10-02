@@ -72,7 +72,11 @@ helm upgrade -i registration-harvester-worker-stac eoepca-dev/registration-harve
 
 ## Validation
 
-Operaton and the harvester worker may take several minutes to start.
+Operaton and the harvester worker may take several minutes to start. Wait for them:
+
+```
+kubectl wait --for=condition=Available deployment --all -n resource-registration --timeout=10m
+```{{exec}}
 
 We can validate the deployment and check that startup has completed with the provided script `validation.sh`{{}}
 

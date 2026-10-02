@@ -5,9 +5,9 @@ The target of this registration request is the STAC endpoint of the Data Access 
 Note that, as this tutorial's Registration API and Data Access BB are both deployed without IAM protection, no authentication is required for this request. See the full EOEPCA Deployment Guide to see an example of Resource Registration API access with a bearer token.
 
 ```
-curl -X POST "http://registration-api.eoepca.local/processes/register/execution" \
+curl -s -X POST "http://registration-api.eoepca.local/processes/register/execution" \
   -H "Content-Type: application/json" \
-  -d @- <<EOF
+  -d @- <<EOF | jq
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/landsat/landsat-ot-c2-l2.json"},
@@ -17,12 +17,14 @@ curl -X POST "http://registration-api.eoepca.local/processes/register/execution"
 EOF
 ```{{exec}}
 
+The response contains `resource-and-data-catalogue-link`{{}}, the URL of the collection now registered in the STAC API.
+
 Similarly, we register the Sentinel 2 L2A Collection 1 STAC collection, used later if you choose to do the optional Sentinel harvesting step:
 
 ```
-curl -X POST "http://registration-api.eoepca.local/processes/register/execution" \
+curl -s -X POST "http://registration-api.eoepca.local/processes/register/execution" \
   -H "Content-Type: application/json" \
-  -d @- <<EOF
+  -d @- <<EOF | jq
 {
     "inputs": {
         "source": {"rel": "collection", "href": "https://raw.githubusercontent.com/EOEPCA/registration-harvester/refs/heads/main/etc/collections/sentinel/sentinel-2-c1-l2a.json"},
@@ -35,7 +37,7 @@ EOF
 A OGC Processes API Job should have run to ingest the Collection. You can see its state using the API
 
 ```
-curl http://registration-api.eoepca.local/jobs | jq
+curl -s http://registration-api.eoepca.local/jobs | jq
 ```{{exec}}
 
 The jobs status can also be viewed through the [web UI of the Registration API]({{TRAFFIC_HOST1_82}}/jobs).
@@ -43,13 +45,13 @@ The jobs status can also be viewed through the [web UI of the Registration API](
 You should be able to see the ingested collections in the Data Access BB's STAC API
 
 ```
-curl http://eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2 | jq
+curl -s http://eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2 | jq
 ```{{exec}}
 
 and for Sentinel 2
 
 ```
-curl http://eoapi.eoepca.local/stac/collections/sentinel-2-c1-l2a | jq
+curl -s http://eoapi.eoepca.local/stac/collections/sentinel-2-c1-l2a | jq
 ```{{exec}}
 
-Alternatively, the registered collections can be seen in the [Data Access BB's STAC Browser]({{TRAFFIC_HOST1_89}}/browser/): [**Landsat**]({{TRAFFIC_HOST1_89}}/browser/#/external/eoapi.eoepca.local/stac/collections/landsat-ot-c2-l2), [**Sentinel**]({{TRAFFIC_HOST1_89}}/browser/#/external/eoapi.eoepca.local/stac/collections/sentinel-2-c1-l2a)
+Alternatively, the registered collections can be seen in the [Data Access BB's STAC Browser]({{TRAFFIC_HOST1_89}}/browser/): [**Landsat**]({{TRAFFIC_HOST1_89}}/browser/stac/collections/landsat-ot-c2-l2), [**Sentinel**]({{TRAFFIC_HOST1_89}}/browser/stac/collections/sentinel-2-c1-l2a)

@@ -2,12 +2,10 @@ Before proceeding with the Resource Registration building block deployment, we n
 
 This includes configuration of the URL through which the harvested 'eodata' assets can be retrieved. This tutorial environment uses a proxy to route access to running services. Thus, we have to ensure that this proxied URL is well configured within the deployment.
 
+The tutorial proxy serves `eodata.eoepca.local` on port 84, so we fill that port into the tutorial's host URL template:
+
 ```bash
-source ~/.eoepca/state
-EODATA_EXT_URL="$(
-  sed "s#PORT#$(awk -v host="$INGRESS_HOST" '$0 ~ ("eodata." host) {print $1}' /tmp/assets/killercodaproxy)#" \
-    /etc/killercoda/host
-)"
+EODATA_EXT_URL="$(sed 's#PORT#84#' /etc/killercoda/host)"
 echo "External host for eodata: ${EODATA_EXT_URL}/"
 ```{{exec}}
 
@@ -38,7 +36,7 @@ no
 no
 ```{{exec}}
 
-To simplify demonstration we opt not to put the resource registration behind authentication. This tutorial's Data Access BB itself is deployed without IAM too, so the STAC API it registers into does not require authentication either - but the generic STAC-catalog harvester used later still needs an IAM client to be configured for it to start up correctly, so we still enable client support:
+To simplify demonstration we opt not to put the resource registration behind authentication. This tutorial's Data Access BB itself is deployed without IAM too, so the STAC API it registers into does not require authentication either - but the generic STAC-catalog harvester used later always requests an access token before it writes to the catalogue, so we still enable client support:
 
 ```
 no

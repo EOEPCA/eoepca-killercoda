@@ -36,10 +36,14 @@ It may take a few seconds to harvest. The harvester worker's log output can be v
 kubectl -n resource-registration logs -f deploy/registration-harvester-worker-stac
 ```{{exec}}
 
+Each scene is published with a `POST .../collections/sentinel-2-l2a/items`{{}} request answered with `201 Created`{{}}.
+
 Once complete, the two harvested scenes are visible directly via the STAC API:
 
 ```
-curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-l2a/items" | jq '[.features[] | {id, datetime: .properties.datetime}]'
+curl -s "http://eoapi.eoepca.local/stac/collections/sentinel-2-l2a/items" | jq '.features[].id'
 ```{{exec}}
 
-and via the STAC Browser bundled with the Data Access BB, at [this link]({{TRAFFIC_HOST1_89}}/browser/#/external/eoapi.eoepca.local/stac/collections/sentinel-2-l2a) or within the cluster at `http://eoapi.eoepca.local/browser/#/external/eoapi.eoepca.local/stac/collections/sentinel-2-l2a`.
+The STAC harvester copies the metadata only. The asset links in these items still point to the Planetary Computer storage.
+
+The scenes can also be browsed in the STAC Browser bundled with the Data Access BB, at [this link]({{TRAFFIC_HOST1_89}}/browser/stac/collections/sentinel-2-l2a).

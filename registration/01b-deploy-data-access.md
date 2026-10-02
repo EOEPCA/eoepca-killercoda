@@ -35,7 +35,7 @@ no
 1Gi
 ```{{exec}}
 
-Disable IAM - this tutorial's STAC catalogue stays fully open. The Resource Registration BB deployed later still enables its own IAM client, due to a limitation in the harvester explained at that point:
+Disable IAM - this tutorial's STAC catalogue stays fully open. The Resource Registration BB deployed later still needs its own IAM client, for a reason explained at that point:
 ```
 no
 openeo
@@ -90,7 +90,7 @@ helm upgrade -i eoapi eoapi/eoapi \
 kubectl apply -f eoapi/generated-ingress.yaml
 ```{{exec}}
 
-> This also creates routes for Raster, Vector, Multidim, STAC Manager and titiler-openeo, none of which are deployed in this tutorial - requests to those specific paths will fail, `/stac` and `/browser` are unaffected. It also fails to create two `Certificate` resources, since cert-manager isn't installed in this tutorial - expected, as this tutorial doesn't use HTTPS.
+> This also creates routes for Raster, Vector, Multidim, STAC Manager and titiler-openeo, none of which are deployed in this tutorial - requests to those specific paths will fail, `/stac` and `/browser` are unaffected.
 
 ### Wait for Readiness
 
