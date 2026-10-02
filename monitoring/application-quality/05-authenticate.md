@@ -10,7 +10,7 @@ Managing pipelines requires an authenticated user. The portal signs users in thr
    - Password: `eoepcapassword`{{}}
 4. Keycloak redirects you back to the portal, which now shows your username in the top navigation.
 
-You can now browse **Pipelines**, **Monitoring** and **Reports** in the portal.
+You can now browse **Analysis Pipelines**, **Pipelines Executions** and **Execution Reports** in the portal.
 
 ## Get an API token for this terminal
 

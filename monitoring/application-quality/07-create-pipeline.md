@@ -16,7 +16,7 @@ export PIPELINE_ID=$(echo "$PIPELINE" | jq -r '.id')
 echo "$PIPELINE" | jq
 ```{{exec}}
 
-The pipeline now appears under **Pipelines** in the portal, alongside the built-in ones.
+The pipeline now appears under **Analysis Pipelines** in the portal, alongside the built-in ones.
 
 ## Run it against the same repository
 
@@ -28,7 +28,7 @@ RUN=$(
     -d '{"parameters": {"clone_subworkflow": {"clone": {"repo_url": "https://github.com/EOEPCA/app-package-validation", "repo_branch": "main"}}}}'
 )
 export RUN_ID=$(echo "$RUN" | jq -r '.id')
-echo "$RUN" | jq
+echo "$RUN" | jq 'del(.executed_cwl)'
 ```{{exec}}
 
 Check the pods come up in the run's namespace:
@@ -40,10 +40,16 @@ kubectl get pods -n applicationqualitypipeline-$RUN_ID
 With only one analysis tool this run usually finishes sooner. Check it until the status is `succeeded`{{}}:
 
 ```
-curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/$PIPELINE_ID/runs/$RUN_ID/" | jq
+curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/$PIPELINE_ID/runs/$RUN_ID/?fields=status,job_reports_count,digest_quality" | jq
 ```{{exec}}
 
-Compare `digest`{{}} with the first run. This rule permits warnings, but still fails on security or critical issues. A passing verdict means the findings meet this rule; it does not mean that Bandit found no issues.
+Then look at its digest:
+
+```
+curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/$PIPELINE_ID/runs/$RUN_ID/" | jq '.digest'
+```{{exec}}
+
+Compare it with the first run. This rule permits warnings, but still fails on security or critical issues. A passing verdict means the findings meet this rule; it does not mean that Bandit found no issues.
 
 ## Look at what Bandit found
 
@@ -55,8 +61,8 @@ Each result names the test that fired, the file and line, and the severity and c
 
 ## Where to go next
 
-The pipeline stays in the deployment, so you can keep experimenting: add another tool to it, point it at one of your own repositories, or run it again from the portal and watch it under **Monitoring**.
+The pipeline stays in the deployment, so you can keep experimenting: add another tool to it, point it at one of your own repositories, or run it again from the portal and watch it under **Pipelines Executions**. List its runs so far:
 
 ```
-curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/$PIPELINE_ID/runs/" | jq
+curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/$PIPELINE_ID/runs/?fields=id,status,digest_quality,start_time" | jq
 ```{{exec}}

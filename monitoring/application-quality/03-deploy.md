@@ -37,12 +37,14 @@ You should see three components running:
 - **application-quality-db** — PostgreSQL database
 - **application-quality-web** — the web portal
 
-The API creates its local admin account before it applies the database migrations, so a first install cannot create that account, nor load the catalogue of analysis tools and pipelines that belongs to it. Restart the API once to complete the initialisation:
+The API creates its local admin account before it applies the database migrations, so a first install cannot create that account, nor load the catalogue of analysis tools and pipelines that belongs to it. Wait for the API to finish its migrations and respond, then restart it once to complete the initialisation:
 
 ```
+source ~/.eoepca/state
+curl --fail --show-error --silent --retry 30 --retry-all-errors --retry-delay 2 \
+  "${HTTP_SCHEME}://${APP_QUALITY_PUBLIC_HOST}/api/tools/" > /dev/null
 kubectl rollout restart deployment/application-quality-api -n application-quality
 kubectl rollout status deployment/application-quality-api -n application-quality --timeout=5m
-source ~/.eoepca/state
 curl --fail --show-error --silent --retry 30 --retry-all-errors --retry-delay 2 \
   "${HTTP_SCHEME}://${APP_QUALITY_PUBLIC_HOST}/api/tools/" | jq
 ```{{exec}}

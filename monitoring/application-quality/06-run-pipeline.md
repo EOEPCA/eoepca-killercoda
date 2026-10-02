@@ -23,10 +23,12 @@ RUN=$(
     -d '{"parameters": {"clone_subworkflow": {"clone": {"repo_url": "https://github.com/EOEPCA/app-package-validation", "repo_branch": "main"}}}}'
 )
 export RUN_ID=$(echo "$RUN" | jq -r '.id')
-echo "$RUN" | jq
+echo "$RUN" | jq 'del(.executed_cwl)'
 ```{{exec}}
 
-The same thing can be done from the portal: **Pipelines** → the execute icon (a lightning bolt) on the pipeline → fill in the repository URL → **Execute Pipeline**.
+The response also contains `executed_cwl`{{}}, the single CWL workflow generated from the pipeline's tools. It is long, so it is left out here.
+
+The same thing can be done from the portal: **Analysis Pipelines** → the execute icon (a lightning bolt) on the pipeline → fill in the repository URL → **Execute**.
 
 ## Watch it run
 
@@ -36,12 +38,12 @@ Each run gets its own Kubernetes namespace, named after the run id. Calrissian r
 kubectl get pods -n applicationqualitypipeline-$RUN_ID
 ```{{exec}}
 
-Run that again after a few seconds to see the step pods come and go. Open **Analysis Pipelines Executions** in the portal to follow the same run: it shows each stage's status and the execution timeline.
+Run that again after a few seconds to see the step pods come and go. Open **Pipelines Executions** in the portal to follow the same run: it shows each stage's status and the execution timeline.
 
-Check the run itself. It moves from `starting`{{}} to `running`{{}} and finally to `succeeded`{{}}; image downloads can make the first run take several minutes:
+Check the run itself, asking the API for just the fields we need. It moves from `starting`{{}} to `running`{{}} and finally to `succeeded`{{}}; image downloads can make the first run take several minutes:
 
 ```
-curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/6/runs/$RUN_ID/" | jq
+curl -sS -H "Authorization: Bearer $AQ_TOKEN" "$AQ_URL/api/pipelines/6/runs/$RUN_ID/?fields=status,job_reports_count,digest_quality" | jq
 ```{{exec}}
 
 Repeat that command until the status is `succeeded`{{}} and four job reports have been collected.  The run resources are removed after completion, so the pod listing above becomes empty.
@@ -51,7 +53,7 @@ Repeat that command until the status is `succeeded`{{}} and four job reports hav
 Each tool posts its findings back to the API as a job report, with a digest counting the issues it found by severity:
 
 ```
-curl -sS "$AQ_URL/api/pipelines/6/runs/$RUN_ID/jobreports/" | jq
+curl -sS "$AQ_URL/api/pipelines/6/runs/$RUN_ID/jobreports/" | jq '.[].digest'
 ```{{exec}}
 
 The run aggregates those counts and evaluates the pipeline's quality rules against them:
@@ -68,7 +70,7 @@ The full report of each tool is kept as well. Ruff's findings, for example, name
 curl -sS "$AQ_URL/api/pipelines/6/runs/$RUN_ID/jobreports/?name=ruff" | jq '.[0].output[0]'
 ```{{exec}}
 
-In the portal, the **Reports** tab shows the same reports per run and per tool.
+In the portal, **Execution Reports** shows the same reports per run and per tool.
 
 ## Inspect execution resources
 
