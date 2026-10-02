@@ -4,7 +4,7 @@ The metadata used here describes two real Sentinel-2 Level-2A scenes, one over c
 
 ### Get an access token
 
-The `resource-catalogue` Keycloak client has the OAuth2 device authorization grant enabled, which is the simplest way to get a token in a terminal.
+The `resource-catalogue` Keycloak client has the OAuth2 device authorization grant enabled, which is the simplest way to get a token in a terminal. The client also requires PKCE, so we first create a random verifier and send its SHA-256 hash (the challenge) with the request.
 
 ```
 source ~/.eoepca/state
@@ -17,10 +17,10 @@ DEVICE=$(curl -sS -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/pro
   --data-urlencode "code_challenge=${CHALLENGE}" \
   --data-urlencode "code_challenge_method=S256")
 
-echo "$DEVICE" | jq -r '"Open \(.verification_uri_complete) and log in as eoepcauser"'
+echo "$DEVICE" | jq -r '.verification_uri_complete'
 ```{{exec}}
 
-Open the printed URL and log in as `eoepcauser`{{}} / `eoepcapassword`{{}}, a user which the deployment scripts added to the `resource-catalogue-admin` group. The first time this client is used, Keycloak also asks you to grant it access - click **Yes**. Now exchange the device code for a token:
+Open the printed URL and log in as `eoepcauser`{{}} / `eoepcapassword`{{}}, a user which the deployment scripts added to the `resource-catalogue-admin` group. Keycloak then asks you to grant the client access - click **Yes**. Now exchange the device code for a token:
 
 ```
 DEVICE_CODE=$(echo "$DEVICE" | jq -r '.device_code')

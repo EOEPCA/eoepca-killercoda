@@ -32,7 +32,7 @@ Next, we deploy the software using the same Helm chart as for the read-only inst
 ```
 helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
   --values generated-protected-values.yaml \
-  --version 2.1.0-dev2 \
+  --version 2.1.0-dev1 \
   --namespace resource-discovery \
   --create-namespace
 ```{{exec}}

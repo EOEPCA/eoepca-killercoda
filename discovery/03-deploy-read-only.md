@@ -12,7 +12,7 @@ Then we deploy the software via helm, using the configuration values generated i
 ```
 helm upgrade -i resource-catalogue eoepca-dev/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.1.0-dev2 \
+  --version 2.1.0-dev1 \
   --namespace resource-discovery \
   --create-namespace
 ```{{exec}}
@@ -24,7 +24,7 @@ kubectl apply -f generated-ingress.yaml
 ```{{exec}}
 
 
-Now we wait for the Resource Discovery pods to start. This may take some time, especially in this demo environment. The catalogue restarts a couple of times while its database initialises.
+Now we wait for the Resource Discovery pods to start. This may take some time, especially in this demo environment.
 
 ```
 while ! kubectl wait --for=condition=Ready --all=true -n resource-discovery pod --timeout=1m &>/dev/null; do
@@ -35,15 +35,18 @@ done
 echo -e "\nResource Discovery is READY"
 ```{{exec}}
 
-Once deployed, the Resource Discovery STAC API should be accessible at `http://resource-catalogue.eoepca.local`{{}}
-
-We can validate it with the provided script `validation.sh`{{}}
+The catalogue restarts a couple of times while its database initialises, and its pod reports ready before it can serve requests. Wait until the catalogue answers:
 
 ```
-bash validation.sh
+source ~/.eoepca/state
+curl -sf -o /dev/null --retry 30 --retry-delay 10 --retry-all-errors \
+  "${HTTP_SCHEME}://resource-catalogue.${INGRESS_HOST}/" \
+  && echo "Resource Discovery is serving requests"
 ```{{exec}}
 
-We can also check manually the provided STAC API via:
+Once deployed, the Resource Discovery STAC API should be accessible at `http://resource-catalogue.eoepca.local`{{}}
+
+We can check the STAC API via:
 
 ```
 curl -s "http://resource-catalogue.eoepca.local/stac" | jq

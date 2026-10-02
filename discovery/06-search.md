@@ -28,7 +28,7 @@ Filters are combined, so asking for September acquisitions over Italy matches no
 curl -s -X POST "http://resource-catalogue.eoepca.local/stac/search" \
   -H "Content-Type: application/json" \
   -d '{"bbox": [11, 41, 13, 43], "datetime": "2024-09-01T00:00:00Z/2024-09-30T23:59:59Z", "limit": 10}' \
-  | jq '{numberMatched, features: [.features[].id]}'
+  | jq '.numberMatched'
 ```{{exec}}
 
 `numberMatched`{{}} is `0`{{}}. Moving the box over Greece brings the Athens scene back:
@@ -37,7 +37,7 @@ curl -s -X POST "http://resource-catalogue.eoepca.local/stac/search" \
 curl -s -X POST "http://resource-catalogue.eoepca.local/stac/search" \
   -H "Content-Type: application/json" \
   -d '{"bbox": [23, 36, 25, 38], "datetime": "2024-09-01T00:00:00Z/2024-09-30T23:59:59Z", "limit": 10}' \
-  | jq '{numberMatched, features: [.features[].id]}'
+  | jq '.features[].id'
 ```{{exec}}
 
 ### Search other catalogues at the same time

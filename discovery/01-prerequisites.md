@@ -25,7 +25,7 @@ Next we need to check the specific Resource Discovery BB prerequisites for insta
 bash check-prerequisites.sh
 ```{{exec}}
 
-This is the first Deployment Guide script run in this tutorial, so it will also ask a few questions to establish the shared EOEPCA configuration (domain, storage class, TLS) used by every building block. The ingress class question is skipped because APISIX has already been selected for you by the tutorial environment.
+This is the first Deployment Guide script run in this tutorial, so it will also ask a few questions to establish the shared EOEPCA configuration (domain, storage class, TLS) used by every building block. The HTTP scheme and ingress class questions are skipped because the tutorial environment has already set them to `http`{{}} and `apisix`{{}}.
 
 > Some configuration has already been established by the startup scripts of the tutorial environment. In these cases we can answer `n`{{}} to accept the current value.
 
@@ -39,7 +39,7 @@ Use `local-path`{{}} to provide persistent Kubernetes volumes inside this tutori
 local-path
 ```{{exec}}
 
-Disable cert-manager because Localcoda provides the tutorial's external HTTPS proxy:
+Disable cert-manager, since the services in this tutorial are served over plain HTTP:
 ```
 no
 ```{{exec}}
