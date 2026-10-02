@@ -6,6 +6,7 @@ In this tutorial you will:
 - Load a Sentinel-2 catalogue covering Iceland.
 - Search for a clear summer scene near Reykjavík.
 - Render true-colour and spectral-band previews, and explore a collection mosaic.
+- Publish an openEO process graph as a map tile service.
 - Update collection metadata and inspect the change in STAC Manager and STAC Browser.
 
 The sample catalogue links to public Cloud Optimised GeoTIFFs. Data Access reads these files when you request imagery.
