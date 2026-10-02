@@ -85,11 +85,14 @@ The dataset summary should show the `Longitude`, `Latitude`, and `Day` variables
 
 ### Build a Processing Chain
 
+The client builds a process graph locally. Nothing runs on the backend until the graph is executed:
+
 ```python
 cube_processed = connection.load_collection(
     collection_id=collection_id,
     temporal_extent=["2024-09-01", "2024-09-30"],
-    spatial_extent=spatial_extent
+    spatial_extent=spatial_extent,
+    bands=["Day"],
 )
 
 cube_processed = cube_processed.filter_temporal(["2024-09-10", "2024-09-20"])
@@ -112,6 +115,17 @@ if validation_errors:
 
 print("✓ Graph is valid and saved")
 ```{{exec}}
+
+### Run the Processing Chain
+
+Send the chain to the backend and inspect the result:
+
+```python
+cube_processed.download("processed.nc")
+print(xarray.load_dataset("processed.nc"))
+```{{exec}}
+
+The test collection has samples on 5, 15 and 25 September, so only the 15 September sample passes the temporal filter. The `t` dimension has been reduced away, and every `Day` value is `1500` (15 × 100).
 
 ### Band Mathematics
 

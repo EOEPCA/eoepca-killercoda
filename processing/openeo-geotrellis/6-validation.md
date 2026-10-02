@@ -1,3 +1,11 @@
+First, run the Deployment Guide validation script. It checks the pods, services, the `batch-jobs` service account and the OpenEO endpoints:
+
+```bash
+bash validation.sh
+```{{exec}}
+
+It should finish with `openEO validation succeeded`.
+
 Now validate the deployment directly through the OpenEO HTTP API.
 
 Because OIDC is disabled, the workshop backend accepts a demo username and a password formed by appending `123` to that username. Basic auth in OpenEO is a two-step handshake: exchange your real HTTP Basic credentials for an access token at `/credentials/basic`, then use that token (not the raw base64 credentials) as the bearer token on every other call:

@@ -8,6 +8,6 @@ By the end of this tutorial, you will have:
 - Deployed the Spark Operator, ZooKeeper, and the OpenEO GeoTrellis application.
 - Exposed the OpenEO API through NGINX Ingress.
 - Validated API discovery, demo authentication, and synchronous processing.
-- Used the Python OpenEO client to download data and build a process graph.
+- Used the Python OpenEO client to download data and build and run a process graph.
 
 The image preparation and Helm deployments take several minutes, so wait for each command to finish before continuing. This tutorial assumes basic familiarity with Kubernetes and EOEPCA.
