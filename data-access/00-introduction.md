@@ -23,6 +23,6 @@ The sample catalogue links to public Cloud Optimised GeoTIFFs. Data Access reads
 
 ### Environment
 
-Localcoda supplies Kubernetes, NGINX ingress and MinIO. For deployment on your own infrastructure, follow the [EOEPCA prerequisites](https://eoepca.readthedocs.io/projects/deploy/en/latest/prerequisites/).
+Localcoda supplies Kubernetes, NGINX ingress and MinIO. For deployment on your own infrastructure, follow the [EOEPCA prerequisites](https://eoepca.readthedocs.io/projects/deploy/en/latest/prerequisites/prerequisites-overview/).
 
 This tutorial runs without IAM. STAC reads and transactions are unauthenticated; openEO processing requires the credentials generated during configuration.

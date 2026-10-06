@@ -1,6 +1,6 @@
 The CLI is convenient for a person at a terminal, but applications often need an HTTP interface. EODAG can expose its providers through a STAC API, allowing standard STAC clients to search the same gateway.
 
-> **Note**: This used to be part of eodag and is now stac-fastapi-eodag
+> **Note**: The STAC server is provided by the separate `stac-fastapi-eodag` package.
 
 ### Start the STAC Server
 
