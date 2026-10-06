@@ -10,7 +10,7 @@ bash apply-secrets.sh
 The Application Quality BB is deployed from the Helm chart in its GitHub repository. Clone it and update the chart dependencies:
 
 ```
-git clone --branch reference-deployment https://github.com/EOEPCA/application-quality.git reference-repo
+git clone --branch 2.1.0 https://github.com/EOEPCA/application-quality.git reference-repo
 helm dependency update reference-repo/application-quality-reference-deployment
 ```{{exec}}
 
