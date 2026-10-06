@@ -26,6 +26,14 @@ Visit the [EOEPCA Tutorials](https://killercoda.com/eoepca) on Killercoda.
 >   * ref. locacoda configuration `VIRT_ENGINE=sysbox`
 >   * see [Run localcoda using sysbox](https://github.com/spinto/localcoda/blob/main/docs/ADVANCED_CONFIG.md#run-using-sysbox)
 
+> **Setup Alternative - `codavm`**
+> 
+> The setup included here establishes a 'native' localcoda setup. Alternatively you can use `codavm` that provides a pre-packaged virtual machine including docker, sysbox, localcoda and eoepca-killercoda - deployed and ready for execution of the tutorials.
+> 
+> `codavm` relies upon Vagrant to provision the VM, with an appropriate provider such as VirtualBox or libvirt.
+> 
+> See [here](https://github.com/rconway/codavm) for details of [`codavm`](https://github.com/rconway/codavm).
+
 ### Setup
 
 Create a local root directory for the tutorials and localcoda environment.
