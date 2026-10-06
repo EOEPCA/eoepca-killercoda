@@ -174,3 +174,5 @@ deactivate
 ```{{exec}}
 
 To build a process graph visually, open the [OpenEO Web Editor connected to this backend](https://editor.openeo.org/?server={{TRAFFIC_HOST1_81}}). Authenticate with username `testuser`{{copy}} and password `testuser123`{{copy}}, then use the **Processes** panel to reproduce the examples by connecting process nodes.
+
+> Note: The above usage of the OpenEO Web Editor is only possible if the openEO backend is exposed publicly via https. Thus, it will not work with `.nip.io` addresses that are restricted to HTTP and are not publicly accessible.
