@@ -3,6 +3,9 @@ We can now deploy the Resource Registration building block's API service.
 We deploy the software via helm, using the configuration values generated in the previous step.
 
 ```
+helm repo add eoepca https://eoepca.github.io/helm-charts
+helm repo update eoepca
+# TODO - remove this when catalogue and reg-api have a stable release
 helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
 helm repo update eoepca-dev
 

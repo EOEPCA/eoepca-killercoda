@@ -11,7 +11,7 @@ By default this worker registers harvested metadata into the Resource Discovery 
 
 ```
 source ~/.eoepca/state
-helm upgrade -i registration-harvester-worker-sentinel eoepca-dev/registration-harvester \
+helm upgrade -i registration-harvester-worker-sentinel eoepca/registration-harvester \
   --version 2.0.0 \
   --namespace resource-registration \
   --create-namespace \

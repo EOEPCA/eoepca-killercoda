@@ -7,18 +7,18 @@ First, create the namespace and apply the Resource Health secrets:
 bash apply-secrets.sh
 ```{{exec}}
 
-The Resource Health BB is deployed from the published EOEPCA Helm charts-dev repository:
+The Resource Health BB is deployed from the published EOEPCA Helm charts repository:
 
 ```
-helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev/
-helm repo update eoepca-dev
+helm repo add eoepca https://eoepca.github.io/helm-charts/
+helm repo update eoepca
 ```{{exec}}
 
 Now deploy the Resource Health BB using the generated values and the
 Localcoda-specific compatibility values:
 
 ```
-helm upgrade -i resource-health eoepca-dev/resource-health-reference-deployment \
+helm upgrade -i resource-health eoepca/resource-health-reference-deployment \
   --version 2.1.3 \
   -f generated-values.yaml \
   -f /tmp/assets/localcoda-values.yaml \

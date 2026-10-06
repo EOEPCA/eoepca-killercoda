@@ -63,7 +63,7 @@ The data will become visible from outside the tutorial environment under [this U
 The generic STAC-catalog harvester, used in the next step to harvest from a real public STAC API, can be installed using Helm:
 
 ```
-helm upgrade -i registration-harvester-worker-stac eoepca-dev/registration-harvester \
+helm upgrade -i registration-harvester-worker-stac eoepca/registration-harvester \
   --version 2.0.0 \
   --namespace resource-registration \
   --create-namespace \

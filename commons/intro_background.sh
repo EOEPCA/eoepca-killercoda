@@ -440,11 +440,9 @@ EOF
   # Helm chart
   helm repo add eoepca https://eoepca.github.io/helm-charts
   helm repo update eoepca
-  helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
-  helm repo update eoepca-dev
   iam_helm_values > /tmp/iam-values.yaml
-  if ! retry 3 helm upgrade -i iam eoepca-dev/iam-bb \
-    --version 2.1.0-dev12 \
+  if ! retry 3 helm upgrade -i iam eoepca/iam-bb \
+    --version 2.1.0 \
     --namespace iam \
     --values /tmp/iam-values.yaml \
     --create-namespace; then
