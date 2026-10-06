@@ -1,1 +1,0 @@
-../commons/intro_foreground.sh
