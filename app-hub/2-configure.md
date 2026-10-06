@@ -31,7 +31,7 @@ For the OAuth client ID:
 application-hub
 ```{{exec}}
 
-The script generates the client secret itself and renders it into the Keycloak client manifest, along with three other files:
+The script generates the OAuth client secret, stores it in `~/.eoepca/state`{{}} and renders four files:
 
 - `generated-values.yaml` - Helm values for the Application Hub
 - `generated-ingress.yaml` - Ingress configuration

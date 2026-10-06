@@ -21,7 +21,7 @@ cd deployment-guide/scripts/iam
 
 ## Check IAM Prerequisites
 
-The EOEPCA Deployment Guide uses scripts to facilitate the deployment. The scripts are highly configurable to allow adaption to the target deployment environemnt, and so they request user input to gather information. This deployment information is maintained by the scripts in the state file `~/.eoepca/state`{{}}.
+The EOEPCA Deployment Guide uses scripts to facilitate the deployment. The scripts are highly configurable to allow adaption to the target deployment environment, and so they request user input to gather information. This deployment information is maintained by the scripts in the state file `~/.eoepca/state`{{}}.
 
 The tutorial startup scripts have already pre-configured a number of aspects of the deployment to fit with the constraints of the tutorial environment, including:
 * use of `http`{{}} instead of `https`{{}}

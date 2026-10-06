@@ -5,6 +5,8 @@ The Application Hub filters the profiles it offers by the JupyterHub groups a us
 
 Open the [Application Hub]({{TRAFFIC_HOST1_83}}) and log in as `eric`{{}} with the password `eoepcapassword`{{}}. Keycloak handles the login and returns you to the Hub.
 
+Click **Start My Server**. `eric` belongs to no groups yet, so the only entry offered is **Pending configuration**.
+
 Go to the [Admin Panel]({{TRAFFIC_HOST1_83}}/hub/admin#/) and select [**Manage Groups**]({{TRAFFIC_HOST1_83}}/hub/admin#/groups).
 
 Create two groups with this exact naming:

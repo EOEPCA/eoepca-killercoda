@@ -31,7 +31,7 @@ curl -fsS -H "Authorization: Bearer basic//${OPENEO_TOKEN}" \
 
 `sentinel-2-iceland` is listed. Its `cube:dimensions` show how openEO treats the collection: a data cube with `x`, `y`, time (`t`) and band (`spectral`) dimensions.
 
-An openEO process graph describes processing as connected steps. This one loads the true-colour band on the date of the scene you found, merges the scenes from that satellite pass with `firstpixel`, and returns a PNG. Publish it as an XYZ map tile service:
+An openEO process graph describes processing as connected steps. This one loads the true-colour band on the date of the scene you found, reduces the time dimension with `first` to keep one value per pixel, and returns a PNG. Publish it as an XYZ map tile service:
 
 ```bash
 cat > true-colour-service.json <<'EOF'
@@ -58,7 +58,7 @@ cat > true-colour-service.json <<'EOF'
           "dimension": "t",
           "reducer": {
             "process_graph": {
-              "first": {"process_id": "firstpixel", "arguments": {"data": {"from_parameter": "data"}}, "result": true}
+              "first": {"process_id": "first", "arguments": {"data": {"from_parameter": "data"}}, "result": true}
             }
           }
         }

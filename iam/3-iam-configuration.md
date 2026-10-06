@@ -2,10 +2,10 @@ In addition to the core platform configuration, there is additional information 
 
 The following command runs a script `configure-iam.sh`{{}} that prompts for the information required to tailor the IAM.
 
-Before running the script, in order that the tutorial environment is able to successfully proxy browser access to the Keycloak service, we need to preemptively override the `KEYCLOAK_HOST`{{}} variable to the external hostname exposed by the tutorial to access Keycloak.
+Before running the script, in order that the tutorial environment is able to successfully proxy browser access to the Keycloak service, we need to preemptively override the `KEYCLOAK_HOST`{{}} variable to the external hostname exposed by the tutorial to access Keycloak. The tutorial proxy exposes Keycloak on port `90`{{}}.
 
 ```bash
-export KEYCLOAK_HOST="$(port="$(grep auth /tmp/assets/killercodaproxy | awk '{print $1}')" ; sed "s#http://PORT#$port#" /etc/killercoda/host )"
+export KEYCLOAK_HOST="$(sed 's#http://PORT#90#' /etc/killercoda/host)"
 echo "External Keycloak host: ${KEYCLOAK_HOST}"
 ```{{exec}}
 

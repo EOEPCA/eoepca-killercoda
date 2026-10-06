@@ -25,7 +25,9 @@ kubectl get ingress -n openeo
 Wait for the API to answer through the ingress. This endpoint is public, so no token is needed yet:
 
 ```bash
-while [[ $(curl -s -o /dev/null -w "%{http_code}" -L http://openeo-argo.eoepca.local/openeo/1.1.0) != 200 ]]; do sleep 5; done
+curl -sf -o /dev/null -L --retry 30 --retry-delay 5 --retry-all-errors \
+  http://openeo-argo.eoepca.local/openeo/1.1.0
+
 curl -s -L http://openeo-argo.eoepca.local/openeo/1.1.0 | jq '{title, api_version, backend_version}'
 ```{{exec}}
 

@@ -1,6 +1,11 @@
 ## Run a Sentinel-2 NDVI Job
 
-Create a batch job. The process graph loads the red and near-infrared bands of the registered sample, computes NDVI from them, and writes the result as NetCDF:
+Create a batch job. The process graph has four nodes:
+
+- `load` reads the red and near-infrared bands of the registered sample.
+- `scale` uses `apply` to run a child process on every pixel. Sentinel-2 L2A bands are stored as integers, and multiplying by the 0.0001 scale factor turns them into floating-point values.
+- `ndvi` computes `(nir - red) / (nir + red)`.
+- `save` writes the result as NetCDF.
 
 ```bash
 JOB_HEADERS=$(mktemp)
@@ -21,10 +26,25 @@ curl -fsS -D "${JOB_HEADERS}" -o /dev/null \
             "bands": ["red", "nir"]
           }
         },
+        "scale": {
+          "process_id": "apply",
+          "arguments": {
+            "data": {"from_node": "load"},
+            "process": {
+              "process_graph": {
+                "multiply": {
+                  "process_id": "multiply",
+                  "arguments": {"x": {"from_parameter": "x"}, "y": 0.0001},
+                  "result": true
+                }
+              }
+            }
+          }
+        },
         "ndvi": {
           "process_id": "ndvi",
           "arguments": {
-            "data": {"from_node": "load"},
+            "data": {"from_node": "scale"},
             "red": "red",
             "nir": "nir"
           }
@@ -47,12 +67,26 @@ export JOB_ID=$(grep -i '^openeo-identifier:' "${JOB_HEADERS}" | cut -d' ' -f2 |
 echo "Created job: ${JOB_ID}"
 ```{{exec}}
 
-A job sits in `created` status until started:
+A new job stays in `created` status until it is started:
 
 ```bash
 curl -fsS "${OPENEO_URL}/jobs/${JOB_ID}" \
-  -H "Authorization: Bearer ${AUTH_TOKEN}"
-echo
+  -H "Authorization: Bearer ${AUTH_TOKEN}" | jq '{id, title, status}'
+```{{exec}}
+
+Start the job. In openEO, a `POST` to the job's `results` endpoint starts processing. The API queues the job and returns HTTP `202`:
+
+```bash
+curl -fsS -X POST "${OPENEO_URL}/jobs/${JOB_ID}/results" \
+  -H "Authorization: Bearer ${AUTH_TOKEN}" \
+  -w '\nHTTP %{http_code}\n'
+```{{exec}}
+
+Check the status again. It should now be `queued` or `running`:
+
+```bash
+curl -fsS "${OPENEO_URL}/jobs/${JOB_ID}" \
+  -H "Authorization: Bearer ${AUTH_TOKEN}" | jq '{id, title, status}'
 ```{{exec}}
 
 Argo runs the job in an executor pod, which asks Dask Gateway for a temporary scheduler and worker to do the computation. Run this a couple of times while the job is running to watch them come and go:
@@ -85,23 +119,52 @@ ACCESS_TOKEN=$(curl -s -X POST \
 export AUTH_TOKEN="oidc/${OIDC_ORGANISATION}/${ACCESS_TOKEN}"
 ```{{exec}}
 
-The job's results endpoint lists the published assets:
+The API checks the workflow every few seconds, so the job reports `finished` shortly after the executor pod completes. If it still shows `running`, wait a few seconds and run it again:
 
 ```bash
-RESULTS=$(curl -fsS "${OPENEO_URL}/jobs/${JOB_ID}/results" -H "Authorization: Bearer ${AUTH_TOKEN}")
-jq '{assets: (.assets | keys)}' <<<"${RESULTS}"
+curl -fsS "${OPENEO_URL}/jobs/${JOB_ID}" \
+  -H "Authorization: Bearer ${AUTH_TOKEN}" | jq '{id, title, status}'
 ```{{exec}}
 
-Download the result:
+### Get the result
+
+The job's results are published as a STAC collection. Its `extent` covers the processed area, and `assets` holds the NetCDF file with a signed download link:
 
 ```bash
-RESULT_URL=$(jq -r '.assets | to_entries[0].value.href' <<<"${RESULTS}")
+RESULTS=$(curl -fsS "${OPENEO_URL}/jobs/${JOB_ID}/results" \
+  -H "Authorization: Bearer ${AUTH_TOKEN}")
 
-curl -fsS "${RESULT_URL}" \
-  -H "Authorization: Bearer ${AUTH_TOKEN}" \
-  -o ~/openeo-ndvi.nc
+echo "$RESULTS" | jq '{extent, assets}'
+```{{exec}}
+
+Download the file:
+
+```bash
+RESULT_URL=$(echo "$RESULTS" | jq -r '.assets[].href')
+
+curl -fsS "${RESULT_URL}" -o ~/openeo-ndvi.nc
 
 ls -lh ~/openeo-ndvi.nc
 ```{{exec}}
 
-You now have an NDVI raster computed from two Sentinel-2 bands by a Dask worker inside an Argo Workflow. To see it as an image, open the job in the [OpenEO Web Editor](https://editor.openeo.org?server={{TRAFFIC_HOST1_81}}/openeo/1.1.0/) from step 6 and select it under **Data Processing**.
+### Inspect the NDVI values
+
+Open the file with [xarray](https://xarray.dev/) in a Python virtual environment:
+
+```bash
+python3 -m venv ~/venv
+~/venv/bin/pip install -q xarray h5netcdf h5py
+
+cd ~
+~/venv/bin/python - <<'EOF'
+import xarray
+
+ndvi = xarray.open_dataset("openeo-ndvi.nc").to_dataarray()
+print(ndvi)
+print("min:", float(ndvi.min()), "mean:", float(ndvi.mean()), "max:", float(ndvi.max()))
+EOF
+```{{exec}}
+
+The result is a single time step on the sample's 10 m UTM grid (`crs: EPSG:32631`). Cells outside the cropped sample are `nan`. NDVI ranges from -1 to 1: this area is mostly farmland, so the mean is about 0.6, while water gives values near or below 0.
+
+You now have an NDVI raster computed from two Sentinel-2 bands by a Dask worker inside an Argo Workflow, found through the Resource Discovery catalogue and served back through the openEO API.

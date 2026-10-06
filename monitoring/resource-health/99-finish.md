@@ -1,11 +1,12 @@
 
-You have deployed Resource Health, run passing and failing checks, and inspected
-their results through the Telemetry API and dashboard. 
+You have deployed Resource Health, run passing and failing checks, written a
+custom pytest check, and inspected the results through the Telemetry API and
+dashboard.
 
 ### Key Concepts
 
 - **Health check templates**: Pre-defined patterns for checks such as
-  `simple_ping` and `generic_script_template`
+  `simple_ping`, or your own pytest script with `generic_script_template`
 - **Scheduled checks**: Cron expressions control when checks run
 - **Kubernetes CronJobs**: Each registered check creates a CronJob
 - **Telemetry**: OpenTelemetry sends outcomes to OpenSearch for querying and

@@ -75,7 +75,7 @@ curl -X GET "http://opa.eoepca.local/v1/data/example/allow_all" \
 
 Expect result `{"result":true}`{{}}
 
-**User 'bob' is a privileged user...**
+**User `eoepcauser`{{}} is a privileged user...**
 
 Ref. https://github.com/EOEPCA/iam-policies/blob/main/policies/example/data.json
 
@@ -83,29 +83,31 @@ Ref. https://github.com/EOEPCA/iam-policies/blob/main/policies/example/data.json
 curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"input": {"identity": {"attributes": { "preferred_username": ["bob"]}}}}'
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eoepcauser"]}}}}'
 ```{{exec}}
 
 Expect result `{"result":true}`{{}}
 
-**User 'eric' is NOT a privileged user...**
+**User `eoepcaadmin`{{}} is NOT a privileged user...**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/privileged_user" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eric"]}}}}'
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eoepcaadmin"]}}}}'
 ```{{exec}}
 
 Expect result `{"result":false}`{{}}
 
-**User 'eric' has a verified email**
+**User `eoepcaadmin`{{}} has a verified email**
 
 ```bash
 curl -X POST "http://opa.eoepca.local/v1/data/example/email_verified" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eric"], "email_verified": ["true"]}}}}'
+  -d '{"input": {"identity": {"attributes": { "preferred_username": ["eoepcaadmin"], "email_verified": ["true"]}}}}'
 ```{{exec}}
 
 Expect result `{"result":true}`{{}}
+
+The same `privileged_users`{{}} list is used by the policy that protects the service in the next step - so `eoepcauser`{{}} will be allowed and `eoepcaadmin`{{}} will be refused.

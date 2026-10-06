@@ -25,27 +25,46 @@ Deploy both the read-only catalogue (what OpenEO itself will query) and the IAM-
 helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
 helm repo update eoepca-dev
 
-helm upgrade -i resource-discovery eoepca-dev/rm-resource-catalogue \
+helm upgrade -i resource-catalogue eoepca-dev/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.1.0-dev2 \
+  --version 2.1.0-dev1 \
   --namespace resource-discovery \
   --create-namespace
 kubectl apply -f generated-ingress.yaml
 
-helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
-  --values generated-protected-values.yaml \
-  --version 2.1.0-dev2 \
-  --namespace resource-discovery
-kubectl apply -f generated-protected-ingress.yaml
-
 kubectl apply -f generated-iam.yaml
 kubectl apply -f generated-db-secret.yaml
+
+helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
+  --values generated-protected-values.yaml \
+  --version 2.1.0-dev1 \
+  --namespace resource-discovery \
+  --create-namespace
+kubectl apply -f generated-protected-ingress.yaml
 ```{{exec}}
 
-Wait for the read-only STAC endpoint to come up:
+Wait for Resource Discovery to be ready:
 
 ```bash
-while [[ $(curl -s -o /dev/null -w "%{http_code}" http://resource-catalogue.eoepca.local/stac) != 200 ]]; do sleep 5; done
+while ! kubectl wait --for=condition=Ready --all=true -n resource-discovery pod --timeout=1m &>/dev/null; do
+  sleep 10
+  echo "Waiting for Resource Discovery readiness"
+done
+
+echo -e "\nResource Discovery is READY"
+```{{exec}}
+
+The catalogue restarts while its database initialises, and its pod reports ready before it can serve requests. Wait until the catalogue answers:
+
+```bash
+curl -sf -o /dev/null --retry 30 --retry-delay 10 --retry-all-errors \
+  http://resource-catalogue.eoepca.local/ \
+  && echo "Resource Discovery is serving requests"
+```{{exec}}
+
+Check the read-only STAC endpoint:
+
+```bash
 curl -fsS http://resource-catalogue.eoepca.local/stac | jq '{title, description}'
 ```{{exec}}
 

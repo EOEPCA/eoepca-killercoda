@@ -28,7 +28,7 @@ Now we deploy the core eoAPI services. Localcoda needs the chart's Metrics Serve
 helm repo add eoapi https://developmentseed.org/eoapi-k8s/
 helm repo update eoapi
 helm upgrade -i eoapi eoapi/eoapi \
-  --version 0.16.3 \
+  --version 0.13.1 \
   --namespace data-access \
   --create-namespace \
   --values eoapi/generated-values.yaml \
@@ -60,7 +60,7 @@ only published as a git-sourced Helm chart (no packaged chart repo), so it's ins
 from a pinned tag:
 
 ```bash
-git clone --depth 1 --branch titiler-openeo-chart-v3.0.1 https://github.com/sentinel-hub/titiler-openeo /tmp/titiler-openeo
+git clone --depth 1 --branch titiler-openeo-v0.12.0 https://github.com/sentinel-hub/titiler-openeo /tmp/titiler-openeo
 helm upgrade -i titiler-openeo /tmp/titiler-openeo/deployment/k8s/charts \
   --namespace data-access \
   --values titiler-openeo/generated-values.yaml
