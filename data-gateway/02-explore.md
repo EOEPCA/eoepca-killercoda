@@ -2,7 +2,7 @@ EODAG ships with a catalogue of provider and collection definitions. These defin
 
 ### List All Collections
 
-> **Note**: Collections used to be known as product types
+> **Note**: Earlier EODAG releases call collections *product types*.
 
 The full formatted listing is several thousand lines, so save it to a file and print a useful summary:
 

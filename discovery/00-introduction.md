@@ -1,8 +1,8 @@
 Welcome to the **[EOEPCA Resource Discovery](https://eoepca.readthedocs.io/projects/resource-discovery/en/latest/)** building block tutorial!
 
-The Resource Discovery service plays a key role in enabling users and services to search, discover, and access data assets using standard web APIs.
+Resource Discovery lets users and services search for and discover datasets, workflows and other resources through standard web APIs.
 
-In this scenario, you will learn how to deploy and interact with the EOEPCA Resource Discovery Building Block — a core component responsible for exposing Earth Observation datasets and services through metadata that complies with the [STAC (SpatioTemporal Asset Catalog)](https://stacspec.org/en) standard.
+In this scenario, you will learn how to deploy and interact with the EOEPCA Resource Discovery Building Block and publish Earth Observation metadata through its [STAC (SpatioTemporal Asset Catalog)](https://stacspec.org/en) interface.
 
 This tutorial can take a little time to start, for example 5 minutes or more, whilst Kubernetes, APISIX, Keycloak and Crossplane are installed for you.
 

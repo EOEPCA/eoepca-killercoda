@@ -14,12 +14,11 @@ You've explored:
 ### Key Takeaways
 
 - The gateway is a consistent client interface, not a central copy of provider data.
-- Product types give workflows stable dataset identifiers across different backends.
+- Collections give workflows stable dataset identifiers across different backends.
 - EODAG normalises provider-specific protocols and metadata into common searches and product objects.
 - Provider coverage, authentication, metadata, and assets still differ, so provider choice remains visible and controllable.
-- STAC provides an interoperable HTTP boundary, while the Python API is the natural choice for direct workflow integration.
+- The STAC API suits HTTP clients; the Python API suits direct workflow integration.
 - Downloads go through the same product objects as searches, and can be restricted to the assets an application actually needs.
-- Large product downloads should be planned deliberately; discovery and metadata searches are lightweight by comparison.
 
 For more information:
 
