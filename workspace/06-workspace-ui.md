@@ -15,6 +15,8 @@ Open the [Workspace UI]({{TRAFFIC_HOST1_81}}/workspaces/ws-eoepcauser) for `eoep
 * Username: `eoepcauser`
 * Password: `eoepcapassword`
 
+> NOTE that due to the proxying approach that is used by this tutorial environment, you will find that the navigation links within the Workspace UI will not work. This includes the link to open the Datalab session, as well as the `Editor` and `Data` links within the Datalab session. As an alternative, you should use the direct links provided in this tutorial to access the Datalab and its components.
+
 ## Start the Datalab Session
 
 Each workspace is created with a `default` Datalab session, initially stopped. List it through the Workspace API:
@@ -140,9 +142,7 @@ mc cat mystorage/ws-eoepcauser-results/ndvi-summary.csv
 
 The summary is still readable - it lives in the workspace bucket, not in the session.
 
-Stopping deletes the session's namespaces, including the one holding its cluster, and the
-command above waits for them. Educates fails a new session while the previous one is still
-terminating.
+Stopping deletes the session's namespaces, including the one holding its cluster, and the command above waits for them. Educates will fail a new session while the previous one is still terminating.
 
 Start the session again:
 
