@@ -58,13 +58,17 @@ kubectl -n ws-${KEYCLOAK_TEST_USER} rollout status \
 
 Open the [Datalab]({{TRAFFIC_HOST1_91}}/) and sign in with the same credentials.
 
-The gateway starts shortly after the deployment becomes ready. If the first request returns `502`, wait a few seconds and reload.
+The gateway starts shortly after the deployment becomes ready. If the first request returns `502`, wait up to a minute and reload.
 
 If the `Configuring session` cover remains visible, close it with the cross in the top-right corner to access the terminal and editor.
 
 The dashboard provides a terminal, an editor and a file browser for the workspace buckets.
 
 > NOTE that the `Data` file browser is not available in this Tutorial. It mounts the bucket over FUSE, which the Tutorial's container runtime does not support, so its `data-ws-eoepcauser-default` pod stays in `CrashLoopBackOff` with a mount propagation error. The terminal and editor are not affected. Use the `aws` client in the terminal instead.
+
+## Access the VSCode Editor UI
+
+Navigate to {{TRAFFIC_HOST1_92}} to access the editor. It is a VSCode-style interface with a file browser, editor and terminal. This editor is unique to the workspace and session, and is not shared with other users or sessions.
 
 ## Process the Observations
 

@@ -89,25 +89,7 @@ kubectl apply -f workspace-dependencies/provider-configs.yaml
 
 The workspace pipeline needs its own Keycloak client, `workspace-pipeline`, so it can self-serve a Keycloak client/roles/groups for every workspace it provisions.
 
-The role grants below reference Keycloak's built-in `realm-management` client, so look up its UUID:
-
-```bash
-source ~/.eoepca/state
-KEYCLOAK_ADMIN_TOKEN=$( \
-  curl -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/master/protocol/openid-connect/token" \
-    --silent --show-error \
-    -d "client_id=admin-cli" -d "grant_type=password" \
-    -d "username=${KEYCLOAK_ADMIN_USER}" --data-urlencode "password=${KEYCLOAK_ADMIN_PASSWORD}" \
-    | jq -r '.access_token' \
-)
-export REALM_MANAGEMENT_CLIENT_UUID=$( \
-  curl --silent --show-error -H "Authorization: Bearer ${KEYCLOAK_ADMIN_TOKEN}" \
-    "${HTTP_SCHEME}://${KEYCLOAK_HOST}/admin/realms/${REALM}/clients?clientId=realm-management" \
-    | jq -r '.[0].id' \
-)
-```{{exec}}
-
-Render and apply the `workspace-pipeline` client, the `realm-management` client, and the `realm-management` roles the pipeline needs: `manage-users`, `manage-authorization`, `manage-clients`, `create-client` and `realm-admin`.
+Render and apply the `workspace-pipeline` client and grant it the roles it needs on Keycloak's built-in `realm-management` client: `manage-users`, `manage-authorization`, `manage-clients`, `create-client` and `realm-admin`.
 
 ```bash
 source ~/.eoepca/state
@@ -118,18 +100,13 @@ kubectl apply -f workspace-dependencies/generated-pipeline-iam.yaml
 
 ## TLS Certificate for Datalab Sessions
 
-Each Datalab session ingress references a `workspace-tls` secret in the `workspace` namespace, which Educates copies into the session namespace. APISIX drops an ingress whose TLS secret is missing, so create it before the first workspace.
+Each Datalab session ingress references a `workspace-tls` secret in the `workspace` namespace. APISIX drops an ingress whose TLS secret is missing, so create it before the first workspace.
 
-The session ingress uses the internal `eoepca.local` domain, so use a self-signed certificate:
+The deployment guide uses a cert-manager wildcard certificate. This tutorial is served over HTTP and has no public DNS, so a self-signed certificate is enough:
 
 ```bash
-source ~/.eoepca/state
-openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
-  -keyout /tmp/workspace-tls.key -out /tmp/workspace-tls.crt \
-  -subj "/CN=*.${INGRESS_HOST}" \
-  -addext "subjectAltName=DNS:*.${INGRESS_HOST}"
-kubectl -n workspace create secret tls workspace-tls \
-  --cert=/tmp/workspace-tls.crt --key=/tmp/workspace-tls.key
+openssl req -x509 -newkey rsa:2048 -nodes -subj "/CN=*.eoepca.local" -keyout tls.key -out tls.crt
+kubectl -n workspace create secret tls workspace-tls --cert=tls.crt --key=tls.key
 ```{{exec}}
 
 ## Keycloak Client for the Workspace API
