@@ -40,7 +40,7 @@ Harvester and openEO services are not included. Datacube Access itself has no se
 
 | Component | Version |
 | --- | --- |
-| IAM chart | `2.1.0-dev12` |
+| IAM chart | `2.1.0` |
 | Workspace API chart / image | `2.2.2` / `v2.2.0` |
 | Workspace CSI-rclone, Educates and Pipeline charts | `2.2.0` |
 | PostgreSQL operator | `5.8.8` |

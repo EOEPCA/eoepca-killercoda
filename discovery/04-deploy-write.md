@@ -30,9 +30,9 @@ kubectl apply -f generated-db-secret.yaml
 Next, we deploy the software using the same Helm chart as for the read-only instance but with slightly different configuration:
 
 ```
-helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
+helm upgrade -i resource-catalogue-protected eoepca/rm-resource-catalogue \
   --values generated-protected-values.yaml \
-  --version 2.1.0-dev1 \
+  --version 2.1.0 \
   --namespace resource-discovery \
   --create-namespace
 ```{{exec}}

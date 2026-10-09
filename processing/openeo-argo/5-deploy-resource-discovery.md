@@ -22,12 +22,12 @@ EOF
 Deploy both the read-only catalogue (what OpenEO itself will query) and the IAM-protected writable catalogue (what we'll use to register data):
 
 ```bash
-helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev
-helm repo update eoepca-dev
+helm repo add eoepca https://eoepca.github.io/helm-charts
+helm repo update eoepca
 
-helm upgrade -i resource-catalogue eoepca-dev/rm-resource-catalogue \
+helm upgrade -i resource-catalogue eoepca/rm-resource-catalogue \
   --values generated-values.yaml \
-  --version 2.1.0-dev1 \
+  --version 2.1.0 \
   --namespace resource-discovery \
   --create-namespace
 kubectl apply -f generated-ingress.yaml
@@ -35,9 +35,9 @@ kubectl apply -f generated-ingress.yaml
 kubectl apply -f generated-iam.yaml
 kubectl apply -f generated-db-secret.yaml
 
-helm upgrade -i resource-catalogue-protected eoepca-dev/rm-resource-catalogue \
+helm upgrade -i resource-catalogue-protected eoepca/rm-resource-catalogue \
   --values generated-protected-values.yaml \
-  --version 2.1.0-dev1 \
+  --version 2.1.0 \
   --namespace resource-discovery \
   --create-namespace
 kubectl apply -f generated-protected-ingress.yaml
