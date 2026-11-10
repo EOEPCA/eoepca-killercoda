@@ -112,7 +112,7 @@ Finally, verify every ingress route used in this tutorial, including the STAC Ma
 for path in / stac/ raster/ vector/ multidim/ manager/ browser/ openeo/; do
   curl -fsS -o /dev/null \
     -w "${path} -> HTTP %{http_code}\n" \
-    "${EOAPI_PUBLIC_URL}/${path}"
+    "http://eoapi.eoepca.local/${path}"
 done
 ```{{exec}}
 

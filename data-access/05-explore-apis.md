@@ -56,7 +56,7 @@ Open the map and zoom towards Reykjavík. The map requests tiles from a mosaic o
 Inspect the tile service description:
 
 ```bash
-curl -fsS "{{TRAFFIC_HOST1_82}}/raster/collections/sentinel-2-iceland/WebMercatorQuad/tilejson.json?assets=visual" | jq
+curl -fsS "http://eoapi.eoepca.local/raster/collections/sentinel-2-iceland/WebMercatorQuad/tilejson.json?assets=visual" | jq
 ```{{exec}}
 
 The `tiles` entry is a URL template for map clients. The public tutorial proxy supplies browser-accessible links.
