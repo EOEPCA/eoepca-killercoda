@@ -50,7 +50,7 @@ Let's check the status of all resources:
 kubectl get all -n resource-health
 ```{{exec}}
 
-Once deployed, the services are available through the Localcoda proxy:
+Wait a few seconds for the ingress to apply, then the services are available through the Localcoda proxy:
 
 - [Resource Health dashboard]({{TRAFFIC_HOST1_81}})
 - [Health Checks API documentation]({{TRAFFIC_HOST1_81}}/api/healthchecks/docs)
