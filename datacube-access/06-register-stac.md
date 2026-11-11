@@ -12,6 +12,8 @@ source ~/datacube-venv/bin/activate
 
 The STAC API is exposed at `http://eoapi.eoepca.local/stac`. We obtain a token with the public `eoapi` client using the OAuth 2.0 device flow (PKCE).
 
+
+Some definitions for the STAC API
 ```
 python - <<'PY'
 import json, time, hashlib, base64, secrets
@@ -23,7 +25,14 @@ TOKEN_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/token"
 DEVICE_AUTH_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/auth/device"
 CLIENT_ID = "eoapi"
 SCOPE = "roles offline_access"
+PY
+```
 
+{{exec}}
+
+Interactive Authorization. Click on the link and enter the code.
+```
+python - <<'PY'
 verifier = secrets.token_urlsafe(64)
 challenge = base64.urlsafe_b64encode(
     hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
@@ -33,7 +42,14 @@ da = requests.post(DEVICE_AUTH_ENDPOINT, data={
     "code_challenge_method": "S256", "scope": SCOPE}, timeout=30).json()
 print("Open:", da["verification_uri"])
 print("Enter code:", da["user_code"])
+PY
+```
 
+{{exec}}
+
+Finish authorization.
+```
+python - <<'PY'
 data = {"grant_type": "urn:ietf:params:oauth:grant-type:device_code",
         "device_code": da["device_code"], "client_id": CLIENT_ID, "code_verifier": verifier}
 start = time.time()

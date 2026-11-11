@@ -20,7 +20,7 @@ import requests
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 os.environ["CURL_CA_BUNDLE"] = certifi.where()
 
-auth = json.load(open("/tmp/stac-auth.json"))
+auth = json.load(open("/tmp/stac-auth.json")) # IS THIS THE CORRECT WAY TO DO IT???
 stac_endpoint, collection_id, token = auth["stac_endpoint"], auth["collection_id"], auth["access_token"]
 
 items = list(requests.get(

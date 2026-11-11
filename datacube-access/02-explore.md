@@ -1,22 +1,37 @@
-Check the deployed services:
+Now we'll check all the services we have deployed in the earlier steps to make sure everything is available!
+
+## Check the deployed services
 
 ```
 kubectl get pods -n workspace
 kubectl get pods -n data-access
 ```{{exec}}
 
-Check the IAM realm and STAC API:
+## Check the IAM realm and STAC API
 
 ```
 curl --fail --silent --show-error http://auth.eoepca.local/realms/eoepca/.well-known/openid-configuration | jq '.issuer'
+```{{exec}}
+
+## Check the STAC API
+
+```
 curl --fail --silent --show-error http://eoapi.eoepca.local/stac/ | jq
 ```{{exec}}
 
-Open the [Workspace UI]({{TRAFFIC_HOST1_81}}/workspaces), [STAC Browser]({{TRAFFIC_HOST1_82}}/browser/) or [STAC Manager]({{TRAFFIC_HOST1_82}}/manager/).
+## Check the webservice GUIs
 
-The workshop accounts are `eoepcauser` and `eoepcaadmin`, both with password `eoepcapassword`. The administrator can create workspaces and register public collections. A regular user can register private collections prefixed with `eoepcauser.`.
+Open the
+- [Workspace UI]({{TRAFFIC_HOST1_81}}/workspaces), 
+- [STAC Browser]({{TRAFFIC_HOST1_82}}/browser/) or 
+- [STAC Manager]({{TRAFFIC_HOST1_82}}/manager/).
 
-Activate the notebook environment:
+## Credentials
+
+- The workshop accounts are `eoepcauser` and `eoepcaadmin`, both with password `eoepcapassword`. 
+- The administrator can create workspaces and register public collections. A regular user can register private collections prefixed with `eoepcauser.`.
+
+## Activate the notebook environment
 
 ```
 source ~/datacube-venv/bin/activate

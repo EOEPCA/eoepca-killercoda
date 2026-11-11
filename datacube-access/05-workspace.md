@@ -12,6 +12,8 @@ source ~/datacube-venv/bin/activate
 
 The workspace API is exposed at `http://workspace-api.eoepca.local/workspaces`. We use the public `workspace-api` client with the OAuth 2.0 device flow (PKCE) so no client secret is required.
 
+
+Definitions for the workspace webservice
 ```
 python - <<'PY'
 import json, time, hashlib, base64, secrets
@@ -23,7 +25,14 @@ TOKEN_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/token"
 DEVICE_AUTH_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/auth/device"
 CLIENT_ID = "workspace-api"
 SCOPE = "roles offline_access"
+PY
+```
 
+{{exec}}
+
+Interactive authentication. Click on the link and enter the code.
+```
+python - <<'PY'
 verifier = secrets.token_urlsafe(64)
 challenge = base64.urlsafe_b64encode(
     hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
@@ -33,7 +42,12 @@ da = requests.post(DEVICE_AUTH_ENDPOINT, data={
     "code_challenge_method": "S256", "scope": SCOPE}, timeout=30).json()
 print("Open:", da["verification_uri"])
 print("Enter code:", da["user_code"])
+PY
+```
 
+Continue Authentication.
+```
+python - <<'PY'
 data = {"grant_type": "urn:ietf:params:oauth:grant-type:device_code",
         "device_code": da["device_code"], "client_id": CLIENT_ID, "code_verifier": verifier}
 start = time.time()
@@ -75,6 +89,14 @@ resp = requests.post(ws_endpoint, headers=headers,
 resp.raise_for_status()
 ws_name = resp.json()["name"]
 print(f"Created workspace '{ws_name}'")
+PY
+```
+
+{{exec}}
+
+Check if the workspace is ready.
+```
+python - <<'PY'
 
 while True:
     s = requests.get(f"{ws_endpoint}/{ws_name}", headers=headers).json()
