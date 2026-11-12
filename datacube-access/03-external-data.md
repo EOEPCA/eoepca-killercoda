@@ -42,22 +42,18 @@ Before starting this scenario make sure you have done the following:
 
 Create and activate a virtual environment for this scenario:
 
-```
-python -m venv ~/eoepca-venv
-source ~/eoepca-venv/bin/activate
-```
+```bash
 
-Install the dependencies:
+source ~/datacube-venv/bin/activate
 
-```
-pip install -r requirements.txt
 ```
 
 ### Configure connection parameters
 
 Set up the environment variables needed for authentication, the STAC API and the Workspace API. A `.env` file is used to load them:
 
-```
+```bash
+
 cat > .env <<'ENV'
 # --- connection setup ---
 STAC_ENDPOINT="http://eoapi.eoepca.local/stac"
@@ -80,9 +76,13 @@ WORKSPACE_AUTH_SVC_PASSWORD=""
 ENV
 ```
 
-```
+{{exec}}
+
+```bash
 source .env
 ```
+
+{{exec}}
 
 ---
 
@@ -93,16 +93,19 @@ Get the Sentinel-5P Cloud Fraction data from the DLR GeoService STAC API.
 - **S5P Cloud Fraction InPuls L3:** EOC Geoservice Sentinel-5P TROPOMI L3 Daily Composites - Cloud Fraction (CF)
 - https://geoservice.dlr.de/eoc/ogc/stac/v1/collections/S5P_TROPOMI_L3_P1D_CF_v2
 
-Activate your environment:
+Activate the Python environment:
+
+```bash
+
+python3
 
 ```
-source ~/eoepca-venv/bin/activate
-```
+
+{{exec}}
 
 ### Import libraries
 
-```
-python - <<'PY'
+```python
 from pystac import Item, Collection, Catalog, Extent, SpatialExtent, TemporalExtent, Asset, CatalogType
 from pystac_client import Client
 from odc.stac import stac_load
@@ -125,7 +128,7 @@ import json
 import boto3
 
 print("All libraries imported.")
-PY
+
 ```
 
 {{exec}}
@@ -134,13 +137,12 @@ PY
 
 Ensure the DLR GeoService certificate is trusted by setting the cert bundles.
 
-```
-python - <<'PY'
+```python
 import os, certifi
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 os.environ["CURL_CA_BUNDLE"] = certifi.where()
 print("Certificate bundles configured.")
-PY
+
 ```
 
 {{exec}}
@@ -149,12 +151,11 @@ PY
 
 Open the DLR GeoService STAC API catalog so we can query it.
 
-```
-python - <<'PY'
+```python
 url = "https://geoservice.dlr.de/eoc/ogc/stac/v1/"
 catalog = Client.open(url)
 print(f"Opened DLR GeoService STAC API at {url}")
-PY
+
 ```
 
 {{exec}}
@@ -163,13 +164,12 @@ PY
 
 Set the collection ID, the European bounding box, and the date range for the query.
 
-```
-python - <<'PY'
+```python
 collection_id = "S5P_TROPOMI_L3_P1D_CF_v2"
 bbox = [-10.0, 35.0, 30.0, 70.0]   # Europe
 date_time = "2023-08-01T00:00:00Z/2023-12-31T23:59:59Z"
 print(f"Querying collection {collection_id} for {date_time} over {bbox}")
-PY
+
 ```
 
 {{exec}}
@@ -178,16 +178,14 @@ PY
 
 Request the Sentinel-5P Cloud Fraction data over Europe for the given date range.
 
-```
-python - <<'PY'
+```python
 items = list(catalog.search(
     collections=[collection_id],
     bbox=bbox,
     datetime=date_time,
     limit=400,
 ).items())
-print(f"Number of items: {len(items)}")
-PY
+
 ```
 
 {{exec}}
@@ -196,13 +194,12 @@ PY
 
 Inspect the number of items and their information.
 
-```
-python - <<'PY'
+```python
 print(f"Number of items: {len(items)}")
 print(f"First item     : {items[0]}")
 print(f"Last item      : {items[-1]}")
 print(items[0])
-PY
+
 ```
 
 {{exec}}
@@ -211,8 +208,7 @@ PY
 
 Load the data to confirm it is valid.
 
-```
-python - <<'PY'
+```python
 ds = stac_load(
     items,
     bands=["cf"],
@@ -221,7 +217,7 @@ ds = stac_load(
     chunks={"time": 1},
 )
 print(ds)
-PY
+
 ```
 
 {{exec}}
@@ -230,21 +226,19 @@ PY
 
 Compute and inspect a monthly median of the cloud fraction to sanity-check the loaded data.
 
-```
-python - <<'PY'
+```python
 monthly_mean_cf = ds["cf"].groupby("time.month").median(dim="time")
 print(monthly_mean_cf)
-PY
+
 ```
 
 {{exec}}
 
-```
-python - <<'PY'
+```python
 monthly_mean_cf.plot(col="month", col_wrap=3, cmap="viridis",
                      vmin=0, vmax=1, figsize=(12, 6),
                      cbar_kwargs={"label": "Cloud Fraction"})
-PY
+
 ```
 
 {{exec}}

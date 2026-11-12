@@ -4,18 +4,22 @@ The data is pulled from the external catalogue (Step 1). Now it must be reshaped
 
 Activate the Python environment:
 
-```
+```bash
 source ~/datacube-venv/bin/activate
 ```
 
 ## Prepare STAC metadata
 
-```
-python - <<'PY'
-import json, os
-
-# Load the DLR-queried items.
-items = json.load(open("/tmp/stac-items.json"))
+```python
+import pystac
+from pystac import Item, Asset, Collection, Catalog, Extent, SpatialExtent, TemporalExtent, Summaries
+from pystac.extensions.eo import EOExtension, Band
+from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.datacube import SpatialDimension, TemporalDimension, Dimension, DatacubeExtension
+from pystac.extensions.raster import RasterExtension
+from pystac.extensions.storage import StorageExtension
+from pystac.extensions.scientific import ScientificExtension
+from pystac.extensions.raster import RasterExtension, RasterBand
 
 # Set a name for the catalog and collection (needed for intermediate local saving).
 # IMPORTANT: added user prefix for the local private STAC API.
@@ -69,15 +73,14 @@ now_time = datetime.now(timezone.utc).isoformat()
 print(f"catalog_id   = {catalog_id}")
 print(f"collection_id = {collection_id}")
 print(f"proj_epsg    = {proj_epsg}")
-PY
+
 ```
 
 {{exec}}
 
 ### Build the Collection
 
-```
-python - <<'PY'
+```python
 collection = Collection(
     id=collection_id,
     title="Sentinel-5P Cloud Fraction",
@@ -89,6 +92,7 @@ collection = Collection(
         temporal=TemporalExtent(intervals=[start_time, end_time]),
     ),
 )
+
 collection.extra_fields["created"] = now_time
 
 collection.add_asset(
@@ -111,6 +115,7 @@ collection.summaries = Summaries(summaries={
     "proj:code": [items[0].properties.get("proj:code")],
     "proj:transform": transform,
 })
+
 collection.extra_fields["item_assets"] = {
     "cf": {
         "type": "image/tiff; application=geotiff",
@@ -129,15 +134,14 @@ datacube_ext = {"cube:dimensions": {
 collection.extra_fields.update(datacube_ext)
 json.dump(collection.to_dict(), open("/tmp/stac-collection.json", "w"))
 print(collection)
-PY
+
 ```
 
 {{exec}}
 
 ### Build the Items
 
-```
-python - <<'PY'
+```python
 stac_extensions_item = [
     "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
     "https://stac-extensions.github.io/projection/v2.0.0/schema.json",
@@ -145,6 +149,11 @@ stac_extensions_item = [
     "https://stac-extensions.github.io/storage/v2.0.0/schema.json",
     "https://stac-extensions.github.io/sentinel-5p/v0.2.0/schema.json",
 ]
+```
+
+{{exec}}
+
+```python
 
 new_items = []
 for old_item in items:
@@ -155,11 +164,9 @@ for old_item in items:
         datetime=old_item.datetime,
         properties=dict(old_item.properties),
     )
-
     # adapt proj info on properties level to match actual extents
     new_item.properties["proj:bbox"] = bbox
     new_item.properties["proj:shape"] = shape
-
     # adapt assets
     for key, asset in old_item.assets.items():
         if key == "cf":
@@ -176,40 +183,46 @@ for old_item in items:
                 },
             )
             new_item.add_asset("cf", new_asset)
-
+            #
             proj = ProjectionExtension.ext(new_asset, add_if_missing=True)
             proj.code = asset.extra_fields.get("proj:code", "")
             proj.shape = shape
             proj.transform = transform
-
     # normalize other properties
     if new_item.properties.get("license") == "CC-BY 4.0":
         new_item.properties["license"] = "CC-BY-4.0"
     if isinstance(new_item.properties.get("instruments"), str):
         new_item.properties["instruments"] = [new_item.properties["instruments"]]
-
+    #
     new_item.properties["updated"] = now_time
     collection.add_item(new_item)
     new_items.append(new_item)
 
+new_items[0]
+
+```
+
+{{exec}}
+
+```python
+
 json.dump(new_items[0].to_dict(), open("/tmp/stac-items.json", "w"))
 print(f"Created {len(new_items)} items. First item updated.")
-PY
+
 ```
 
 {{exec}}
 
 ### Save Catalog to disk
 
-```
-python - <<'PY'
+```python
 import os
 os.makedirs(catalog_id, exist_ok=True)
 catalog.add_child(collection)
 catalog.normalize_and_save(root_href=catalog_id, catalog_type=pystac.CatalogType.SELF_CONTAINED)
 print(f"Catalog saved to: {catalog_id}")
 print(f"Number of items: {len(list(collection.get_all_items()))}")
-PY
+
 ```
 
 {{exec}}
@@ -218,9 +231,8 @@ PY
 
 Validate the collection and each item before uploading.
 
-```
-python - <<'PY'
-catalog = pystac.read_file(f"{catalog_id}/catalog.json")
+```python
+###catalog = pystac.read_file(f"{catalog_id}/catalog.json")
 print(f"Validating catalog: {catalog.validate()}")
 collection = catalog.get_child(collection_id)
 print(f"Validating collection: {collection.validate()}")
@@ -231,7 +243,9 @@ for item in items:
         item.validate()
     except Exception as e:
         print(f"Failed items {item.id}: {e}")
-PY
+
+print("Validating items finished")
+
 ```
 
 {{exec}}

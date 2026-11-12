@@ -12,10 +12,9 @@ source ~/datacube-venv/bin/activate
 
 The workspace API is exposed at `http://workspace-api.eoepca.local/workspaces`. We use the public `workspace-api` client with the OAuth 2.0 device flow (PKCE) so no client secret is required.
 
-
 Definitions for the workspace webservice
-```
-python - <<'PY'
+
+```python
 import json, time, hashlib, base64, secrets
 import requests, jwt
 
@@ -25,14 +24,14 @@ TOKEN_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/token"
 DEVICE_AUTH_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/auth/device"
 CLIENT_ID = "workspace-api"
 SCOPE = "roles offline_access"
-PY
+
 ```
 
 {{exec}}
 
 Interactive authentication. Click on the link and enter the code.
-```
-python - <<'PY'
+
+```python
 verifier = secrets.token_urlsafe(64)
 challenge = base64.urlsafe_b64encode(
     hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
@@ -42,12 +41,14 @@ da = requests.post(DEVICE_AUTH_ENDPOINT, data={
     "code_challenge_method": "S256", "scope": SCOPE}, timeout=30).json()
 print("Open:", da["verification_uri"])
 print("Enter code:", da["user_code"])
-PY
+
 ```
 
+{{exec}}
+
 Continue Authentication.
-```
-python - <<'PY'
+
+```python
 data = {"grant_type": "urn:ietf:params:oauth:grant-type:device_code",
         "device_code": da["device_code"], "client_id": CLIENT_ID, "code_verifier": verifier}
 start = time.time()
@@ -66,7 +67,7 @@ token = resp.json()["access_token"]
 print(json.dumps(jwt.decode(token, options={"verify_signature": False}), indent=2))
 with open("/tmp/workspace-auth.json", "w") as f:
     json.dump({"access_token": token, "workspace_api_endpoint": WORKSPACE_API_ENDPOINT}, f)
-PY
+
 ```
 
 {{exec}}
@@ -75,8 +76,7 @@ PY
 
 Create a workspace, then poll until the status is `ready`.
 
-```
-python - <<'PY'
+```python
 import json, time
 import requests
 
@@ -89,14 +89,14 @@ resp = requests.post(ws_endpoint, headers=headers,
 resp.raise_for_status()
 ws_name = resp.json()["name"]
 print(f"Created workspace '{ws_name}'")
-PY
+
 ```
 
 {{exec}}
 
 Check if the workspace is ready.
-```
-python - <<'PY'
+
+```python
 
 while True:
     s = requests.get(f"{ws_endpoint}/{ws_name}", headers=headers).json()
@@ -107,7 +107,7 @@ while True:
 
 json.dump(s["storage"]["credentials"], open("/tmp/workspace-s3.json", "w"))
 print("Workspace ready. S3 bucket:", s["storage"]["credentials"]["bucketname"])
-PY
+
 ```
 
 {{exec}}
@@ -116,8 +116,8 @@ PY
 
 Upload every file under the `eoepcauser.s5p-cf-bp-stac-catalog` directory to the workspace using the S3 credentials, mirroring the `end2end/{catalog_id}/` prefix.
 
-```
-python - <<'PY'
+```python
+
 import json, os
 import boto3
 
@@ -140,7 +140,7 @@ for root, dirs, files in os.walk(catalog_id):
         print(f"Uploaded {s3_key} ({uploaded} files)")
 
 print(f"Successfully uploaded {uploaded} files to s3://{bucket}/{prefix}")
-PY
+
 ```
 
 {{exec}}

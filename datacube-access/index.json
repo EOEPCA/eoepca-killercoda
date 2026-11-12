@@ -16,6 +16,26 @@
       {
         "title": "Explore the Environment",
         "text": "02-explore.md"
+      },
+      {
+        "title": "Register external data",
+        "text": "03-external-data.md"
+      },
+      {
+        "title": "Adapt STAC metadata to Best Practices",
+        "text": "04-prepare-stac.md"
+      },
+      {
+        "title": "Save the metadata to the EOEPCA Workspace",
+        "text": "05-workspace.md"
+      },
+      {
+        "title": "Register the metadata in the EOEPCA STAC API",
+        "text": "06-register-stac.md"
+      },
+      {
+        "title": "Access and process the registered data",
+        "text": "07-access-data.md"
       }
     ],
     "finish": {
