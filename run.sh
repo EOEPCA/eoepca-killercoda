@@ -22,6 +22,11 @@ fi
 
 # --- argument handling --------------------------------------------------------
 
+if [ "$1" == "--debug" ]; then
+  DEBUG=true
+  shift
+fi
+
 TUTORIAL="${1:-${TUTORIAL}}"
 
 if [ -z "$TUTORIAL" ]; then
@@ -55,6 +60,9 @@ fi
 BACKEND_OPTS=""
 if [ -n "$EXT_DOMAIN_NAME" ]; then
   BACKEND_OPTS="-o EXT_DOMAIN_NAME=${EXT_DOMAIN_NAME}"
+fi
+if [ "$DEBUG" == "true" ]; then
+  BACKEND_OPTS="$BACKEND_OPTS -Ldev"
 fi
 
 "${LOCALCODA_ROOT}"/backend/bin/backend_run.sh $BACKEND_OPTS "${BIN_DIR}" "${TUTORIAL}/index.json"
