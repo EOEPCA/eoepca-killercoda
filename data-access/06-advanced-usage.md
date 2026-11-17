@@ -29,7 +29,7 @@ curl -fsS -H "Authorization: Bearer basic//${OPENEO_TOKEN}" \
   "http://eoapi.eoepca.local/openeo/collections" | jq
 ```{{exec}}
 
-`sentinel-2-iceland` is listed. Its `cube:dimensions` show how openEO treats the collection: a data cube with `x`, `y`, time (`t`) and band (`spectral`) dimensions.
+`sentinel-2-iceland` is listed. Its `cube:dimensions` show how openEO treats the collection: a data cube with `x` , `y` , time (`t` ) and band (`spectral` ) dimensions.
 
 An openEO process graph describes processing as connected steps. This one loads the true-colour band on the date of the scene you found, reduces the time dimension with `first` to keep one value per pixel, and returns a PNG. Publish it as an XYZ map tile service:
 
