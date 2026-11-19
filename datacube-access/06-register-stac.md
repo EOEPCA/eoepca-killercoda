@@ -12,10 +12,9 @@ source ~/datacube-venv/bin/activate
 
 The STAC API is exposed at `http://eoapi.eoepca.local/stac`. We obtain a token with the public `eoapi` client using the OAuth 2.0 device flow (PKCE).
 
-
 Some definitions for the STAC API
-```
-python - <<'PY'
+
+```python
 import json, time, hashlib, base64, secrets
 import requests, jwt
 
@@ -25,14 +24,14 @@ TOKEN_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/token"
 DEVICE_AUTH_ENDPOINT = f"{AUTH_ENDPOINT}/protocol/openid-connect/auth/device"
 CLIENT_ID = "eoapi"
 SCOPE = "roles offline_access"
-PY
+
 ```
 
 {{exec}}
 
 Interactive Authorization. Click on the link and enter the code.
-```
-python - <<'PY'
+
+```python
 verifier = secrets.token_urlsafe(64)
 challenge = base64.urlsafe_b64encode(
     hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
@@ -42,14 +41,14 @@ da = requests.post(DEVICE_AUTH_ENDPOINT, data={
     "code_challenge_method": "S256", "scope": SCOPE}, timeout=30).json()
 print("Open:", da["verification_uri"])
 print("Enter code:", da["user_code"])
-PY
+
 ```
 
 {{exec}}
 
 Finish authorization.
-```
-python - <<'PY'
+
+```python
 data = {"grant_type": "urn:ietf:params:oauth:grant-type:device_code",
         "device_code": da["device_code"], "client_id": CLIENT_ID, "code_verifier": verifier}
 start = time.time()
@@ -68,7 +67,7 @@ token = resp.json()["access_token"]
 print(jwt.decode(token, options={"verify_signature": False}))
 with open("/tmp/stac-auth.json", "w") as f:
     json.dump({"access_token": token, "stac_endpoint": STAC_ENDPOINT, "collection_id": "eoepcauser.s5p-cf-bp"}, f)
-PY
+
 ```
 
 {{exec}}
@@ -77,10 +76,7 @@ PY
 
 Confirm the STAC API is reachable and that our collection id is not yet registered (a `404` is expected).
 
-```
-python - <<'PY'
-import json
-import requests
+```python
 
 auth = json.load(open("/tmp/stac-auth.json"))
 stac_endpoint, collection_id, token = auth["stac_endpoint"], auth["collection_id"], auth["access_token"]
@@ -91,20 +87,17 @@ print("PASS (not yet registered)" if resp.status_code == 404 else f"FAIL ({resp.
 print("Existing collections:")
 for c in requests.get(f"{stac_endpoint}/collections").json()["collections"]:
     print(" -", c["id"])
-PY
+
 ```
 
 {{exec}}
 
 ## Register the collection
 
-```
-python - <<'PY'
-import json
-import requests
+```python
 
-auth = json.load(open("/tmp/stac-auth.json"))
-stac_endpoint, token = auth["stac_endpoint"], auth["access_token"]
+#auth = json.load(open("/tmp/stac-auth.json"))
+#stac_endpoint, token = auth["stac_endpoint"], auth["access_token"]
 headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 resp = requests.post(
@@ -113,21 +106,18 @@ resp = requests.post(
     json=json.load(open("/tmp/stac-collection-register.json")),
 )
 print("Collection registration status:", resp.status_code, "->", "PASS" if resp.status_code == 201 else "FAIL")
-PY
+
 ```
 
 {{exec}}
 
 Register each item:
 
-```
-python - <<'PY'
-import json
-import requests
+```python
 
-auth = json.load(open("/tmp/stac-auth.json"))
-stac_endpoint, token = auth["stac_endpoint"], auth["access_token"]
-collection_id = auth["collection_id"]
+#auth = json.load(open("/tmp/stac-auth.json"))
+#stac_endpoint, token = auth["stac_endpoint"], auth["access_token"]
+#collection_id = auth["collection_id"]
 headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 items_endpoint = f"{stac_endpoint}/collections/{collection_id}/items"
 
@@ -138,7 +128,7 @@ for item in items:
     r.raise_for_status()
     created += 1
 print(f"Uploaded {created}/{len(items)} items")
-PY
+
 ```
 
 {{exec}}
@@ -147,13 +137,10 @@ PY
 
 Count the items exposed by the STAC API.
 
-```
-python - <<'PY'
-import json
-import requests
+```python
 
-auth = json.load(open("/tmp/stac-auth.json"))
-stac_endpoint, token, collection_id = auth["stac_endpoint"], auth["access_token"], auth["collection_id"]
+#auth = json.load(open("/tmp/stac-auth.json"))
+#stac_endpoint, token, collection_id = auth["stac_endpoint"], auth["access_token"], auth["collection_id"]
 params, total, link = {"limit": 250}, 0, f"{stac_endpoint}/collections/{collection_id}/items"
 headers = {"Authorization": f"Bearer {token}"}
 
@@ -165,7 +152,7 @@ while link:
     link = next((ln["href"] for ln in body.get("links", []) if ln["rel"] == "next"), None)
     params = {}
 print(f"Total items exposed by STAC API: {total}")
-PY
+
 ```
 
 {{exec}}

@@ -216,7 +216,7 @@ print(f"Created {len(new_items)} items. First item updated.")
 ### Save Catalog to disk
 
 ```python
-import os
+
 os.makedirs(catalog_id, exist_ok=True)
 catalog.add_child(collection)
 catalog.normalize_and_save(root_href=catalog_id, catalog_type=pystac.CatalogType.SELF_CONTAINED)

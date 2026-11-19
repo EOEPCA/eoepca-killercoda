@@ -12,8 +12,7 @@ source ~/datacube-venv/bin/activate
 
 Query the EOEPCA STAC API with the same bounding box and date range as the external query, reusing the token from the previous step.
 
-```
-python - <<'PY'
+```python
 import json, certifi, os
 import requests
 
@@ -28,8 +27,8 @@ items = list(requests.get(
     headers={"Authorization": f"Bearer {token}"}, params={"limit": 400},
 ).json()["features"])
 print(f"Query returned {len(items)} items from the EOEPCA STAC API")
-json.dump(items, open("/tmp/registered-items.json", "w"), indent=2)
-PY
+#json.dump(items, open("/tmp/registered-items.json", "w"), indent=2)
+
 ```
 
 {{exec}}
@@ -38,13 +37,11 @@ PY
 
 Load the registered items with odc-stac and compute a monthly median of the cloud fraction.
 
-```
-python - <<'PY'
-import json
+```python
 from odc.stac import stac_load
 
 bbox = [-10.0, 35.0, 30.0, 70.0]
-items = json.load(open("/tmp/registered-items.json"))
+#items = json.load(open("/tmp/registered-items.json"))
 
 ds = stac_load(
     items,
@@ -56,19 +53,18 @@ ds = stac_load(
 )
 monthly_mean_cf = ds["cf"].groupby("time.month").median(dim="time")
 print(monthly_mean_cf)
-PY
+
 ```
 
 {{exec}}
 
 Plot the monthly cloud fractions to confirm the data is usable.
 
-```
-python - <<'PY'
+```python
 monthly_mean_cf.plot(col="month", col_wrap=3, cmap="viridis",
                      vmin=0, vmax=1, figsize=(12, 6),
                      cbar_kwargs={"label": "Cloud Fraction"})
-PY
+
 ```
 
 {{exec}}

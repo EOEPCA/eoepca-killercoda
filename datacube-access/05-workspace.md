@@ -77,8 +77,6 @@ with open("/tmp/workspace-auth.json", "w") as f:
 Create a workspace, then poll until the status is `ready`.
 
 ```python
-import json, time
-import requests
 
 auth = json.load(open("/tmp/workspace-auth.json"))
 token, ws_endpoint = auth["access_token"], auth["workspace_api_endpoint"]
@@ -118,8 +116,8 @@ Upload every file under the `eoepcauser.s5p-cf-bp-stac-catalog` directory to the
 
 ```python
 
-import json, os
-import boto3
+#import json, os
+#import boto3
 
 creds = json.load(open("/tmp/workspace-s3.json"))
 s3 = boto3.session.Session().resource(

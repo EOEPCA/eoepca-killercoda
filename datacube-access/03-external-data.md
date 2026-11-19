@@ -30,23 +30,7 @@ flowchart LR
     D -->|4. Access & process| E[Processing BB]
 ```
 
-## Prerequisites
-
-Before starting this scenario make sure you have done the following:
-
-- Cloned this scenario repository to your local machine and checked out the appropriate branch.
-- Created a Python virtual environment (see `requirements.txt`) and installed the required packages.
-- Configured the connection parameters in a `.env` file (see the setup below).
-
 ## Setup your environment
-
-Create and activate a virtual environment for this scenario:
-
-```bash
-
-source ~/datacube-venv/bin/activate
-
-```
 
 ### Configure connection parameters
 
@@ -138,7 +122,7 @@ print("All libraries imported.")
 Ensure the DLR GeoService certificate is trusted by setting the cert bundles.
 
 ```python
-import os, certifi
+#import os, certifi
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 os.environ["CURL_CA_BUNDLE"] = certifi.where()
 print("Certificate bundles configured.")
