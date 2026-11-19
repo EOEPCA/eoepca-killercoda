@@ -218,10 +218,48 @@ print(monthly_mean_cf)
 
 {{exec}}
 
+With access to a GUI we would plot a realistic map...
+
 ```python
 monthly_mean_cf.plot(col="month", col_wrap=3, cmap="viridis",
                      vmin=0, vmax=1, figsize=(12, 6),
                      cbar_kwargs={"label": "Cloud Fraction"})
+
+```
+
+... here on the console we can at least assume a cloud fraction map.
+
+```python
+import numpy as np
+
+# Characters represent increasing cloud fraction
+levels = " O0@"
+
+def print_heatmap(data, width=60, height=20):
+    # Sample the data down to fit a terminal
+    rows = np.linspace(0, data.shape[0] - 1, height).astype(int)
+    cols = np.linspace(0, data.shape[1] - 1, width).astype(int)
+    small = data[np.ix_(rows, cols)]
+
+    for row in small:
+        line = ""
+        for value in row:
+            if np.isnan(value):
+                line += " "
+            else:
+                index = int(np.clip(value, 0, 1) * (len(levels) - 1))
+                line += levels[index]
+        print(line)
+
+for month in monthly_mean_cf.month.values:
+    print(f"\nCloud fraction — month {month}")
+    print_heatmap(monthly_mean_cf.sel(month=month).values)
+
+print("\nLegend:")
+print(f"no clouds: {levels[0]}")
+print(f"low clouds: {levels[1]}")
+print(f"med clouds: {levels[2]}")
+print(f"high clouds: {levels[3]}")
 
 ```
 
