@@ -42,10 +42,10 @@ kubectl rollout status deployment/mailpit -n notifications --timeout=120s
 This deploys the webhook source (GitHub and GitLab), the API server source, the CloudEvents player, emailer and default broker:
 
 ```
-helm repo add eoepca-dev https://eoepca.github.io/helm-charts-dev/
-helm repo update eoepca-dev
+helm repo add eoepca https://eoepca.github.io/helm-charts/
+helm repo update eoepca
 
-helm upgrade -i notification-automation eoepca-dev/notification-automation \
+helm upgrade -i notification-automation eoepca/notification-automation \
   --namespace notifications \
   --create-namespace \
   --version 0.1.2 \
