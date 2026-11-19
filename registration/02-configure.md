@@ -1,5 +1,9 @@
 Before proceeding with the Resource Registration building block deployment, we need first to configure it. We can do it with the configuration script `configure-resource-registration.sh`{{}} provided in the EOEPCA deployment guide.
 
+```
+cd ~/deployment-guide/scripts/resource-registration
+```{{exec}}
+
 This includes configuration of the URL through which the harvested 'eodata' assets can be retrieved. This tutorial environment uses a proxy to route access to running services. Thus, we have to ensure that this proxied URL is well configured within the deployment.
 
 The tutorial proxy serves `eodata.eoepca.local` on port 84, so we fill that port into the tutorial's host URL template:
