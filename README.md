@@ -123,6 +123,13 @@ The available tutorial directories can be found using
 find . -name index.json -exec dirname {} \;
 ```
 
+### External Access
+
+To access tutorials via an external IP, set `EXT_DOMAIN_NAME` in your `.env`:
+```bash
+export EXT_DOMAIN_NAME=".<your external ip>.nip.io"
+```
+
 ### macOS notes
 
 * **A modern bash is required** — macOS ships bash 3.2, but the localcoda backend and some helper scripts (`open.sh`, `restart.sh`) use bash 4+ features. Install it with `brew install bash` (the scripts use `#!/usr/bin/env bash`, so the Homebrew version is picked up via `PATH`). If `which bash` still shows `/bin/bash` afterwards (symptom: `bad substitution` errors from `backend_run.sh`), Homebrew's directory isn't early enough in your `PATH` — fix it with:
