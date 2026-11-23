@@ -57,12 +57,17 @@ fi
 ) || exit $?
 
 # --- run logic ----------------------------------------------------------------
-BACKEND_OPTS=""
+BACKEND_OPTS=()
 if [ -n "$EXT_DOMAIN_NAME" ]; then
-  BACKEND_OPTS="-o EXT_DOMAIN_NAME=${EXT_DOMAIN_NAME}"
+  case "$EXT_DOMAIN_NAME" in
+    *[\<\>\ ]*)
+      echo "ERROR: EXT_DOMAIN_NAME ('$EXT_DOMAIN_NAME') looks like an unreplaced placeholder - set your real IP in .env, e.g. \".192.168.1.10.nip.io\""
+      exit 1 ;;
+  esac
+  BACKEND_OPTS=(-o "EXT_DOMAIN_NAME=${EXT_DOMAIN_NAME}")
 fi
 if [ "$DEBUG" == "true" ]; then
   BACKEND_OPTS="$BACKEND_OPTS -Ldev"
 fi
 
-"${LOCALCODA_ROOT}"/backend/bin/backend_run.sh $BACKEND_OPTS "${BIN_DIR}" "${TUTORIAL}/index.json"
+"${LOCALCODA_ROOT}"/backend/bin/backend_run.sh "${BACKEND_OPTS[@]}" "${BIN_DIR}" "${TUTORIAL}/index.json"
