@@ -56,14 +56,6 @@ Open the URL printed by the command in your browser. Wait for the environment se
 > 
 > See [here](https://github.com/rconway/codavm) for details of [`codavm`](https://github.com/rconway/codavm).
 
-> **Setup Alternative - `codavm`**
-> 
-> The setup included here establishes a 'native' localcoda setup. Alternatively you can use `codavm` that provides a pre-packaged virtual machine including docker, sysbox, localcoda and eoepca-killercoda - deployed and ready for execution of the tutorials.
-> 
-> `codavm` relies upon Vagrant to provision the VM, with an appropriate provider such as VirtualBox or libvirt.
-> 
-> See [here](https://github.com/rconway/codavm) for details of [`codavm`](https://github.com/rconway/codavm).
-
 ### Setup
 
 Create a local root directory for the tutorials and localcoda environment.
