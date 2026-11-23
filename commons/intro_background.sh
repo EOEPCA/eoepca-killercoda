@@ -383,6 +383,22 @@ if [[ -e /tmp/assets/crossplane ]]; then
     --set provider.defaultActivations={}; then
     setup_failed "Crossplane install failed. Check: kubectl get pods -n crossplane-system"
   fi
+  if ! kubectl -n crossplane-system patch deployment crossplane \
+    --type=merge --patch-file=/dev/stdin <<'EOF'
+spec:
+  template:
+    spec:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+EOF
+  then
+    setup_failed "Crossplane DNS configuration failed."
+  fi
+  if ! kubectl -n crossplane-system rollout status deployment/crossplane --timeout=5m; then
+    setup_failed "Crossplane did not become ready. Check: kubectl get pods -n crossplane-system"
+  fi
   # Secret with Minio credentials for Crossplane S3 provider
   source ~/.eoepca/state
   kubectl create secret generic minio-secret \
