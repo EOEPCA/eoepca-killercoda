@@ -158,8 +158,16 @@ if [[ -e /tmp/assets/apisix ]]; then
   mkdir -p ~/.eoepca && echo 'export INGRESS_CLASS="apisix"' >> ~/.eoepca/state
   helm repo add apisix https://apache.github.io/apisix-helm-chart/
   helm repo update apisix
+  APISIX_CRDS_URL="https://raw.githubusercontent.com/apache/apisix-helm-chart/apisix-2.16.0/charts/apisix-ingress-controller/crds/apisixic-crds.yaml"
+  if ! retry 3 kubectl apply --server-side -f "$APISIX_CRDS_URL"; then
+    setup_failed "APISIX CRD installation failed."
+  fi
+  if ! kubectl wait --for=condition=Established --timeout=60s crd/gatewayproxies.apisix.apache.org; then
+    setup_failed "APISIX GatewayProxy CRD did not become ready."
+  fi
   if ! retry 3 helm upgrade -i apisix apisix/apisix \
     --version 2.16.0 \
+    --skip-crds \
     --namespace ingress-apisix --create-namespace \
     --set securityContext.runAsUser=0 \
     --set hostNetwork=true \
@@ -172,6 +180,7 @@ if [[ -e /tmp/assets/apisix ]]; then
     --set apisix.deployment.role=traditional \
     --set apisix.deployment.role_traditional.config_provider=yaml \
     --set ingress-controller.config.provider.type=apisix-standalone \
+    --set ingress-controller.config.disableGatewayAPI=true \
     --set ingress-controller.enabled=true \
     --set ingress-controller.webhook.enabled=true \
     --set ingress-controller.gatewayProxy.createDefault=true; then
