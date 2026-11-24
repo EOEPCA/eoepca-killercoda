@@ -4,15 +4,17 @@ The metadata used here describes two real Sentinel-2 Level-2A scenes, one over c
 
 ### Get an access token
 
-The `resource-catalogue` Keycloak client has the OAuth2 device authorization grant enabled, which is the simplest way to get a token in a terminal. The client also requires PKCE, so we first create a random verifier and send its SHA-256 hash (the challenge) with the request.
+The `resource-catalogue` Keycloak client has the OAuth2 device authorization grant enabled, which is the simplest way to get a token in a terminal. The client also requires PKCE, so we first create a random verifier and send its SHA-256 hash (the challenge) with the request. Terminal requests use Keycloak's internal route, while the verification link opens its public login page.
 
 ```
 source ~/.eoepca/state
 
+KEYCLOAK_INTERNAL_URL="${HTTP_SCHEME}://auth.${INGRESS_HOST}"
+
 VERIFIER=$(openssl rand -hex 32)
 CHALLENGE=$(printf '%s' "$VERIFIER" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '=')
 
-DEVICE=$(curl -sS -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/auth/device" \
+DEVICE=$(curl -sS -X POST "${KEYCLOAK_INTERNAL_URL}/realms/${REALM}/protocol/openid-connect/auth/device" \
   --data-urlencode "client_id=resource-catalogue" \
   --data-urlencode "code_challenge=${CHALLENGE}" \
   --data-urlencode "code_challenge_method=S256")
@@ -25,7 +27,7 @@ Open the printed URL and log in as `eoepcauser`{{}} / `eoepcapassword`{{}}, a us
 ```
 DEVICE_CODE=$(echo "$DEVICE" | jq -r '.device_code')
 
-ACCESS_TOKEN=$(curl -sS -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/token" \
+ACCESS_TOKEN=$(curl -sS -X POST "${KEYCLOAK_INTERNAL_URL}/realms/${REALM}/protocol/openid-connect/token" \
   --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
   --data-urlencode "device_code=${DEVICE_CODE}" \
   --data-urlencode "client_id=resource-catalogue" \
