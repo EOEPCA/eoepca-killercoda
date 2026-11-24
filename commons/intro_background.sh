@@ -65,7 +65,7 @@ export HTTP_SCHEME="http"
 export INGRESS_HOST="eoepca.local"
 EOF
 fi
-if false; then
+if [[ -e /tmp/assets/ignoreresrequests ]]; then
   ### Avoid applying strict resource requests - to avoid premature exhaustion of node resources
   ### THIS IS JUST FOR DEMO! DO NOT DO THIS PART IN PRODUCTION!
   echo configuring kyverno to ignore resource requests...  >> /tmp/killercoda_setup.log
