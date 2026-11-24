@@ -89,7 +89,7 @@ VERIFIER=$(openssl rand -hex 32)
 # code_challenge = base64url(sha256(verifier)), per RFC 7636
 CHALLENGE=$(printf '%s' "$VERIFIER" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '=')
 
-DEVICE=$(curl -s -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/auth/device" \
+DEVICE=$(curl -s -X POST "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/${REALM}/protocol/openid-connect/auth/device" \
   --data-urlencode "client_id=resource-catalogue" \
   --data-urlencode "code_challenge=${CHALLENGE}" \
   --data-urlencode "code_challenge_method=S256")
@@ -102,7 +102,7 @@ Open the printed URL and log in with username `eoepcauser`{{copy}} and password 
 ```bash
 DEVICE_CODE=$(echo "$DEVICE" | jq -r '.device_code')
 
-ACCESS_TOKEN=$(curl -s -X POST "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/token" \
+ACCESS_TOKEN=$(curl -s -X POST "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/${REALM}/protocol/openid-connect/token" \
   -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
   -d "code_verifier=${VERIFIER}" \
   -d "device_code=${DEVICE_CODE}" \

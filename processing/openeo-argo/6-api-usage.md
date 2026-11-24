@@ -6,7 +6,7 @@ Get an access token from Keycloak using the `openeo-argo` client, and wrap it in
 source ~/.eoepca/state
 
 ACCESS_TOKEN=$(curl -s -X POST \
-    "${OIDC_ISSUER_URL}/protocol/openid-connect/token" \
+    "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/${REALM}/protocol/openid-connect/token" \
     -d "grant_type=password" \
     -d "username=${KEYCLOAK_TEST_USER}" \
     -d "password=${KEYCLOAK_TEST_PASSWORD}" \
