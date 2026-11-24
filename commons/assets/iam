@@ -219,6 +219,7 @@ keycloak-operator:
       tlsSecret: *tlsSecretRef
     hostname:
       hostname: *kcurl
+      backchannelDynamic: true
     ingress:
       enabled: false
     proxy:
