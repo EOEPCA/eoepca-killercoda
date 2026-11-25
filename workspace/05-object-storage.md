@@ -8,7 +8,7 @@ Authenticate as the workspace owner:
 source ~/.eoepca/state
 ACCESS_TOKEN=$(
   curl --silent --show-error --fail \
-    "${HTTP_SCHEME}://${KEYCLOAK_HOST}/realms/${REALM}/protocol/openid-connect/token" \
+    "${HTTP_SCHEME}://auth.${INGRESS_HOST}/realms/${REALM}/protocol/openid-connect/token" \
     -d "username=${KEYCLOAK_TEST_USER}" \
     --data-urlencode "password=${KEYCLOAK_TEST_PASSWORD}" \
     -d "grant_type=password" \
