@@ -7,8 +7,11 @@ set -euo pipefail
 # the image. Fetch the image without unpacking, rewrite that small layer with
 # root-owned tar headers, and register the patched image locally for CRI.
 
-IMAGE_REPO="${OPENEO_GEOTRELLIS_IMAGE_REPO:-vito-docker.artifactory.vgt.vito.be/openeo-geotrellis-kube-python311}"
-SOURCE_TAG="${OPENEO_GEOTRELLIS_SOURCE_TAG:-20260428-666}"
+VALUES_FILE="${OPENEO_GEOTRELLIS_VALUES_FILE:-openeo-geotrellis/generated-values.yaml}"
+IMAGE_REPO="$(gomplate -d "values=${VALUES_FILE}" -i '{{ (ds "values").image }}')"
+SOURCE_TAG="$(gomplate -d "values=${VALUES_FILE}" -i '{{ (ds "values").imageVersion }}')"
+IMAGE_REPO="${OPENEO_GEOTRELLIS_IMAGE_REPO:-${IMAGE_REPO}}"
+SOURCE_TAG="${OPENEO_GEOTRELLIS_SOURCE_TAG:-${SOURCE_TAG}}"
 PATCHED_TAG="${OPENEO_GEOTRELLIS_PATCHED_TAG:-localcoda}"
 BAD_DIFF_ID="${OPENEO_GEOTRELLIS_BAD_DIFF_ID:-sha256:84f3bb909ec6e34bd8b1acef0f9fa63e93a21ed8ae7fcd5b4aaecac3289f9d43}"
 
@@ -37,15 +40,16 @@ if ! k3s ctr -n k8s.io content fetch "${SOURCE_IMAGE}" >"${FETCH_LOG}" 2>&1; the
 fi
 
 TOKEN="$(
-  curl -fsSL \
-    "https://artifactory.vgt.vito.be/artifactory/api/docker/vito-docker/v2/token?service=artifactory.vgt.vito.be&scope=repository:${REPO_PATH}:pull" \
-    | jq -r .token
+  curl -fsSL --get "https://${REGISTRY_HOST}/swr/auth/v2/registry/auth/" \
+    --data-urlencode "service=dockyard" \
+    --data-urlencode "scope=repository:${REPO_PATH}:pull" \
+    | jq -er '.token // .access_token'
 )"
 
 MANIFEST="$(
   curl -fsSL \
     -H "Authorization: Bearer ${TOKEN}" \
-    -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+    -H "Accept: application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json" \
     "https://${REGISTRY_HOST}/v2/${REPO_PATH}/manifests/${SOURCE_TAG}"
 )"
 
