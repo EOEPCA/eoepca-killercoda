@@ -158,6 +158,12 @@ if [[ -e /tmp/assets/apisix ]]; then
   mkdir -p ~/.eoepca && echo 'export INGRESS_CLASS="apisix"' >> ~/.eoepca/state
   helm repo add apisix https://apache.github.io/apisix-helm-chart/
   helm repo update apisix
+  if ! kubectl get crd httproutes.gateway.networking.k8s.io >/dev/null 2>&1; then
+    if ! retry 3 kubectl apply --server-side \
+      -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml; then
+      setup_failed "Gateway API CRD installation failed."
+    fi
+  fi
   APISIX_CRDS_URL="https://raw.githubusercontent.com/apache/apisix-helm-chart/apisix-2.16.0/charts/apisix-ingress-controller/crds/apisixic-crds.yaml"
   if ! retry 3 kubectl apply --server-side -f "$APISIX_CRDS_URL"; then
     setup_failed "APISIX CRD installation failed."
