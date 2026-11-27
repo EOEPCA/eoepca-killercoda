@@ -11,9 +11,8 @@ This one-time preparation downloads a large image and normally takes one or two 
 Install the OpenEO Spark application. The two overrides select the locally patched image and prevent Kubernetes from replacing it with a remote pull:
 
 ```bash
-helm upgrade -i openeo-geotrellis-openeo sparkapplication \
-    --repo https://artifactory.vgt.vito.be/artifactory/helm-charts \
-    --version 1.2.0 \
+helm upgrade -i openeo-geotrellis-openeo oci://ghcr.io/open-eo/charts/sparkapplication \
+    --version 1.6.0 \
     --namespace openeo-geotrellis \
     --create-namespace \
     --values openeo-geotrellis/generated-values.yaml \

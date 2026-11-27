@@ -4,7 +4,8 @@ We can deploy ZooKeeper using Helm:
 
 ```bash
 helm upgrade -i openeo-geotrellis-zookeeper \
-    https://artifactory.vgt.vito.be/artifactory/helm-charts/zookeeper-11.1.6.tgz \
+    oci://registry-1.docker.io/bitnamicharts/zookeeper \
+    --version 11.1.6 \
     --namespace openeo-geotrellis \
     --values zookeeper/generated-values.yaml \
     --wait --timeout 5m
