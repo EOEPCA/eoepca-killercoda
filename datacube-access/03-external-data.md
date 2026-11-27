@@ -230,8 +230,6 @@ monthly_mean_cf.plot(col="month", col_wrap=3, cmap="viridis",
 ... here on the console we can at least assume a cloud fraction map.
 
 ```python
-import numpy as np
-
 # Characters represent increasing cloud fraction
 levels = " O0@"
 
@@ -240,7 +238,7 @@ def print_heatmap(data, width=60, height=20):
     rows = np.linspace(0, data.shape[0] - 1, height).astype(int)
     cols = np.linspace(0, data.shape[1] - 1, width).astype(int)
     small = data[np.ix_(rows, cols)]
-
+    #
     for row in small:
         line = ""
         for value in row:

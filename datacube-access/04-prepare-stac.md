@@ -2,12 +2,6 @@
 
 The data is pulled from the external catalogue (Step 1). Now it must be reshaped so the resulting collection and items conform to STAC Best Practices before registration.
 
-Activate the Python environment:
-
-```bash
-source ~/datacube-venv/bin/activate
-```
-
 ## Prepare STAC metadata
 
 ```python
@@ -217,11 +211,29 @@ print(f"Created {len(new_items)} items. First item updated.")
 
 ```python
 
-os.makedirs(catalog_id, exist_ok=True)
+# Set Self-Href to destination directory
+catalog.set_self_href(f"{os.path.abspath(catalog_id)}/catalog.json")
+
+# add the collection (which contains the item) to the catalog
 catalog.add_child(collection)
-catalog.normalize_and_save(root_href=catalog_id, catalog_type=pystac.CatalogType.SELF_CONTAINED)
+
+# IMPORTANT: make asset hrefs relative to their STAC item files
+catalog.make_all_asset_hrefs_relative()
+
+# run validate_all to check that the STAC metadata is valid
+catalog.validate_all()
+
+# write catalog.json, collection.json, and all items to the output directory
+catalog.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+
+# Check
+print(f"catalog.json exists: {os.path.exists(os.path.join(catalog_id, 'catalog.json'))}")
+print(f"List content: {os.listdir(catalog_id)}")
+
 print(f"Catalog saved to: {catalog_id}")
 print(f"Number of items: {len(list(collection.get_all_items()))}")
+
+catalog.to_dict()
 
 ```
 
@@ -232,8 +244,9 @@ print(f"Number of items: {len(list(collection.get_all_items()))}")
 Validate the collection and each item before uploading.
 
 ```python
-###catalog = pystac.read_file(f"{catalog_id}/catalog.json")
+catalog = pystac.read_file(f"{catalog_id}/catalog.json")
 print(f"Validating catalog: {catalog.validate()}")
+
 collection = catalog.get_child(collection_id)
 print(f"Validating collection: {collection.validate()}")
 

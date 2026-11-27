@@ -2,12 +2,6 @@
 
 The [Workspace Building Block](https://eoepca.readthedocs.io/projects/workspace/en/latest/) provides S3-compatible storage for the prepared STAC metadata and derived products. We create a workspace, wait until it is ready, then upload the catalog directory produced in the previous step.
 
-Activate the Python environment:
-
-```
-source ~/datacube-venv/bin/activate
-```
-
 ## Connect to the Workspace API
 
 The workspace API is exposed at `http://workspace-api.eoepca.local/workspaces`. We use the public `workspace-api` client with the OAuth 2.0 device flow (PKCE) so no client secret is required.
@@ -64,9 +58,9 @@ while True:
     raise RuntimeError(f"Device flow failed: {err}")
 
 token = resp.json()["access_token"]
-print(json.dumps(jwt.decode(token, options={"verify_signature": False}), indent=2))
-with open("/tmp/workspace-auth.json", "w") as f:
-    json.dump({"access_token": token, "workspace_api_endpoint": WORKSPACE_API_ENDPOINT}, f)
+# print(json.dumps(jwt.decode(token, options={"verify_signature": False}), indent=2))
+# with open("/tmp/workspace-auth.json", "w") as f:
+#     json.dump({"access_token": token, "workspace_api_endpoint": WORKSPACE_API_ENDPOINT}, f)
 
 ```
 
@@ -78,8 +72,9 @@ Create a workspace, then poll until the status is `ready`.
 
 ```python
 
-auth = json.load(open("/tmp/workspace-auth.json"))
-token, ws_endpoint = auth["access_token"], auth["workspace_api_endpoint"]
+# auth = json.load(open("/tmp/workspace-auth.json"))
+# token, ws_endpoint = auth["access_token"], auth["workspace_api_endpoint"]
+ws_endpoint = WORKSPACE_API_ENDPOINT
 headers = {"Authorization": f"Bearer {token}"}
 
 resp = requests.post(ws_endpoint, headers=headers,
